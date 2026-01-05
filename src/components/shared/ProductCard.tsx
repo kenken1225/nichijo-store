@@ -26,4 +26,3 @@ export function ProductCard({ title, price, href, imageUrl, imageAlt }: Props) {
   );
 }
 
-

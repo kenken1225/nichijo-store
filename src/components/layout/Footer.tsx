@@ -5,9 +5,9 @@ const columns = [
   {
     title: "Shop",
     links: [
-      { href: "/products", label: "New Arrivals" },
-      { href: "/products?filter=best", label: "Best Sellers" },
-      { href: "/products?filter=sale", label: "Sale" },
+      { href: "/collections", label: "Collections" },
+      { href: "/collections?filter=best", label: "Best Sellers" },
+      { href: "/collections?filter=sale", label: "Sale" },
     ],
   },
   {

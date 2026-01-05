@@ -14,6 +14,9 @@ export type ShopifyVariant = {
   id: string;
   title: string;
   price: ShopifyPrice;
+  availableForSale?: boolean;
+  quantityAvailable?: number | null;
+  selectedOptions?: { name: string; value: string }[];
 };
 
 export type ShopifyProduct = {

@@ -1,3 +1,6 @@
+@import "tailwindcss/preflight";
+
+@tailwind utilities;
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -19,7 +22,7 @@
   --card-foreground: #1a1a1a;
   --popover: #ffffff;
   --popover-foreground: #0a0a0a;
-  --primary: #2d3142;
+  --primary: #c77d58;
   --primary-foreground: #faf8f5;
   --secondary: #e8dfd0;
   --secondary-foreground: #2d3142;
@@ -186,4 +189,87 @@
   }
 }
 
+/* Rich Text Styles */
+:where(.rich-text) {
+  color: var(--muted-foreground);
+  line-height: 1.6;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
 
+:where(.rich-text p) {
+  margin: 0.5rem 0;
+}
+
+:where(.rich-text ul),
+:where(.rich-text ol) {
+  margin: 0.75rem 0;
+  padding-left: 1.25rem;
+}
+
+:where(.rich-text ul) {
+  list-style: disc;
+}
+
+:where(.rich-text ol) {
+  list-style: decimal;
+}
+
+:where(.rich-text li) {
+  margin: 0.25rem 0;
+}
+
+:where(.rich-text img),
+:where(.rich-text video),
+:where(.rich-text iframe) {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.375rem;
+}
+
+:where(.rich-text iframe) {
+  aspect-ratio: 16 / 9;
+}
+
+ol,
+ul,
+menu {
+  list-style: auto;
+}
+
+/* Mini cart You May Also Like compact sizing */
+.mini-cart-yml {
+  font-size: 0.8125rem;
+}
+.mini-cart-yml .space-y-3 > * + * {
+  margin-top: 0.625rem;
+}
+.mini-cart-yml .flex.gap-3 > * {
+  margin-right: 0.5rem;
+}
+
+.mini-cart-yml .flex.gap-3 {
+  gap: 0.5rem;
+}
+.mini-cart-yml .min-w-\[150px\] {
+  min-width: 8.75rem;
+}
+.mini-cart-yml img {
+  border-radius: 0.375rem;
+}
+.mini-cart-yml p {
+  margin: 0;
+}
+.mini-cart-yml .text-sm,
+.mini-cart-yml .text-xs,
+.mini-cart-yml button {
+  font-size: 0.6rem;
+}
+
+.mini-cart-yml .space-y-3 > p.text-sm:first-of-type {
+  font-size: 1rem;
+}
+
+.mini-cart-yml button {
+  padding: 0.375rem 2rem;
+}

@@ -5,13 +5,7 @@ import { FeaturedProducts } from "@/components/sections/FeaturedProducts";
 import { About } from "@/components/sections/About";
 import { Blog } from "@/components/sections/Blog";
 import { CTA } from "@/components/sections/CTA";
-
-const mockProducts = [
-  { title: "Minimal Wave Tee", price: "$42.00", href: "/products/minimal-wave-tee" },
-  { title: "Zen Garden Print", price: "$28.00", href: "/products/zen-garden-print" },
-  { title: "Ceramic Tea Set", price: "$68.00", href: "/products/ceramic-tea-set" },
-  { title: "Canvas Tote", price: "$32.00", href: "/products/canvas-tote" },
-];
+import { getProductsList } from "@/lib/shopify/products";
 
 const mockPosts = [
   {
@@ -31,13 +25,21 @@ const mockPosts = [
   },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const featuredProducts = await getProductsList(4);
+
   return (
     <>
       <Hero />
       <Trust />
       <CategoryGrid />
-      <FeaturedProducts products={mockProducts} />
+      <FeaturedProducts
+        products={featuredProducts.map((p) => ({
+          title: p.title,
+          price: p.priceFormatted,
+          href: `/products/${p.handle}`,
+        }))}
+      />
       <About />
       <Blog posts={mockPosts} />
       <CTA />
