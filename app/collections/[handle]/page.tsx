@@ -21,13 +21,9 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
 
   return (
     <div className="bg-background">
-      <section className="py-6 sm:py-10">
+      <section className="py-6 sm:py-10 bg-secondary/60">
         <Container>
-          <CollectionHeader
-            title={collection.title}
-            description={collection.description}
-            imageUrl={collection.image?.url}
-          />
+          <CollectionHeader title={collection.title} description={collection.description} />
         </Container>
       </section>
 

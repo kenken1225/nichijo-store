@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 type Props = {
   title: string;
   price: string;
@@ -8,7 +10,7 @@ type Props = {
 
 export function ProductCard({ title, price, href, imageUrl, imageAlt }: Props) {
   return (
-    <a
+    <Link
       href={href}
       className="flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm transition hover:shadow"
     >
@@ -22,7 +24,6 @@ export function ProductCard({ title, price, href, imageUrl, imageAlt }: Props) {
         <p className="text-base font-medium text-foreground">{title}</p>
         <p className="text-sm text-muted-foreground">{price}</p>
       </div>
-    </a>
+    </Link>
   );
 }
-

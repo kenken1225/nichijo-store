@@ -229,3 +229,68 @@ export const COLLECTION_BY_HANDLE_QUERY = `
     }
   }
 `;
+
+export const BLOGS_LIST_QUERY = `
+  query BlogsList {
+    blogs(first: 20) {
+      edges {
+        node {
+          handle
+          title
+        }
+      }
+    }
+  }
+`;
+
+export const BLOG_BY_HANDLE_QUERY = `
+  query BlogByHandle($handle: String!) {
+    blog(handle: $handle) {
+      handle
+      title
+      articles(first: 50, sortKey: PUBLISHED_AT, reverse: true) {
+        edges {
+          node {
+            handle
+            title
+            excerpt
+            publishedAt
+            tags
+            image {
+              url
+              altText
+              width
+              height
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const ARTICLE_BY_HANDLE_QUERY = `
+  query ArticleByHandle($blogHandle: String!, $articleHandle: String!) {
+    blog(handle: $blogHandle) {
+      handle
+      title
+      articleByHandle(handle: $articleHandle) {
+        handle
+        title
+        excerpt
+        contentHtml
+        publishedAt
+        tags
+        image {
+          url
+          altText
+          width
+          height
+        }
+        authorV2 {
+          name
+        }
+      }
+    }
+  }
+`;

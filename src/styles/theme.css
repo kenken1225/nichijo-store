@@ -4,13 +4,14 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Typography scale (Figma準拠) */
+  /* Typography scale */
   --font-size: 16px;
   --text-2xl: 60px;
   --text-xl: 30px;
   --text-lg: 18px;
   --text-base: 16px;
   --text-sm: 14px;
+  --font-weight-bold: 700;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
   --radius: 0.625rem;
@@ -272,4 +273,34 @@ menu {
 
 .mini-cart-yml button {
   padding: 0.375rem 2rem;
+}
+
+/* Article Content Container */
+
+.article-container h2,
+.article-container h3 {
+  margin-block-start: 3rem !important;
+}
+
+.article-container h2 strong,
+.article-container h3 strong {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-3xl);
+}
+
+@media (max-width: 768px) {
+  .article-container h2 strong,
+  .article-container h3 strong {
+    font-size: var(--text-2xl);
+  }
+}
+
+.article-container blockquote {
+  display: inline-flex;
+  padding: 0 23px 1px 35px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 19px;
+  border-left: 3px solid var(--color-primary);
 }

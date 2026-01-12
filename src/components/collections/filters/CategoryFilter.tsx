@@ -47,4 +47,3 @@ export function CategoryFilter({ categories, selectedCategory, onSelect }: Categ
     </div>
   );
 }
-

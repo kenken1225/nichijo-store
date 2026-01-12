@@ -11,3 +11,5 @@ export function Price({ amount, currencyCode, className }: PriceProps) {
   return <span className={clsx("text-sm text-muted-foreground", className)}>{formatPrice(amount, currencyCode)}</span>;
 }
 
+
+

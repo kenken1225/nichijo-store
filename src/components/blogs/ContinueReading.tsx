@@ -1,0 +1,53 @@
+import Link from "next/link";
+import { Container } from "@/components/layout/Container";
+import type { BlogArticleSummary } from "@/lib/shopify/blogs";
+
+type Props = {
+  blogHandle: string;
+  articles: BlogArticleSummary[];
+};
+
+const formatDate = (value?: string | null) => {
+  if (!value) return "";
+  const date = new Date(value);
+  return new Intl.DateTimeFormat("en-US", { dateStyle: "long" }).format(date);
+};
+
+export function ContinueReading({ blogHandle, articles }: Props) {
+  if (!articles.length) return null;
+
+  return (
+    <section className="bg-secondary/20 py-16">
+      <Container className="space-y-10">
+        <h2 className="text-center text-3xl font-semibold text-foreground">Continue Reading</h2>
+        <div className="grid gap-8 md:grid-cols-3">
+          {articles.map((article) => (
+            <Link
+              key={article.handle}
+              href={`/blogs/${blogHandle}/${article.handle}`}
+              className="flex h-full flex-col gap-4 rounded-xl border border-border bg-card p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+            >
+              <div className="aspect-[4/3] w-full overflow-hidden rounded-lg bg-muted/40">
+                {article.image?.url ? (
+                  <img
+                    src={article.image.url}
+                    alt={article.image.altText ?? article.title}
+                    className="h-full w-full object-cover"
+                  />
+                ) : null}
+              </div>
+              <div className="space-y-2">
+                <p className="text-xs text-muted-foreground">{formatDate(article.publishedAt)}</p>
+                <h3 className="text-lg font-semibold text-foreground leading-tight line-clamp-2">{article.title}</h3>
+                {article.excerpt ? (
+                  <p className="text-sm text-muted-foreground leading-6 line-clamp-3">{article.excerpt}</p>
+                ) : null}
+              </div>
+              <span className="mt-auto text-sm font-semibold text-primary">Read More →</span>
+            </Link>
+          ))}
+        </div>
+      </Container>
+    </section>
+  );
+}

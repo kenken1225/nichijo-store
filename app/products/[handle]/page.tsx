@@ -7,6 +7,8 @@ import { Container } from "@/components/layout/Container";
 import { getProductByHandle, getProductRecommendations } from "@/lib/shopify/products";
 import { BackLink } from "@/components/shared/BackLink";
 
+export const revalidate = 3600;
+
 type ProductPageProps = {
   params: Promise<{ handle: string }>;
 };

@@ -3,7 +3,7 @@ import clsx from "clsx";
 
 const navLinks = [
   { href: "/collections", label: "Collections" },
-  { href: "/blog", label: "Culture" },
+  { href: "/blogs/news", label: "Blogs" },
   { href: "/about", label: "About" },
   { href: "/cart", label: "Cart" },
 ];
@@ -23,4 +23,3 @@ export function Navigation({ className }: NavigationProps) {
     </nav>
   );
 }
-

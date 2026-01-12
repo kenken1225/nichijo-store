@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import type { CollectionProduct } from "@/lib/shopify/collections";
 import { CategoryFilter } from "./CategoryFilter";
 import { PriceFilter } from "./PriceFilter";
@@ -135,6 +135,7 @@ export function CollectionFilters({ products }: CollectionFiltersProps) {
                 onClearAll={clearAll}
               />
             </div>
+
             <div className="hidden lg:flex">
               <SortSelect value={sort} onChange={setSort} />
             </div>

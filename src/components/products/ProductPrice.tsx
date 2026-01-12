@@ -7,3 +7,5 @@ export function ProductPrice({ value }: ProductPriceProps) {
   return <p className="text-xl font-medium text-foreground">{value}</p>;
 }
 
+
+

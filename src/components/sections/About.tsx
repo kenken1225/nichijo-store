@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Container } from "../layout/Container";
 
 export function About() {
@@ -11,12 +12,12 @@ export function About() {
             We believe Japanese creativity transcends borders. Every design tells a story, every product carries
             tradition. Our mission is to bring authentic culture-inspired creations to fans worldwide.
           </p>
-          <a
+          <Link
             href="/about"
             className="inline-flex w-fit items-center rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground transition hover:border-foreground"
           >
             Our Story
-          </a>
+          </Link>
         </div>
       </Container>
     </section>

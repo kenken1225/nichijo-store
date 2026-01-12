@@ -28,4 +28,23 @@ export type ShopifyProduct = {
   variants: ShopifyVariant[];
 };
 
-// ProductPageの型定義
+export type ShopifyArticleAuthor = {
+  name: string;
+};
+
+export type ShopifyArticle = {
+  handle: string;
+  title: string;
+  excerpt?: string | null;
+  contentHtml?: string | null;
+  image?: ShopifyImage | null;
+  publishedAt?: string | null;
+  tags: string[];
+  author?: ShopifyArticleAuthor | null;
+};
+
+export type ShopifyBlog = {
+  handle: string;
+  title: string;
+  articles?: ShopifyArticle[];
+};

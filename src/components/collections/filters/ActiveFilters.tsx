@@ -24,9 +24,7 @@ export function ActiveFilters({
 
   return (
     <div className="flex flex-wrap items-center gap-2 text-sm">
-      {selectedCategory ? (
-        <FilterChip label={`Category: ${selectedCategory}`} onClear={onClearCategory} />
-      ) : null}
+      {selectedCategory ? <FilterChip label={`Category: ${selectedCategory}`} onClear={onClearCategory} /> : null}
       {hasPrice ? <FilterChip label={`Price: ${priceLabel}`} onClear={onClearPrice} /> : null}
       {inStockOnly ? <FilterChip label="In stock" onClear={onClearInStock} /> : null}
       <button
@@ -50,4 +48,3 @@ function FilterChip({ label, onClear }: { label: string; onClear: () => void }) 
     </span>
   );
 }
-

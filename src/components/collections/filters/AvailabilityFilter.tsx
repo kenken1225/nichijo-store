@@ -16,4 +16,3 @@ export function AvailabilityFilter({ inStockOnly, onToggle }: AvailabilityFilter
     </label>
   );
 }
-

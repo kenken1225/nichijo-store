@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 type Crumb = {
   label: string;
   href?: string;
@@ -14,9 +16,9 @@ export function ProductBreadcrumb({ items }: Props) {
         {items.map((item, index) => (
           <li key={item.label} className="flex items-center gap-2">
             {item.href ? (
-              <a href={item.href} className="hover:text-foreground">
+              <Link href={item.href} className="hover:text-foreground">
                 {item.label}
-              </a>
+              </Link>
             ) : (
               <span className="text-foreground">{item.label}</span>
             )}
@@ -27,6 +29,3 @@ export function ProductBreadcrumb({ items }: Props) {
     </nav>
   );
 }
-
-
-
