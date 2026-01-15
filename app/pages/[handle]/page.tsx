@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Container } from "@/components/layout/Container";
-import { getBlogs } from "@/lib/shopify/blogs";
+import { getPages } from "@/lib/shopify/pages";
 
 // Revalidate
 export const revalidate = 3600;
 
-export default async function BlogsPage() {
-  const blogs = await getBlogs();
+export default async function PagesPage() {
+  const pages = await getPages();
 
   const newsBlog = blogs.find((b) => b.handle.toLowerCase() === "news");
   if (newsBlog) {

@@ -294,3 +294,33 @@ export const ARTICLE_BY_HANDLE_QUERY = `
     }
   }
 `;
+
+export const PAGES_LIST_QUERY = `
+ query PageList {
+	pages(first: 20) {
+		edges{
+      node{
+        handle
+        title
+      }
+    }
+	}
+}
+`;
+
+export const PAGE_BY_HANDLE_QUERY = `
+query PageShow($handle: String!, $locale: String!) {
+  page(handle: $handle) {
+    handle
+    title
+    body
+    publishedAt
+    updatedAt
+    translations(locale: $locale) {
+      key
+      locale
+      value
+    }
+  }
+}
+`;

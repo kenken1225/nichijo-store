@@ -48,3 +48,11 @@ export type ShopifyBlog = {
   title: string;
   articles?: ShopifyArticle[];
 };
+
+export type ShopifyPage = {
+  title: string;
+  handle: string;
+  contentHtml?: string | null;
+  publishedAt?: string | null;
+  updatedAt?: string | null;
+};
