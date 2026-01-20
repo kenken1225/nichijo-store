@@ -49,10 +49,66 @@ export type ShopifyBlog = {
   articles?: ShopifyArticle[];
 };
 
-export type ShopifyPage = {
+export type ShopifyPagesList = {
   title: string;
   handle: string;
-  contentHtml?: string | null;
+};
+
+export type ShopifyPage = {
+  title: string;
+  handle?: string;
+  body?: string | null;
   publishedAt?: string | null;
   updatedAt?: string | null;
+};
+
+export type ShopifyPolicies = {
+  title: string;
+  handle?: string;
+  body?: string | null;
+};
+
+export type ShopifyCart = {
+  id: string;
+  checkoutUrl: string;
+  totalQuantity: number;
+  cost: {
+    subtotalAmount: ShopifyPrice;
+    totalAmount: ShopifyPrice;
+  };
+  buyerIdentity: {
+    email?: string | null;
+    countryCode?: string | null;
+  };
+  attributes: {
+    key: string;
+    value: string;
+  }[];
+};
+
+export type CartLineMerchandise = {
+  id: string;
+  title: string;
+  availableForSale?: boolean;
+  price: ShopifyPrice;
+  selectedOptions?: { name: string; value: string }[];
+  product: {
+    title: string;
+    handle: string;
+    featuredImage?: ShopifyImage | null;
+  };
+};
+
+export type CartLine = {
+  id: string;
+  quantity: number;
+  cost: {
+    subtotalAmount: ShopifyPrice;
+    totalAmount: ShopifyPrice;
+  };
+  merchandise: CartLineMerchandise;
+  attributes: {
+    key: string;
+    value: string;
+  }[];
 };

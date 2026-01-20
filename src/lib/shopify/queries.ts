@@ -171,6 +171,52 @@ export const COLLECTIONS_QUERY = `
   }
 `;
 
+export const CART_QUERY = `
+query CartById($cartId: ID!) {
+  cart(id: $cartId) {
+    id
+    checkoutUrl
+    totalQuantity
+    cost {
+      subtotalAmount { amount currencyCode }
+      totalAmount { amount currencyCode }
+    }
+    lines(first: 50) {
+      edges {
+        node {
+          id
+          quantity
+          cost {
+            subtotalAmount { amount currencyCode }
+            totalAmount { amount currencyCode }
+          }
+          merchandise {
+            ... on ProductVariant {
+              id
+              title
+              availableForSale
+              price { amount currencyCode }
+              selectedOptions { name value }
+              product {
+                title
+                handle
+                featuredImage { url altText width height }
+              }
+            }
+          }
+          attributes { key value }
+        }
+      }
+    }
+    buyerIdentity {
+      email
+      countryCode
+    }
+    attributes { key value }
+  }
+}
+`;
+
 export const COLLECTION_BY_HANDLE_QUERY = `
   query CollectionByHandle($handle: String!) {
     collection(handle: $handle) {
@@ -309,18 +355,39 @@ export const PAGES_LIST_QUERY = `
 `;
 
 export const PAGE_BY_HANDLE_QUERY = `
-query PageShow($handle: String!, $locale: String!) {
+query PageShow($handle: String!) {
   page(handle: $handle) {
     handle
     title
     body
-    publishedAt
     updatedAt
-    translations(locale: $locale) {
-      key
-      locale
-      value
-    }
   }
 }
+`;
+
+export const POLICIES_QUERY = `
+  query Policies {
+    shop {
+      privacyPolicy {
+        title
+        handle
+        body
+      }
+      termsOfService {
+        title
+        handle
+        body
+      }
+      shippingPolicy {
+        title
+        handle
+        body
+      }
+      refundPolicy {
+        title
+        handle
+        body
+      }
+    }
+  }
 `;

@@ -1,4 +1,4 @@
-import { getPageSingle } from "@/lib/shopify/pages";
+import { getPolicyByHandle } from "@/lib/shopify/policies";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/layout/Container";
 import Link from "next/link";
@@ -10,12 +10,12 @@ type GetPageProps = {
   params: Promise<{ handle: string }>;
 };
 
-export default async function GetPage({ params }: GetPageProps) {
+export default async function PolicyPage({ params }: GetPageProps) {
   const { handle } = await params;
-  if (!handle) {
-    return notFound();
-  }
-  const data = await getPageSingle(handle);
+  if (!handle) return notFound();
+
+  const policy = await getPolicyByHandle(handle);
+  if (!policy) return notFound();
 
   return (
     <div className="bg-background">
@@ -26,19 +26,19 @@ export default async function GetPage({ params }: GetPageProps) {
               Home
             </Link>{" "}
             /{" "}
-            <Link href={`/pages/${data?.handle}`} className="hover:underline">
-              {data?.title}
+            <Link href={`/policies/${policy.handle}`} className="hover:underline">
+              {policy.title}
             </Link>
           </div>
         </Container>
       </section>
 
-      <section className="py-12 ">
+      <section className="py-12">
         <Container className="max-w-4xl space-y-6">
-          <h2 className="text-3xl font-bold text-foreground leading-tight sm:text-4xl">{data?.title}</h2>
+          <h2 className="text-3xl font-bold text-foreground leading-tight sm:text-4xl">{policy.title}</h2>
           <div
             className="page-common-container space-y-6 prose prose-neutral max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-primary prose-img:rounded-lg prose-blockquote:border-l-4 prose-blockquote:border-primary/60 prose-blockquote:bg-muted/60 prose-blockquote:px-4 prose-blockquote:py-3"
-            dangerouslySetInnerHTML={{ __html: data?.body ?? notFound() }}
+            dangerouslySetInnerHTML={{ __html: policy.body ?? "" }}
           />
         </Container>
       </section>

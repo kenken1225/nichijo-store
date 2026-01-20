@@ -84,6 +84,16 @@ export async function POST(req: Request) {
   }
 
   try {
+    const setCartCookie = (res: NextResponse, id: string) => {
+      res.cookies.set("cartId", id, {
+        path: "/",
+        httpOnly: true,
+        sameSite: "lax",
+        maxAge: 60 * 60 * 24 * 6,
+        secure: true,
+      });
+    };
+
     if (!cartId) {
       const create = await shopifyFetch<{
         cartCreate?: { cart: unknown; userErrors?: { message: string }[] };
@@ -94,7 +104,11 @@ export async function POST(req: Request) {
       if (!cart || err) {
         throw new Error(err ?? "Failed to create cart");
       }
-      return NextResponse.json({ cartId: (cart as { id: string }).id, cart });
+
+      const newCartId = (cart as { id: string }).id;
+      const res = NextResponse.json({ cartId: newCartId, cart }, { status: 200 });
+      setCartCookie(res, newCartId);
+      return res;
     }
 
     const add = await shopifyFetch<{
@@ -107,7 +121,9 @@ export async function POST(req: Request) {
       throw new Error(err ?? "Failed to add to cart");
     }
 
-    return NextResponse.json({ cartId, cart });
+    const res = NextResponse.json({ cartId, cart }, { status: 200 });
+    setCartCookie(res, cartId);
+    return res;
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 500 });

@@ -1,47 +1,33 @@
 import { shopifyFetch } from "../shopify";
-import type { ShopifyPage } from "@/lib/types/shopify";
+import type { ShopifyPagesList, ShopifyPage } from "@/lib/types/shopify";
 import { PAGES_LIST_QUERY, PAGE_BY_HANDLE_QUERY } from "./queries";
 
 type PagesListQuery = {
-  pages: { edges: { node: Pick<ShopifyPage, "handle" | "title"> }[] };
+  pages: { edges: { node: ShopifyPagesList }[] } | null;
 };
 
-type PageByHandleQuery = {
-  pages: {
-    handle: ShopifyPage["handle"];
-    title: ShopifyPage["title"];
-    body?: ShopifyPage["contentHtml"];
-    publishedAt: ShopifyPage["publishedAt"];
-    updatedAt: ShopifyPage["updatedAt"];
-  } | null;
+type PageSingleQuery = {
+  page: ShopifyPage | null;
 };
 
-export type PageHandle = Pick<ShopifyPage, "handle" | "title">;
-export type PageDetail = {
-  handle: ShopifyPage["handle"];
-  title: ShopifyPage["title"];
-  body?: ShopifyPage["contentHtml"];
-  publishedAt?: ShopifyPage["publishedAt"];
-  updatedAt?: ShopifyPage["updatedAt"];
-};
+export type PageListHandle = PagesListQuery;
+export type PageSingleHandle = PageSingleQuery;
 
-export async function getPages(): Promise<PageHandle[]> {
+export async function getPageList(): Promise<ShopifyPagesList[]> {
   const data = await shopifyFetch<PagesListQuery>(PAGES_LIST_QUERY);
   return data?.pages?.edges?.map(({ node }) => node) ?? [];
 }
 
-export async function getPagesWithSummary(handle: string): Promise<PageDetail[]> {
-  const data = await shopifyFetch<PageSummary>(PAGE_BY_HANDLE_QUERY, { handle });
-  if (!data?.pages || !data.pages.edges) return [];
+export async function getPageSingle(handle: string): Promise<ShopifyPage | null> {
+  const data = await shopifyFetch<PageSingleQuery>(PAGE_BY_HANDLE_QUERY, { handle });
+  if (!data?.page) return null;
 
-  const pages =
-    data?.pages?.edges?.map(({ node }) => ({
-      handle: node.handle,
-      title: node.title,
-      body: node.body ?? null,
-      publishedAt: node.publishedAt ?? null,
-      updatedAt: node.updatedAt ?? null,
-    })) ?? [];
+  const page = {
+    handle: data.page.handle ?? undefined,
+    title: data.page.title,
+    body: data.page.body ?? null,
+    updatedAt: data.page.updatedAt ?? null,
+  };
 
-  return pages ?? [];
+  return page ?? null;
 }
