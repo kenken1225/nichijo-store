@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
-import { Package, MapPin, User, LogOut, ChevronRight, Loader2 } from "lucide-react";
+import { Package, MapPin, User, ChevronRight, Loader2 } from "lucide-react";
 import { SubmitButton } from "./SubmitButton";
 import { formatDate, formatPrice } from "@/lib/shopify";
 import { CustomerOrder } from "@/lib/shopify/customer";
@@ -145,13 +145,12 @@ export function AccountDashboard() {
         )}
       </div>
 
-      <div className="pt-6 border-t border-border">
+      <div className="pt-6 border-t border-border ">
         <SubmitButton
           onClick={handleLogout}
           loading={loggingOut}
-          className="bg-transparent text-foreground border border-border hover:bg-muted/50"
+          className="bg-transparent border border-border hover:bg-muted/50"
         >
-          <LogOut className="w-4 h-4 mr-2" />
           Log Out
         </SubmitButton>
       </div>

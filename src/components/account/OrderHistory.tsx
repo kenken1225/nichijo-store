@@ -49,6 +49,47 @@ export function OrderHistory() {
     setExpandedOrder(expandedOrder === orderId ? null : orderId);
   };
 
+  // Helper function to determine the fulfillment status of each item
+  const getItemFulfillmentStatus = (
+    order: CustomerOrder,
+    itemTitle: string,
+    orderedQuantity: number
+  ): { status: string; fulfilledQuantity: number } => {
+    if (!order.successfulFulfillments || order.successfulFulfillments.length === 0) {
+      return { status: "UNFULFILLED", fulfilledQuantity: 0 };
+    }
+
+    let fulfilledQuantity = 0;
+    for (const fulfillment of order.successfulFulfillments) {
+      for (const lineItem of fulfillment.fulfillmentLineItems.nodes) {
+        if (lineItem.lineItem.title === itemTitle) {
+          fulfilledQuantity += lineItem.quantity;
+        }
+      }
+    }
+    if (fulfilledQuantity === 0) {
+      return { status: "UNFULFILLED", fulfilledQuantity: 0 };
+    } else if (fulfilledQuantity >= orderedQuantity) {
+      return { status: "FULFILLED", fulfilledQuantity };
+    } else {
+      return { status: "PARTIALLY_FULFILLED", fulfilledQuantity };
+    }
+  };
+
+  // Get status text
+  const getStatusLabel = (status: string): string => {
+    switch (status) {
+      case "FULFILLED":
+        return "Shipped";
+      case "PARTIALLY_FULFILLED":
+        return "Partially Shipped";
+      case "UNFULFILLED":
+        return "Not Shipped";
+      default:
+        return "Processing";
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -119,6 +160,12 @@ export function OrderHistory() {
                 <h4 className="font-medium text-sm">Items</h4>
                 {order.lineItems.edges.map((edge, index) => {
                   const item = edge.node;
+                  // Get the fulfillment status of each item
+                  const { status: itemStatus, fulfilledQuantity } = getItemFulfillmentStatus(
+                    order,
+                    item.title,
+                    item.quantity
+                  );
                   return (
                     <div key={index} className="flex gap-4 items-start">
                       <div className="w-16 h-16 rounded bg-muted flex items-center justify-center overflow-hidden">
@@ -140,6 +187,10 @@ export function OrderHistory() {
                           <div className="text-xs text-muted-foreground">{item.variant.title}</div>
                         )}
                         <div className="text-xs text-muted-foreground">Qty: {item.quantity}</div>
+                        <span className={`text-xs px-2 py-0.5 rounded-full ${getStatusColor(itemStatus)}`}>
+                          {getStatusLabel(itemStatus)}
+                          {itemStatus === "PARTIALLY_FULFILLED" && ` (${fulfilledQuantity}/${item.quantity})`}
+                        </span>
                       </div>
                       {item.variant?.price && (
                         <div className="text-sm font-medium">

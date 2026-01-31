@@ -8,20 +8,14 @@ type SubmitButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   loading?: boolean;
 };
 
-export function SubmitButton({
-  children,
-  loading,
-  disabled,
-  className,
-  ...props
-}: SubmitButtonProps) {
+export function SubmitButton({ children, loading, disabled, className, ...props }: SubmitButtonProps) {
   return (
     <button
       type="submit"
       disabled={loading || disabled}
       className={clsx(
         "w-full py-3 px-4 rounded-lg font-medium text-sm",
-        "bg-primary text-primary-foreground",
+        "bg-primary",
         "hover:opacity-90 transition-opacity",
         "focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2",
         "disabled:opacity-50 disabled:cursor-not-allowed",

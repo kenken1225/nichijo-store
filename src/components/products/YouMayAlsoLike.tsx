@@ -128,13 +128,15 @@ export function YouMayAlsoLike({
       return (
         <div className="flex flex-col items-start gap-3 rounded-md border border-border p-3">
           <div className="flex flex-col items-start gap-2 w-full">
-            <div className="group relative h-auto w-full overflow-hidden rounded bg-muted/60 flex-shrink-0">
+            <div className="group relative aspect-[4/5] w-full overflow-hidden rounded bg-muted/60 flex-shrink-0">
               {item.imageUrl ? (
                 <>
                   <Image
                     src={item.imageUrl ?? ""}
                     alt={item.imageAlt ?? item.title}
-                    className={`h-full w-full object-cover transition-opacity duration-300 ${
+                    fill
+                    sizes="150px"
+                    className={`object-cover transition-opacity duration-300 ${
                       hasSecondaryImage ? "group-hover:opacity-0" : ""
                     }`}
                   />
@@ -142,7 +144,9 @@ export function YouMayAlsoLike({
                     <Image
                       src={item.secondaryImageUrl ?? ""}
                       alt={item.imageAlt ?? item.title}
-                      className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                      fill
+                      sizes="150px"
+                      className="object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                     />
                   )}
                 </>

@@ -20,10 +20,12 @@ export function ProductCard({ title, price, href, imageUrl, imageAlt, secondaryI
       <div className="aspect-[4/5] w-full bg-muted/50 relative overflow-hidden">
         {imageUrl ? (
           <>
-            <img
+            <Image
               src={imageUrl}
               alt={imageAlt ?? title}
-              className={`h-full w-full object-cover transition-opacity duration-300 ${
+              fill
+              sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
+              className={`object-cover transition-opacity duration-300 ${
                 hasSecondaryImage ? "group-hover:opacity-0" : ""
               }`}
             />
@@ -31,7 +33,9 @@ export function ProductCard({ title, price, href, imageUrl, imageAlt, secondaryI
               <Image
                 src={secondaryImageUrl ?? ""}
                 alt={imageAlt ?? title}
-                className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                fill
+                sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
+                className="object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
               />
             )}
           </>

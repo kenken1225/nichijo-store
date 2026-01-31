@@ -50,6 +50,16 @@ export const ORDER_FRAGMENT = `
     processedAt
     financialStatus
     fulfillmentStatus
+    successfulFulfillments{
+     fulfillmentLineItems(first: 50){
+      nodes{
+       lineItem {
+        title
+      }
+      quantity
+      }
+     }
+    }
     totalPrice {
       amount
       currencyCode
@@ -411,6 +421,21 @@ export type Customer = {
   };
 };
 
+// Fulfillment Line Item type
+export type FulfillmentLineItem = {
+  lineItem: {
+    title: string;
+  };
+  quantity: number;
+};
+
+// Fulfillment type
+export type Fulfillment = {
+  fulfillmentLineItems: {
+    nodes: FulfillmentLineItem[];
+  };
+};
+
 // Customer Order type
 export type CustomerOrder = {
   id: string;
@@ -419,6 +444,7 @@ export type CustomerOrder = {
   processedAt: string;
   financialStatus: string;
   fulfillmentStatus: string;
+  successfulFulfillments?: Fulfillment[];
   totalPrice: { amount: string; currencyCode: string };
   subtotalPrice: { amount: string; currencyCode: string };
   totalShippingPrice: { amount: string; currencyCode: string };
