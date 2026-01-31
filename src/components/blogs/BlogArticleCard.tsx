@@ -1,15 +1,10 @@
 import Link from "next/link";
 import type { BlogArticleSummary } from "@/lib/shopify/blogs";
+import { formatDate } from "@/lib/shopify";
 
 type BlogArticleCardProps = {
   blogHandle: string;
   article: BlogArticleSummary;
-};
-
-const formatDate = (value?: string | null) => {
-  if (!value) return "";
-  const date = new Date(value);
-  return new Intl.DateTimeFormat("en-US", { dateStyle: "medium" }).format(date);
 };
 
 export function BlogArticleCard({ blogHandle, article }: BlogArticleCardProps) {
@@ -29,7 +24,9 @@ export function BlogArticleCard({ blogHandle, article }: BlogArticleCardProps) {
       </div>
 
       <div className="flex flex-1 flex-col gap-3 px-4 py-4">
-        <div className="text-xs font-medium text-muted-foreground">{formatDate(article.publishedAt)}</div>
+        <div className="text-xs font-medium text-muted-foreground">
+          {formatDate(article.publishedAt ?? "", "en-US")}
+        </div>
 
         <div className="space-y-2">
           <h3 className="text-base font-semibold text-foreground line-clamp-2">{article.title}</h3>

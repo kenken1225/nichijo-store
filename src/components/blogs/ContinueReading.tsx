@@ -1,16 +1,11 @@
 import Link from "next/link";
 import { Container } from "@/components/layout/Container";
 import type { BlogArticleSummary } from "@/lib/shopify/blogs";
+import { formatDate } from "@/lib/shopify";
 
 type Props = {
   blogHandle: string;
   articles: BlogArticleSummary[];
-};
-
-const formatDate = (value?: string | null) => {
-  if (!value) return "";
-  const date = new Date(value);
-  return new Intl.DateTimeFormat("en-US", { dateStyle: "long" }).format(date);
 };
 
 export function ContinueReading({ blogHandle, articles }: Props) {
@@ -37,7 +32,7 @@ export function ContinueReading({ blogHandle, articles }: Props) {
                 ) : null}
               </div>
               <div className="space-y-2">
-                <p className="text-xs text-muted-foreground">{formatDate(article.publishedAt)}</p>
+                <p className="text-xs text-muted-foreground">{formatDate(article.publishedAt ?? "", "en-US")}</p>
                 <h3 className="text-lg font-semibold text-foreground leading-tight line-clamp-2">{article.title}</h3>
                 {article.excerpt ? (
                   <p className="text-sm text-muted-foreground leading-6 line-clamp-3">{article.excerpt}</p>

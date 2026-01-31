@@ -27,11 +27,11 @@ export function LoginForm() {
         router.push("/account");
         router.refresh();
       } else {
-        setError(result.error || "ログインに失敗しました");
+        setError(result.error || "Login failed");
       }
     } catch (err) {
       console.error("Login error:", err);
-      setError("ログイン処理中にエラーが発生しました");
+      setError("Login processing error");
     } finally {
       setLoading(false);
     }
@@ -39,11 +39,7 @@ export function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {error && (
-        <div className="p-4 rounded-lg bg-destructive/10 text-destructive text-sm">
-          {error}
-        </div>
-      )}
+      {error && <div className="p-4 rounded-lg bg-destructive/10 text-destructive text-sm">{error}</div>}
 
       <FormInput
         label="Email address"
@@ -78,10 +74,7 @@ export function LoginForm() {
 
       <p className="text-center text-sm text-muted-foreground">
         Don&apos;t have an account?{" "}
-        <Link
-          href="/account/register"
-          className="text-foreground font-medium hover:underline"
-        >
+        <Link href="/account/register" className="text-foreground font-medium hover:underline">
           Create an account
         </Link>
       </p>

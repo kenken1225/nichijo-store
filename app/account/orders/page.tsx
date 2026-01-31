@@ -13,9 +13,9 @@ export default async function OrdersPage() {
   const cookieStore = await cookies();
   const token = cookieStore.get("customerAccessToken")?.value;
 
-  if (!token) {
-    redirect("/account/login");
-  }
+  // if (!token) {
+  //   redirect("/account/login");
+  // }
 
   return (
     <AccountPageLayout

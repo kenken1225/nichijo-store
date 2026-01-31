@@ -4,25 +4,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
-import {
-  Package,
-  MapPin,
-  User,
-  LogOut,
-  ChevronRight,
-  Loader2,
-} from "lucide-react";
+import { Package, MapPin, User, LogOut, ChevronRight, Loader2 } from "lucide-react";
 import { SubmitButton } from "./SubmitButton";
-
-type CustomerOrder = {
-  id: string;
-  name: string;
-  orderNumber: number;
-  processedAt: string;
-  financialStatus: string;
-  fulfillmentStatus: string;
-  totalPrice: { amount: string; currencyCode: string };
-};
+import { formatDate, formatPrice } from "@/lib/shopify";
+import { CustomerOrder } from "@/lib/shopify/customer";
 
 export function AccountDashboard() {
   const router = useRouter();
@@ -56,21 +41,6 @@ export function AccountDashboard() {
     router.refresh();
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
-  const formatPrice = (amount: string, currencyCode: string) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: currencyCode,
-    }).format(Number(amount));
-  };
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -83,9 +53,7 @@ export function AccountDashboard() {
     <div className="space-y-8">
       {/* Welcome Section */}
       <div className="text-center pb-6 border-b border-border">
-        <h2 className="text-xl font-semibold">
-          Welcome back, {customer?.firstName || "there"}!
-        </h2>
+        <h2 className="text-xl font-semibold">Welcome back, {customer?.firstName || "there"}!</h2>
         <p className="text-muted-foreground text-sm mt-1">{customer?.email}</p>
       </div>
 
@@ -138,10 +106,7 @@ export function AccountDashboard() {
       <div>
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold">Recent Orders</h3>
-          <Link
-            href="/account/orders"
-            className="text-sm text-primary hover:underline"
-          >
+          <Link href="/account/orders" className="text-sm text-primary hover:underline">
             View all
           </Link>
         </div>
@@ -153,15 +118,10 @@ export function AccountDashboard() {
         ) : recentOrders.length > 0 ? (
           <div className="space-y-3">
             {recentOrders.map((order) => (
-              <div
-                key={order.id}
-                className="flex items-center justify-between p-4 rounded-lg border border-border"
-              >
+              <div key={order.id} className="flex items-center justify-between p-4 rounded-lg border border-border">
                 <div>
                   <div className="font-medium">{order.name}</div>
-                  <div className="text-sm text-muted-foreground">
-                    {formatDate(order.processedAt)}
-                  </div>
+                  <div className="text-sm text-muted-foreground">{formatDate(order.processedAt)}</div>
                 </div>
                 <div className="text-right">
                   <div className="font-medium">
@@ -178,17 +138,13 @@ export function AccountDashboard() {
           <div className="text-center py-8 text-muted-foreground">
             <Package className="w-12 h-12 mx-auto mb-3 opacity-30" />
             <p>No orders yet</p>
-            <Link
-              href="/collections/all"
-              className="text-sm text-primary hover:underline mt-2 inline-block"
-            >
+            <Link href="/collections/all" className="text-sm text-primary hover:underline mt-2 inline-block">
               Start shopping
             </Link>
           </div>
         )}
       </div>
 
-      {/* Logout Button */}
       <div className="pt-6 border-t border-border">
         <SubmitButton
           onClick={handleLogout}

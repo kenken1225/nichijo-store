@@ -108,7 +108,7 @@ export function AddressManager() {
 
     try {
       if (editingAddress) {
-        // 住所更新
+        // Update address
         const res = await fetch("/api/account/addresses", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -120,7 +120,7 @@ export function AddressManager() {
           return;
         }
       } else {
-        // 住所追加
+        // Add address
         const res = await fetch("/api/account/addresses", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -215,22 +215,13 @@ export function AddressManager() {
       {showForm && (
         <div className="border border-border rounded-lg p-6 bg-card">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="font-semibold">
-              {editingAddress ? "Edit Address" : "Add New Address"}
-            </h3>
-            <button
-              onClick={handleCancel}
-              className="text-muted-foreground hover:text-foreground"
-            >
+            <h3 className="font-semibold">{editingAddress ? "Edit Address" : "Add New Address"}</h3>
+            <button onClick={handleCancel} className="text-muted-foreground hover:text-foreground">
               <X className="w-5 h-5" />
             </button>
           </div>
 
-          {error && (
-            <div className="p-4 rounded-lg bg-destructive/10 text-destructive text-sm mb-6">
-              {error}
-            </div>
-          )}
+          {error && <div className="p-4 rounded-lg bg-destructive/10 text-destructive text-sm mb-6">{error}</div>}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
@@ -241,22 +232,10 @@ export function AddressManager() {
                 onChange={handleChange}
                 required
               />
-              <FormInput
-                label="Last Name"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                required
-              />
+              <FormInput label="Last Name" name="lastName" value={formData.lastName} onChange={handleChange} required />
             </div>
 
-            <FormInput
-              label="Address"
-              name="address1"
-              value={formData.address1}
-              onChange={handleChange}
-              required
-            />
+            <FormInput label="Address" name="address1" value={formData.address1} onChange={handleChange} required />
 
             <FormInput
               label="Apartment, suite, etc."
@@ -267,51 +246,19 @@ export function AddressManager() {
             />
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormInput
-                label="City"
-                name="city"
-                value={formData.city}
-                onChange={handleChange}
-                required
-              />
-              <FormInput
-                label="State / Province"
-                name="province"
-                value={formData.province}
-                onChange={handleChange}
-              />
+              <FormInput label="City" name="city" value={formData.city} onChange={handleChange} required />
+              <FormInput label="State / Province" name="province" value={formData.province} onChange={handleChange} />
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormInput
-                label="ZIP / Postal Code"
-                name="zip"
-                value={formData.zip}
-                onChange={handleChange}
-                required
-              />
-              <FormInput
-                label="Country"
-                name="country"
-                value={formData.country}
-                onChange={handleChange}
-                required
-              />
+              <FormInput label="ZIP / Postal Code" name="zip" value={formData.zip} onChange={handleChange} required />
+              <FormInput label="Country" name="country" value={formData.country} onChange={handleChange} required />
             </div>
 
-            <FormInput
-              label="Phone"
-              name="phone"
-              type="tel"
-              value={formData.phone}
-              onChange={handleChange}
-              optional
-            />
+            <FormInput label="Phone" name="phone" type="tel" value={formData.phone} onChange={handleChange} optional />
 
             <div className="flex gap-3 pt-4">
-              <SubmitButton loading={formLoading}>
-                {editingAddress ? "Update Address" : "Add Address"}
-              </SubmitButton>
+              <SubmitButton loading={formLoading}>{editingAddress ? "Update Address" : "Add Address"}</SubmitButton>
               <button
                 type="button"
                 onClick={handleCancel}
@@ -329,9 +276,7 @@ export function AddressManager() {
         <div className="text-center py-12">
           <MapPin className="w-16 h-16 mx-auto mb-4 text-muted-foreground/30" />
           <h3 className="text-lg font-medium mb-2">No addresses saved</h3>
-          <p className="text-muted-foreground">
-            Add an address to make checkout faster.
-          </p>
+          <p className="text-muted-foreground">Add an address to make checkout faster.</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -339,9 +284,7 @@ export function AddressManager() {
             <div
               key={address.id}
               className={`border rounded-lg p-4 ${
-                address.id === defaultAddressId
-                  ? "border-primary bg-primary/5"
-                  : "border-border"
+                address.id === defaultAddressId ? "border-primary bg-primary/5" : "border-border"
               }`}
             >
               <div className="flex items-start justify-between">

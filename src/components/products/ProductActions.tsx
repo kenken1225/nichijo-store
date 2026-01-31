@@ -152,7 +152,14 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
     return { lines, subtotal, checkoutUrl: checkout, totalQuantity };
   };
 
-  const handleAddToCart = async () => {
+  const clearInvalidCart = () => {
+    setCartId(null);
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem("cartId");
+    }
+  };
+
+  const handleAddToCart = async (retryWithoutCartId = false) => {
     if (!selectedVariant?.id) return;
     const avail = selectedVariant.quantityAvailable;
     const availableForSale = selectedVariant.availableForSale !== false;
@@ -167,13 +174,20 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
     try {
       setLoading(true);
       setErrorMessage("");
+      const currentCartId = retryWithoutCartId ? null : cartId;
       const res = await fetch("/api/cart", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cartId, merchandiseId: selectedVariant.id, quantity }),
+        body: JSON.stringify({ cartId: currentCartId, merchandiseId: selectedVariant.id, quantity }),
       });
       const data = await res.json();
       if (!res.ok) {
+        // If the cart does not exist, clear the cartId and retry
+        if (data?.error?.includes("does not exist") && !retryWithoutCartId) {
+          clearInvalidCart();
+          setLoading(false);
+          return handleAddToCart(true);
+        }
         throw new Error(data?.error ?? "Failed to add to cart");
       }
       setCartId(data.cartId);
@@ -266,7 +280,7 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
           </div>
           <Button
             className="h-12 w-full rounded-lg bg-primary text-primary-foreground text-base font-semibold hover:opacity-90"
-            onClick={handleAddToCart}
+            onClick={() => handleAddToCart()}
             disabled={!selectedVariant?.availableForSale || loading}
           >
             {selectedVariant?.availableForSale ? (
@@ -392,7 +406,7 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
     </>
   );
 
-  async function handleAddToCartFromRecommendation(variantId: string) {
+  async function handleAddToCartFromRecommendation(variantId: string, retryWithoutCartId = false) {
     const rec = recommendations.find((r) => r.variantId === variantId);
     if (rec?.available === false) {
       setErrorMessage("This product is currently not available for sale.");
@@ -402,13 +416,23 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
       setRecommendationLoading(true);
       setAddingVariantId(variantId);
       setErrorMessage("");
+      const currentCartId = retryWithoutCartId ? null : cartId;
       const res = await fetch("/api/cart", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cartId, merchandiseId: variantId, quantity }),
+        body: JSON.stringify({ cartId: currentCartId, merchandiseId: variantId, quantity }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data?.error ?? "Failed to add to cart");
+      if (!res.ok) {
+        // カートが存在しない場合、cartIdをクリアしてリトライ
+        if (data?.error?.includes("does not exist") && !retryWithoutCartId) {
+          clearInvalidCart();
+          setRecommendationLoading(false);
+          setAddingVariantId(null);
+          return handleAddToCartFromRecommendation(variantId, true);
+        }
+        throw new Error(data?.error ?? "Failed to add to cart");
+      }
       setCartId(data.cartId);
       const parsed = parseCart(data.cart);
       setCartLines(parsed.lines);
@@ -436,7 +460,18 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
         body: JSON.stringify({ cartId, lineIds: [lineId] }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data?.error ?? "Failed to remove item");
+      if (!res.ok) {
+        // If the cart does not exist, clear the local state
+        if (data?.error?.includes("does not exist")) {
+          clearInvalidCart();
+          setCartLines([]);
+          setCartSubtotal("");
+          setCheckoutUrl(null);
+          setItemCount(0);
+          return;
+        }
+        throw new Error(data?.error ?? "Failed to remove item");
+      }
       const parsed = parseCart(data.cart);
       setCartLines(parsed.lines);
       setCartSubtotal(parsed.subtotal);

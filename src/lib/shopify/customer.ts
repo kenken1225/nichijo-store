@@ -378,6 +378,7 @@ export const CUSTOMER_ADDRESSES_QUERY = `
   ${ADDRESS_FRAGMENT}
 `;
 
+// Customer Address type
 export type CustomerAddress = {
   id: string;
   firstName?: string;
@@ -393,6 +394,7 @@ export type CustomerAddress = {
   phone?: string;
 };
 
+// Customer type
 export type Customer = {
   id: string;
   firstName?: string;
@@ -409,6 +411,7 @@ export type Customer = {
   };
 };
 
+// Customer Order type
 export type CustomerOrder = {
   id: string;
   name: string;
@@ -437,11 +440,13 @@ export type CustomerOrder = {
   shippingAddress?: CustomerAddress;
 };
 
+// Customer Access Token type
 export type CustomerAccessToken = {
   accessToken: string;
   expiresAt: string;
 };
 
+// Customer User Error type
 export type CustomerUserError = {
   field?: string[];
   message: string;

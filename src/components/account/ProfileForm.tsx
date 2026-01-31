@@ -25,7 +25,7 @@ export function ProfileForm() {
         firstName: customer.firstName || "",
         lastName: customer.lastName || "",
         phone: customer.phone || "",
-        acceptsMarketing: false, // これはAPIから取得できないので初期値false
+        acceptsMarketing: false, // This cannot be retrieved from the API, so initial value is false
       });
     }
   }, [customer]);
@@ -79,11 +79,7 @@ export function ProfileForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {error && (
-        <div className="p-4 rounded-lg bg-destructive/10 text-destructive text-sm">
-          {error}
-        </div>
-      )}
+      {error && <div className="p-4 rounded-lg bg-destructive/10 text-destructive text-sm">{error}</div>}
 
       {success && (
         <div className="p-4 rounded-lg bg-green-50 text-green-700 text-sm">
@@ -94,35 +90,14 @@ export function ProfileForm() {
       <div className="p-4 rounded-lg bg-muted/50 text-sm">
         <span className="font-medium">Email: </span>
         <span className="text-muted-foreground">{customer?.email}</span>
-        <p className="text-xs text-muted-foreground mt-1">
-          Email cannot be changed
-        </p>
+        <p className="text-xs text-muted-foreground mt-1">Email cannot be changed</p>
       </div>
 
-      <FormInput
-        label="First Name"
-        name="firstName"
-        value={formData.firstName}
-        onChange={handleChange}
-        required
-      />
+      <FormInput label="First Name" name="firstName" value={formData.firstName} onChange={handleChange} required />
 
-      <FormInput
-        label="Last Name"
-        name="lastName"
-        value={formData.lastName}
-        onChange={handleChange}
-        required
-      />
+      <FormInput label="Last Name" name="lastName" value={formData.lastName} onChange={handleChange} required />
 
-      <FormInput
-        label="Phone"
-        name="phone"
-        type="tel"
-        value={formData.phone}
-        onChange={handleChange}
-        optional
-      />
+      <FormInput label="Phone" name="phone" type="tel" value={formData.phone} onChange={handleChange} optional />
 
       <FormCheckbox
         name="acceptsMarketing"

@@ -53,3 +53,11 @@ export function formatPrice(amount: string, currencyCode: string, locale = "en-U
     currency: currencyCode,
   }).format(value);
 }
+
+export function formatDate(dateString: string, locale = "en-US") {
+  return new Date(dateString).toLocaleDateString(locale, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
