@@ -84,7 +84,7 @@ export function Navigation({ className, menuItems }: NavigationProps) {
         </button>
       </div>
 
-      <MobileDrawer isOpen={drawerOpen} onClose={closeDrawer} itemCount={itemCount} menuItems={menuItems} />
+      <MobileDrawer isOpen={drawerOpen} onClose={closeDrawer} menuItems={menuItems} />
     </>
   );
 }
