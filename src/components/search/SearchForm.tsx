@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Search, X, Loader2 } from "lucide-react";
 
@@ -12,15 +12,18 @@ export function SearchForm() {
   const [inputValue, setInputValue] = useState(currentQuery);
   const [isSearching, setIsSearching] = useState(false);
 
-  const updateURL = (value: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (value) {
-      params.set("q", value);
-    } else {
-      params.delete("q");
-    }
-    router.push(`${pathname}?${params.toString()}`);
-  };
+  const updateURL = useCallback(
+    (value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (value) {
+        params.set("q", value);
+      } else {
+        params.delete("q");
+      }
+      router.push(`${pathname}?${params.toString()}`);
+    },
+    [searchParams, router, pathname]
+  );
 
   useEffect(() => {
     if (inputValue === currentQuery) {
@@ -35,7 +38,7 @@ export function SearchForm() {
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [inputValue, currentQuery]);
+  }, [inputValue, currentQuery, updateURL]);
 
   const handleClear = () => {
     setInputValue("");
