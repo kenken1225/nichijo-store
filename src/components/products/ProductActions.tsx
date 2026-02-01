@@ -199,7 +199,7 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
       setCheckoutUrl(parsed.checkoutUrl);
       setItemCount(parsed.totalQuantity);
       setDrawerOpen(true);
-    } catch (error) {
+    } catch {
       setErrorMessage("The product inventory is low. Please reduce the quantity to try.");
     } finally {
       setLoading(false);

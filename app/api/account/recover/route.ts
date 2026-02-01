@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    const result = await recoverCustomerPassword(email);
+    await recoverCustomerPassword(email);
 
     return NextResponse.json({
       success: true,
