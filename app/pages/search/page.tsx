@@ -49,7 +49,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           <p className="text-sm uppercase tracking-wide text-muted-foreground">Search</p>
           {query ? (
             <>
-              <h1 className="text-2xl sm:text-3xl font-bold text-foreground">"{query}"</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold text-foreground">&quot;{query}&quot;</h1>
               <p className="text-sm sm:text-base text-muted-foreground">
                 {totalResults > 0 ? `${totalResults} results found` : "No results found"}
               </p>
@@ -111,7 +111,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
             {totalResults === 0 && (
               <div className="text-center py-12">
-                <p className="text-muted-foreground">No results found for "{query}".</p>
+                <p className="text-muted-foreground">No results found for &quot;{query}&quot;.</p>
                 <p className="text-sm text-muted-foreground mt-2">Try searching with different keywords.</p>
               </div>
             )}
