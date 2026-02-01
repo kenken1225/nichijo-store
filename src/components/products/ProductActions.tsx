@@ -200,8 +200,6 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
       setItemCount(parsed.totalQuantity);
       setDrawerOpen(true);
     } catch (error) {
-      // エラーメッセージをログに出力し、ユーザーには在庫関連のメッセージを表示
-      console.error("Add to cart error:", error instanceof Error ? error.message : error);
       setErrorMessage("The product inventory is low. Please reduce the quantity to try.");
     } finally {
       setLoading(false);

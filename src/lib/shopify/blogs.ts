@@ -1,6 +1,6 @@
 import { shopifyFetch } from "../shopify";
 import type { ShopifyArticle, ShopifyBlog } from "../types/shopify";
-import { ARTICLE_BY_HANDLE_QUERY, BLOG_BY_HANDLE_QUERY, BLOGS_LIST_QUERY } from "./queries";
+import { ARTICLE_BY_HANDLE_QUERY, BLOG_BY_HANDLE_QUERY, BLOGS_LIST_QUERY, LATEST_ARTICLES_QUERY, SEARCH_ARTICLES_QUERY } from "./queries";
 
 type BlogsListQuery = {
   blogs: { edges: { node: Pick<ShopifyBlog, "handle" | "title"> }[] };
@@ -24,6 +24,28 @@ type ArticleByHandleQuery = {
     | null;
 };
 
+type SearchArticlesQuery = {
+  articles: {
+    edges: {
+      node: {
+        handle: string;
+        title: string;
+        excerpt: string | null;
+        publishedAt: string | null;
+        tags: string[];
+        image: {
+          url: string;
+          altText: string | null;
+        } | null;
+        blog: {
+          handle: string;
+          title: string;
+        };
+      };
+    }[];
+  } | null;
+};
+
 export type BlogSummary = Pick<ShopifyBlog, "handle" | "title">;
 
 export type BlogArticleSummary = Omit<ShopifyArticle, "contentHtml" | "author">;
@@ -31,6 +53,16 @@ export type BlogArticleSummary = Omit<ShopifyArticle, "contentHtml" | "author">;
 export type BlogWithArticles = BlogSummary & { articles: BlogArticleSummary[] };
 
 export type BlogArticleDetail = BlogArticleSummary & { contentHtml: string; authorName?: string | null };
+
+export type SearchArticleResult = {
+  handle: string;
+  title: string;
+  excerpt: string | null;
+  publishedAt: string | null;
+  tags: string[];
+  image: { url: string; altText: string | null } | null;
+  blogHandle: string;
+};
 
 export async function getBlogs(): Promise<BlogSummary[]> {
   const data = await shopifyFetch<BlogsListQuery>(BLOGS_LIST_QUERY);
@@ -83,4 +115,70 @@ export async function getBlogArticle(
       authorName: article.author?.name ?? null,
     },
   };
+}
+
+export async function searchArticles(query: string): Promise<SearchArticleResult[]> {
+  const data = await shopifyFetch<SearchArticlesQuery>(SEARCH_ARTICLES_QUERY, { query });
+  const articles = data?.articles?.edges ?? [];
+
+  return articles.map(({ node }) => ({
+    handle: node.handle,
+    title: node.title,
+    excerpt: node.excerpt ?? null,
+    publishedAt: node.publishedAt ?? null,
+    tags: node.tags ?? [],
+    image: node.image ?? null,
+    blogHandle: node.blog.handle,
+  }));
+}
+
+type LatestArticlesQuery = {
+  articles: {
+    edges: {
+      node: {
+        handle: string;
+        title: string;
+        excerpt: string | null;
+        publishedAt: string | null;
+        tags: string[];
+        image: {
+          url: string;
+          altText: string | null;
+          width?: number;
+          height?: number;
+        } | null;
+        blog: {
+          handle: string;
+          title: string;
+        };
+      };
+    }[];
+  } | null;
+};
+
+export type LatestArticle = {
+  handle: string;
+  title: string;
+  excerpt: string | null;
+  publishedAt: string | null;
+  tags: string[];
+  image: { url: string; altText: string | null } | null;
+  blogHandle: string;
+  blogTitle: string;
+};
+
+export async function getLatestArticles(count: number = 3): Promise<LatestArticle[]> {
+  const data = await shopifyFetch<LatestArticlesQuery>(LATEST_ARTICLES_QUERY, { first: count });
+  const articles = data?.articles?.edges ?? [];
+
+  return articles.map(({ node }) => ({
+    handle: node.handle,
+    title: node.title,
+    excerpt: node.excerpt ?? null,
+    publishedAt: node.publishedAt ?? null,
+    tags: node.tags ?? [],
+    image: node.image ?? null,
+    blogHandle: node.blog.handle,
+    blogTitle: node.blog.title,
+  }));
 }

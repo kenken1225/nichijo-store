@@ -15,7 +15,7 @@ type NavigationProps = {
 };
 
 const iconLinks = [
-  { href: "/search", label: "Search", icon: Search },
+  { href: "/pages/search", label: "Search", icon: Search },
   { href: "/account", label: "Account", icon: User },
 ];
 

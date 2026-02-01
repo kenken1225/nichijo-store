@@ -1,6 +1,11 @@
 import { shopifyFetch, formatPrice } from "../shopify";
 import type { ShopifyImage, ShopifyVariant } from "../types/shopify";
-import { PRODUCT_BY_HANDLE_QUERY, PRODUCT_RECOMMENDATIONS_QUERY, PRODUCTS_LIST_QUERY } from "./queries";
+import {
+  PRODUCT_BY_HANDLE_QUERY,
+  PRODUCT_RECOMMENDATIONS_QUERY,
+  PRODUCTS_BY_HANDLES_QUERY,
+  PRODUCTS_LIST_QUERY,
+} from "./queries";
 
 type ProductQuery = {
   product: {
@@ -135,6 +140,25 @@ export async function getProductsList(limit = 12): Promise<ProductListItem[]> {
   return edges.slice(0, limit).map(({ node }) => {
     const image = node.featuredImage ?? node.images?.edges?.[0]?.node ?? null;
     const price = node.priceRange?.minVariantPrice;
+    return {
+      handle: node.handle,
+      title: node.title,
+      image,
+      priceFormatted: price ? formatPrice(price.amount, price.currencyCode) : "",
+    };
+  });
+}
+
+// Seach Product Query
+
+export async function searchProducts(query: string): Promise<ProductListItem[]> {
+  const data = await shopifyFetch<ProductsListQuery>(PRODUCTS_BY_HANDLES_QUERY, { query });
+  const products = data?.products?.edges ?? [];
+
+  return products.map(({ node }) => {
+    const image = node.featuredImage ?? node.images?.edges?.[0]?.node ?? null;
+    const price = node.priceRange?.minVariantPrice;
+
     return {
       handle: node.handle,
       title: node.title,

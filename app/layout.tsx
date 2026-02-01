@@ -11,6 +11,9 @@ import { getCart } from "@/lib/shopify/cart";
 export const metadata: Metadata = {
   title: "Nichijo Japanese Shop",
   description: "Nichijo Japanese Shop",
+  icons: {
+    icon: "/favicon-nichijo.png",
+  },
 };
 
 const notoSans = Noto_Sans({

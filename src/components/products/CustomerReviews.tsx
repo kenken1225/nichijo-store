@@ -14,22 +14,25 @@ const reviews: Review[] = [
     author: "Emma K.",
     rating: 5,
     date: "2024/11/16",
-    title: "Absolutely beautiful design",
-    comment: "色・プリントが素敵で、柔らかい着心地。リラックスしたサイズ感でオフの日にぴったり。",
+    title: "A piece of art for everyday use",
+    comment:
+      "This handcrafted ceramic bowl is stunning. The glaze has such a warm, earthy tone, and it feels so special to use it for my morning tea. Truly a treasure from Japan.",
   },
   {
-    author: "Yuki T.",
-    rating: 4,
+    author: "Marcus L.",
+    rating: 5,
     date: "2024/11/14",
-    title: "Worth every penny",
-    comment: "日本の要素がしっかり感じられるデザインでお気に入り。生地も厚すぎず快適です。",
+    title: "Exceptional craftsmanship",
+    comment:
+      "The attention to detail on this lacquerware tray is incredible. You can tell it was made by skilled hands. It adds such elegance to my home and sparks joy every time I see it.",
   },
   {
-    author: "Daniel P.",
+    author: "Sophie R.",
     rating: 4,
     date: "2024/11/10",
-    title: "Great fabric, slightly large",
-    comment: "いつもよりワンサイズ下げても良かったかも。ゆったりが好きならいつものサイズでOK。",
+    title: "Beautiful but delicate",
+    comment:
+      "I love my new indigo-dyed linen cloth. The natural dye gives it such a unique character. Just be gentle when washing—it's worth the extra care.",
   },
 ];
 
@@ -51,11 +54,11 @@ export function CustomerReviews() {
       <Container className="space-y-6">
         <div className="text-center space-y-2">
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Customer Reviews</p>
-          <h2 className="text-2xl font-semibold text-foreground">みんなの声</h2>
+          <h2 className="text-2xl font-semibold text-foreground">What Our Customers Say</h2>
           <div className="flex items-center justify-center gap-2 text-sm text-foreground">
             {renderStars(Math.round(average))}
             <span className="font-medium">{average.toFixed(1)}</span>
-            <span className="text-muted-foreground">({reviews.length}件)</span>
+            <span className="text-muted-foreground">({reviews.length} reviews)</span>
           </div>
         </div>
 

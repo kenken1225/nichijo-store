@@ -73,7 +73,7 @@ export function YouMayAlsoLike({
         }
       } catch (error) {
         if (error instanceof Error && error.name !== "AbortError") {
-          console.error("Failed to fetch recent products:", error);
+          console.error("Failed to fetch recent products:", error.message);
         }
       } finally {
         if (!isCancelled) {

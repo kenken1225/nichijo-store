@@ -1,34 +1,46 @@
 import Link from "next/link";
+import { Container } from "@/components/layout/Container";
+import { ProductCard } from "@/components/shared/ProductCard";
+import { ArrowRight } from "lucide-react";
+import { getProductsList } from "@/lib/shopify/products";
 
-type Product = {
-  title: string;
-  price: string;
-  href: string;
-};
+export async function FeaturedProducts() {
+  const products = await getProductsList(8);
 
-type Props = {
-  products: Product[];
-};
-
-export function FeaturedProducts({ products }: Props) {
   return (
-    <section className="py-8">
-      <div className="mx-auto max-w-5xl px-6">
-        <h2 className="mb-6 text-xl font-semibold">Featured Products</h2>
-        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
-          {products.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="rounded-lg border border-border bg-card p-4 text-left shadow-sm transition hover:shadow"
-            >
-              <div className="mb-2 h-24 rounded bg-muted/50" />
-              <p className="text-base font-medium text-foreground">{item.title}</p>
-              <p className="text-sm text-muted-foreground">{item.price}</p>
-            </Link>
+    <section className="py-16 sm:py-20 bg-stone-100">
+      <Container>
+        <div className="text-center mb-10">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-3">
+            Featured Collection
+          </h2>
+          <p className="text-muted-foreground">
+            Curated pieces celebrating Japanese creativity
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+          {products.map((product) => (
+            <ProductCard
+              key={product.handle}
+              title={product.title}
+              price={product.priceFormatted}
+              href={`/products/${product.handle}`}
+              imageUrl={product.image?.url ?? null}
+            />
           ))}
         </div>
-      </div>
+
+        <div className="text-center mt-10">
+          <Link
+            href="/collections/all"
+            className="inline-flex items-center gap-2 text-foreground font-medium hover:underline"
+          >
+            View All Products
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+      </Container>
     </section>
   );
 }

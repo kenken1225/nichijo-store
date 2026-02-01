@@ -1,33 +1,44 @@
 import Link from "next/link";
+import { BlogArticleCard } from "@/components/blogs/BlogArticleCard";
+import { getLatestArticles } from "@/lib/shopify/blogs";
+import { Container } from "@/components/layout/Container";
 
-type Post = {
-  title: string;
-  excerpt: string;
-  href: string;
-};
+export async function Blog() {
+  const articles = await getLatestArticles(3);
 
-type Props = {
-  posts: Post[];
-};
+  if (articles.length === 0) {
+    return null;
+  }
 
-export function Blog({ posts }: Props) {
   return (
-    <section className="py-8">
-      <div className="mx-auto max-w-5xl px-6">
-        <h2 className="mb-6 text-xl font-semibold">Blog</h2>
-        <div className="grid gap-4 md:grid-cols-3">
-          {posts.map((post) => (
-            <Link
-              key={post.href}
-              href={post.href}
-              className="flex h-full flex-col rounded-lg border border-border bg-card p-4 text-left shadow-sm transition hover:shadow"
-            >
-              <h3 className="mb-2 text-lg font-medium text-foreground">{post.title}</h3>
-              <p className="text-sm text-muted-foreground">{post.excerpt}</p>
-            </Link>
+    <section className="py-16 sm:py-20">
+      <Container>
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold">Latest Articles</h2>
+          <Link
+            href="/blogs/news"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition"
+          >
+            View All →
+          </Link>
+        </div>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {articles.map((article) => (
+            <BlogArticleCard
+              key={`${article.blogHandle}-${article.handle}`}
+              blogHandle={article.blogHandle}
+              article={{
+                handle: article.handle,
+                title: article.title,
+                excerpt: article.excerpt,
+                publishedAt: article.publishedAt,
+                tags: article.tags,
+                image: article.image,
+              }}
+            />
           ))}
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

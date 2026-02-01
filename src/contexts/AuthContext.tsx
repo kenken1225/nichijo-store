@@ -83,7 +83,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         const data = await res.json();
 
         if (!res.ok) {
-          return { success: false, error: data.error || "ログインに失敗しました" };
+          return { success: false, error: data.error || "Login failed" };
         }
 
         // After successful login, get customer information
@@ -91,7 +91,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         return { success: true };
       } catch (error) {
         console.error("Login error:", error);
-        return { success: false, error: "ログイン処理中にエラーが発生しました" };
+        return { success: false, error: "Login processing error" };
       }
     },
     [checkAuth]

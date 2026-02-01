@@ -321,6 +321,58 @@ export const ARTICLE_BY_HANDLE_QUERY = `
   }
 `;
 
+export const SEARCH_ARTICLES_QUERY = `
+  query SearchArticles($query: String!) {
+    articles(first: 20, query: $query) {
+      edges {
+        node {
+          handle
+          title
+          excerpt
+          publishedAt
+          tags
+          image {
+            url
+            altText
+            width
+            height
+          }
+          blog {
+            handle
+            title
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const LATEST_ARTICLES_QUERY = `
+  query LatestArticles($first: Int!) {
+    articles(first: $first, sortKey: PUBLISHED_AT, reverse: true) {
+      edges {
+        node {
+          handle
+          title
+          excerpt
+          publishedAt
+          tags
+          image {
+            url
+            altText
+            width
+            height
+          }
+          blog {
+            handle
+            title
+          }
+        }
+      }
+    }
+  }
+`;
+
 export const PAGES_LIST_QUERY = `
  query PageList {
 	pages(first: 20) {

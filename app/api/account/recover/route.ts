@@ -12,12 +12,6 @@ export async function POST(request: NextRequest) {
 
     const result = await recoverCustomerPassword(email);
 
-    // Even if there are errors, return success for security reasons
-    // (to prevent leaking whether the email is registered or not)
-    if (result.customerUserErrors.length > 0) {
-      console.log("Password recovery errors:", result.customerUserErrors);
-    }
-
     return NextResponse.json({
       success: true,
       message:

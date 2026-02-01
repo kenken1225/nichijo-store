@@ -19,7 +19,6 @@ export function OrderHistory() {
         if (res.ok) {
           const data = await res.json();
           setOrders(data.orders || []);
-          console.log(data.orders);
         }
       } catch (error) {
         console.error("Failed to fetch orders:", error);

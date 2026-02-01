@@ -18,7 +18,7 @@ export async function shopifyFetch<T>(
   options: ShopifyFetchOptions = {}
 ) {
   if (!SHOP_DOMAIN || !STOREFRONT_TOKEN) {
-    throw new Error("SHOPIFY_STORE_DOMAIN と SHOPIFY_STOREFRONT_ACCESS_TOKEN を設定してください。");
+    throw new Error("Shopify credentials are not set");
   }
 
   const res = await fetch(`https://${SHOP_DOMAIN}/api/2024-01/graphql.json`, {

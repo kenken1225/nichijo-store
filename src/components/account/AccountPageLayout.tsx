@@ -35,7 +35,7 @@ export function AccountPageLayout({
         <div className={`${maxWidthClass} mx-auto`}>
           <h1 className="text-2xl font-semibold text-center mb-2">{title}</h1>
           {description && <p className="text-muted-foreground text-center text-sm mb-6">{description}</p>}
-          <div className="border-t border-border mt-4 pt-8 text-white">{children}</div>
+          <div className="border-t border-border mt-4 pt-8 ">{children}</div>
         </div>
       </div>
     </div>
