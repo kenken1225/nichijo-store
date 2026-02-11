@@ -1,29 +1,20 @@
 import { Container } from "@/components/layout/Container";
 import { Package, CreditCard, Heart } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
-const trustItems = [
-  {
-    icon: Package,
-    title: "Global Shipping",
-    description: "Fast delivery to 150+ countries with tracking",
-  },
-  {
-    icon: CreditCard,
-    title: "Secure Payment",
-    description: "Multiple currencies and payment methods accepted",
-  },
-  {
-    icon: Heart,
-    title: "Easy Returns",
-    description: "Hassle-free return policy worldwide",
-  },
-];
+export async function Trust() {
+  const t = await getTranslations("trust");
 
-export function Trust() {
+  const trustItems = [
+    { icon: Package, title: t("shippingTitle"), description: t("shippingDesc") },
+    { icon: CreditCard, title: t("paymentTitle"), description: t("paymentDesc") },
+    { icon: Heart, title: t("returnsTitle"), description: t("returnsDesc") },
+  ];
+
   return (
     <section className="py-16 sm:py-20 bg-[var(--secondary)]">
       <Container>
-        <h2 className="text-2xl sm:text-3xl font-bold text-center mb-12">Shop With Confidence</h2>
+        <h2 className="text-2xl sm:text-3xl font-bold text-center mb-12">{t("heading")}</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
           {trustItems.map((item) => (
             <div key={item.title} className="space-y-4">

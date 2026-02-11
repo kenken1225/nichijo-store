@@ -30,7 +30,7 @@ export function HeaderWrapper({ children }: HeaderWrapperProps) {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
           isTransparent ? "bg-transparent border-transparent" : "bg-white/90 backdrop-blur border-b border-border"
         }`}
       >

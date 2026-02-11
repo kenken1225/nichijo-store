@@ -6,8 +6,8 @@ import { Navigation } from "../navigation";
 import { Image } from "@/components/shared/Image";
 import { getMenu } from "@/lib/shopify/navigation";
 
-export async function Header() {
-  const menu = await getMenu("header-main");
+export async function Header({ locale }: { locale?: string }) {
+  const menu = await getMenu("header-main", locale);
   const menuItems = menu?.items ?? [];
 
   return (

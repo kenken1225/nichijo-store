@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Container } from "@/components/layout/Container";
 import { ProductCard } from "@/components/shared/ProductCard";
 import { Image } from "@/components/shared/Image";
@@ -34,10 +35,12 @@ export function YouMayAlsoLike({
   onAddToCart,
   loadingVariantId = null,
   variant = "default",
-  title = "You May Also Like",
+  title,
   useRecentLocalStorage = false,
   maxRecent = 5,
 }: YouMayAlsoLikeProps) {
+  const t = useTranslations("product");
+  const resolvedTitle = title ?? t("youMayAlsoLike");
   const [recentItems, setRecentItems] = useState<Recommendation[]>([]);
   const [recentLoading, setRecentLoading] = useState(false);
 
@@ -113,12 +116,12 @@ export function YouMayAlsoLike({
           {isLoading ? (
             <span className="flex items-center justify-center gap-1">
               <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
-              Adding...
+              {t("adding")}
             </span>
           ) : item.available ? (
-            "Add"
+            t("add")
           ) : (
-            "Sold"
+            t("sold")
           )}
         </button>
       ) : null;
@@ -179,7 +182,7 @@ export function YouMayAlsoLike({
                   ? "bg-primary text-primary-foreground hover:opacity-90"
                   : "bg-muted text-muted-foreground line-through opacity-60 cursor-not-allowed"
               }`,
-              children: item.available ? "Add to Cart" : "Sold Out",
+              children: item.available ? t("addToCart") : t("outOfStock"),
             })
           : null}
       </div>
@@ -196,7 +199,7 @@ export function YouMayAlsoLike({
     }
     return (
       <div className="space-y-3">
-        <p className="text-sm font-semibold text-foreground mb-1">{title}</p>
+        <p className="text-sm font-semibold text-foreground mb-1">{resolvedTitle}</p>
         <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-1">
           {limited.map((item) => (
             <div key={item.href} className="min-w-[150px] snap-start">
@@ -212,7 +215,7 @@ export function YouMayAlsoLike({
     <section className="bg-secondary/15 py-12">
       <Container className="space-y-6">
         <div className="text-center space-y-2">
-          <h2 className="text-2xl font-semibold text-foreground">You May Also Like</h2>
+          <h2 className="text-2xl font-semibold text-foreground">{t("youMayAlsoLike")}</h2>
         </div>
         {/* Mobile: horizontal scroll */}
         <div className="md:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2">

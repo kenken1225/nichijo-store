@@ -1,4 +1,4 @@
-import { shopifyFetch } from "../shopify";
+import { shopifyFetch, toShopifyLanguage, toShopifyCountry } from "../shopify";
 import type { ShopifyPolicies } from "@/lib/types/shopify";
 import { POLICIES_QUERY } from "./queries";
 
@@ -20,8 +20,8 @@ type PoliciesMap = {
 
 const POLICY_KEYS: (keyof PoliciesMap)[] = ["privacyPolicy", "termsOfService", "shippingPolicy", "refundPolicy"];
 
-export async function getPolicies(): Promise<PoliciesMap> {
-  const data = await shopifyFetch<PoliciesQuery>(POLICIES_QUERY);
+export async function getPolicies(locale?: string, countryCode?: string): Promise<PoliciesMap> {
+  const data = await shopifyFetch<PoliciesQuery>(POLICIES_QUERY, { language: toShopifyLanguage(locale), country: toShopifyCountry(countryCode) });
 
   return {
     privacyPolicy: data?.shop?.privacyPolicy ?? null,
@@ -31,8 +31,8 @@ export async function getPolicies(): Promise<PoliciesMap> {
   };
 }
 
-export async function getPolicyList(): Promise<ShopifyPolicies[]> {
-  const policies = await getPolicies();
+export async function getPolicyList(locale?: string): Promise<ShopifyPolicies[]> {
+  const policies = await getPolicies(locale);
 
   return POLICY_KEYS.flatMap((key) => {
     const policy = policies[key];
@@ -40,10 +40,10 @@ export async function getPolicyList(): Promise<ShopifyPolicies[]> {
   });
 }
 
-export async function getPolicyByHandle(handle: string): Promise<ShopifyPolicies | null> {
+export async function getPolicyByHandle(handle: string, locale?: string): Promise<ShopifyPolicies | null> {
   if (!handle) return null;
 
-  const policies = await getPolicyList();
+  const policies = await getPolicyList(locale);
   const lowerHandle = handle.toLowerCase();
 
   return policies.find((policy) => policy.handle?.toLowerCase() === lowerHandle) ?? null;

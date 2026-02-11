@@ -2,13 +2,15 @@ import Link from "next/link";
 import { BlogArticleCard } from "./BlogArticleCard";
 import type { BlogArticleSummary } from "@/lib/shopify/blogs";
 import { Container } from "../layout/Container";
+import { getTranslations } from "next-intl/server";
 
 type BlogListProps = {
   blogHandle: string;
   articles: BlogArticleSummary[];
 };
 
-export function BlogList({ blogHandle, articles }: BlogListProps) {
+export async function BlogList({ blogHandle, articles }: BlogListProps) {
+  const t = await getTranslations("blogs");
   const featured = articles[0];
   const rest = featured ? articles.slice(1) : articles;
 
@@ -27,8 +29,8 @@ export function BlogList({ blogHandle, articles }: BlogListProps) {
                       className="h-full w-full object-cover"
                     />
                   ) : null}
-                  <span className="absolute left-4 top-4 rounded-full bg-[#e9dece] px-3 py-1 text-xs font-semibold text-[#c47a57]">
-                    Featured
+                  <span className="absolute start-4 top-4 rounded-full bg-[#e9dece] px-3 py-1 text-xs font-semibold text-[#c47a57]">
+                    {t("featured")}
                   </span>
                 </div>
                 <div className="flex flex-col gap-4 px-6 py-8 sm:px-8 sm:py-10">
@@ -45,7 +47,7 @@ export function BlogList({ blogHandle, articles }: BlogListProps) {
                     href={`/blogs/${blogHandle}/${featured.handle}`}
                     className="text-sm font-semibold text-primary hover:underline"
                   >
-                    Read More →
+                    {t("readMore")}
                   </Link>
                 </div>
               </div>
@@ -60,7 +62,7 @@ export function BlogList({ blogHandle, articles }: BlogListProps) {
             </div>
           ) : !featured ? (
             <div className="rounded-lg border border-border bg-card px-4 py-10 text-center text-muted-foreground">
-              There are no articles in this category yet. Please check another category.
+              {t("noArticles")}
             </div>
           ) : null}
         </Container>

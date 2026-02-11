@@ -3,12 +3,14 @@
 import { ButtonHTMLAttributes } from "react";
 import { Loader2 } from "lucide-react";
 import { clsx } from "clsx";
+import { useTranslations } from "next-intl";
 
 type SubmitButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   loading?: boolean;
 };
 
 export function SubmitButton({ children, loading, disabled, className, ...props }: SubmitButtonProps) {
+  const t = useTranslations("auth");
   return (
     <button
       type="submit"
@@ -26,7 +28,7 @@ export function SubmitButton({ children, loading, disabled, className, ...props 
       {loading ? (
         <span className="flex items-center justify-center gap-2">
           <Loader2 className="w-4 h-4 animate-spin" />
-          <span>Loading...</span>
+          <span>{t("loading")}</span>
         </span>
       ) : (
         children

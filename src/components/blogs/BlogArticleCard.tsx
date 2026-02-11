@@ -1,13 +1,15 @@
 import Link from "next/link";
 import type { BlogArticleSummary } from "@/lib/shopify/blogs";
 import { formatDate } from "@/lib/shopify";
+import { getTranslations } from "next-intl/server";
 
 type BlogArticleCardProps = {
   blogHandle: string;
   article: BlogArticleSummary;
 };
 
-export function BlogArticleCard({ blogHandle, article }: BlogArticleCardProps) {
+export async function BlogArticleCard({ blogHandle, article }: BlogArticleCardProps) {
+  const t = await getTranslations("blogs");
   return (
     <Link
       href={`/blogs/${blogHandle}/${article.handle}`}
@@ -33,7 +35,7 @@ export function BlogArticleCard({ blogHandle, article }: BlogArticleCardProps) {
           {article.excerpt ? <p className="text-sm text-muted-foreground line-clamp-2">{article.excerpt}</p> : null}
         </div>
 
-        <div className="mt-auto text-sm font-semibold text-primary">Read More →</div>
+        <div className="mt-auto text-sm font-semibold text-primary">{t("readMore")}</div>
       </div>
     </Link>
   );

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { MapPin, Plus, Edit2, Trash2, Star, Loader2, X } from "lucide-react";
 import { FormInput } from "./FormInput";
 import { SubmitButton } from "./SubmitButton";
+import { useTranslations } from "next-intl";
 
 type CustomerAddress = {
   id: string;
@@ -35,6 +36,7 @@ const emptyAddress: AddressFormData = {
 };
 
 export function AddressManager() {
+  const t = useTranslations("account");
   const [addresses, setAddresses] = useState<CustomerAddress[]>([]);
   const [defaultAddressId, setDefaultAddressId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -116,7 +118,7 @@ export function AddressManager() {
         });
         const data = await res.json();
         if (!res.ok) {
-          setError(data.error || "Failed to update address");
+          setError(data.error || t("failedUpdate"));
           return;
         }
       } else {
@@ -128,7 +130,7 @@ export function AddressManager() {
         });
         const data = await res.json();
         if (!res.ok) {
-          setError(data.error || "Failed to add address");
+          setError(data.error || t("failedAdd"));
           return;
         }
       }
@@ -137,14 +139,14 @@ export function AddressManager() {
       handleCancel();
     } catch (err) {
       console.error("Address form error:", err);
-      setError("An error occurred while saving the address");
+      setError(t("saveError"));
     } finally {
       setFormLoading(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this address?")) return;
+    if (!confirm(t("deleteConfirm"))) return;
 
     setDeletingId(id);
     try {
@@ -158,11 +160,11 @@ export function AddressManager() {
         await fetchAddresses();
       } else {
         const data = await res.json();
-        alert(data.error || "Failed to delete address");
+        alert(data.error || t("failedDelete"));
       }
     } catch (err) {
       console.error("Delete address error:", err);
-      alert("An error occurred while deleting the address");
+      alert(t("deleteError"));
     } finally {
       setDeletingId(null);
     }
@@ -181,7 +183,7 @@ export function AddressManager() {
         setDefaultAddressId(id);
       } else {
         const data = await res.json();
-        alert(data.error || "Failed to set default address");
+        alert(data.error || t("failedSetDefault"));
       }
     } catch (err) {
       console.error("Set default address error:", err);
@@ -207,7 +209,7 @@ export function AddressManager() {
           className="w-full flex items-center justify-center gap-2 p-4 border-2 border-dashed border-border rounded-lg text-muted-foreground hover:text-foreground hover:border-primary transition-colors"
         >
           <Plus className="w-5 h-5" />
-          Add New Address
+          {t("addNewAddress")}
         </button>
       )}
 
@@ -215,7 +217,7 @@ export function AddressManager() {
       {showForm && (
         <div className="border border-border rounded-lg p-6 bg-card">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="font-semibold">{editingAddress ? "Edit Address" : "Add New Address"}</h3>
+            <h3 className="font-semibold">{editingAddress ? t("editAddress") : t("addNewAddress")}</h3>
             <button onClick={handleCancel} className="text-muted-foreground hover:text-foreground">
               <X className="w-5 h-5" />
             </button>
@@ -226,19 +228,19 @@ export function AddressManager() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <FormInput
-                label="First Name"
+                label={t("firstName")}
                 name="firstName"
                 value={formData.firstName}
                 onChange={handleChange}
                 required
               />
-              <FormInput label="Last Name" name="lastName" value={formData.lastName} onChange={handleChange} required />
+              <FormInput label={t("lastName")} name="lastName" value={formData.lastName} onChange={handleChange} required />
             </div>
 
-            <FormInput label="Address" name="address1" value={formData.address1} onChange={handleChange} required />
+            <FormInput label={t("address")} name="address1" value={formData.address1} onChange={handleChange} required />
 
             <FormInput
-              label="Apartment, suite, etc."
+              label={t("apartment")}
               name="address2"
               value={formData.address2}
               onChange={handleChange}
@@ -246,25 +248,25 @@ export function AddressManager() {
             />
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormInput label="City" name="city" value={formData.city} onChange={handleChange} required />
-              <FormInput label="State / Province" name="province" value={formData.province} onChange={handleChange} />
+              <FormInput label={t("city")} name="city" value={formData.city} onChange={handleChange} required />
+              <FormInput label={t("state")} name="province" value={formData.province} onChange={handleChange} />
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormInput label="ZIP / Postal Code" name="zip" value={formData.zip} onChange={handleChange} required />
-              <FormInput label="Country" name="country" value={formData.country} onChange={handleChange} required />
+              <FormInput label={t("zip")} name="zip" value={formData.zip} onChange={handleChange} required />
+              <FormInput label={t("country")} name="country" value={formData.country} onChange={handleChange} required />
             </div>
 
-            <FormInput label="Phone" name="phone" type="tel" value={formData.phone} onChange={handleChange} optional />
+            <FormInput label={t("phone")} name="phone" type="tel" value={formData.phone} onChange={handleChange} optional />
 
             <div className="flex gap-3 pt-4">
-              <SubmitButton loading={formLoading}>{editingAddress ? "Update Address" : "Add Address"}</SubmitButton>
+              <SubmitButton loading={formLoading}>{editingAddress ? t("updateAddress") : t("addAddress")}</SubmitButton>
               <button
                 type="button"
                 onClick={handleCancel}
                 className="px-6 py-3 text-sm font-medium border border-border rounded-lg hover:bg-muted/50 transition-colors"
               >
-                Cancel
+                {t("cancel")}
               </button>
             </div>
           </form>
@@ -275,8 +277,8 @@ export function AddressManager() {
       {addresses.length === 0 && !showForm ? (
         <div className="text-center py-12">
           <MapPin className="w-16 h-16 mx-auto mb-4 text-muted-foreground/30" />
-          <h3 className="text-lg font-medium mb-2">No addresses saved</h3>
-          <p className="text-muted-foreground">Add an address to make checkout faster.</p>
+          <h3 className="text-lg font-medium mb-2">{t("noAddresses")}</h3>
+          <p className="text-muted-foreground">{t("addAddressHint")}</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -294,8 +296,8 @@ export function AddressManager() {
                     <div className="font-medium">
                       {address.firstName} {address.lastName}
                       {address.id === defaultAddressId && (
-                        <span className="ml-2 text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full">
-                          Default
+                        <span className="ms-2 text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full">
+                          {t("default")}
                         </span>
                       )}
                     </div>
@@ -317,7 +319,7 @@ export function AddressManager() {
                       onClick={() => handleSetDefault(address.id)}
                       disabled={settingDefaultId === address.id}
                       className="p-2 text-muted-foreground hover:text-primary transition-colors disabled:opacity-50"
-                      title="Set as default"
+                      title={t("setAsDefault")}
                     >
                       {settingDefaultId === address.id ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -329,7 +331,7 @@ export function AddressManager() {
                   <button
                     onClick={() => handleEdit(address)}
                     className="p-2 text-muted-foreground hover:text-foreground transition-colors"
-                    title="Edit"
+                    title={t("edit")}
                   >
                     <Edit2 className="w-4 h-4" />
                   </button>
@@ -337,7 +339,7 @@ export function AddressManager() {
                     onClick={() => handleDelete(address.id)}
                     disabled={deletingId === address.id}
                     className="p-2 text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50"
-                    title="Delete"
+                    title={t("delete")}
                   >
                     {deletingId === address.id ? (
                       <Loader2 className="w-4 h-4 animate-spin" />

@@ -28,7 +28,7 @@ export function FormCheckbox({
         />
         <span className="text-sm text-foreground">{label}</span>
       </label>
-      {error && <p className="text-sm text-destructive ml-7">{error}</p>}
+      {error && <p className="text-sm text-destructive ms-7">{error}</p>}
     </div>
   );
 }

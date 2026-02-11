@@ -32,7 +32,7 @@ export function DropdownItem({ item }: { item: MenuItem }) {
       </button>
 
       {isOpen && (
-        <div className="absolute left-full top-0 ml-1 z-50">
+        <div className="absolute start-full top-0 ms-1 z-50">
           <div className="bg-card border border-border rounded-lg shadow-lg py-2 min-w-[180px]">
             {item.items!.map((grandchild) => (
               <Link

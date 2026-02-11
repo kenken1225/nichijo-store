@@ -4,12 +4,14 @@ import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import Link from "next/link";
 import { ShoppingBag, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/Button";
 import { formatPrice } from "@/lib/shopify";
 import type { ShopifyVariant } from "@/lib/types/shopify";
 import { YouMayAlsoLike } from "./YouMayAlsoLike";
 import { ProductPrice } from "./ProductPrice";
 import { useCart } from "@/contexts/CartContext";
+import { useCountry } from "@/contexts/CountryContext";
 
 type RecommendationItem = {
   title: string;
@@ -39,7 +41,10 @@ type ProductActionsProps = {
 };
 
 export function ProductActions({ title, descriptionHtml, variants, recommendations = [] }: ProductActionsProps) {
+  const tProduct = useTranslations("product");
+  const tCart = useTranslations("cart");
   const { setItemCount } = useCart();
+  const { country } = useCountry();
   const initialVariant = variants.find((v) => v.availableForSale !== false) ?? variants[0] ?? null;
   const [selectedVariant, setSelectedVariant] = useState<ShopifyVariant | null>(initialVariant);
   const [quantity, setQuantity] = useState(1);
@@ -93,8 +98,8 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
 
   const displayPrice = useMemo(() => {
     if (!selectedVariant?.price) return "";
-    return formatPrice(selectedVariant.price.amount, selectedVariant.price.currencyCode);
-  }, [selectedVariant]);
+    return formatPrice(selectedVariant.price.amount, selectedVariant.price.currencyCode, country.numberLocale);
+  }, [selectedVariant, country.numberLocale]);
 
   const variantMatches = (variant: ShopifyVariant, nextSelections: Record<string, string>) => {
     const opts = variant.selectedOptions ?? [];
@@ -136,7 +141,7 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
     const lines = rawLines.map((item) => {
       const merch = item?.merchandise;
       const image = merch?.product?.featuredImage ?? merch?.image;
-      const price = merch?.price ? formatPrice(merch.price.amount, merch.price.currencyCode) : "";
+      const price = merch?.price ? formatPrice(merch.price.amount, merch.price.currencyCode, country.numberLocale) : "";
       return {
         id: item?.id ?? "",
         quantity: item?.quantity ?? 1,
@@ -148,7 +153,7 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
       };
     });
     const subtotalNode = cart?.cost?.subtotalAmount;
-    const subtotal = subtotalNode ? formatPrice(subtotalNode.amount, subtotalNode.currencyCode) : "";
+    const subtotal = subtotalNode ? formatPrice(subtotalNode.amount, subtotalNode.currencyCode, country.numberLocale) : "";
     const checkout = cart?.checkoutUrl ?? null;
     const totalQuantity = cart?.totalQuantity ?? 0;
     return { lines, subtotal, checkoutUrl: checkout, totalQuantity };
@@ -166,11 +171,11 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
     const avail = selectedVariant.quantityAvailable;
     const availableForSale = selectedVariant.availableForSale !== false;
     if (!availableForSale) {
-      setErrorMessage("Currently this product is not available for sale.");
+      setErrorMessage(tProduct("notAvailable"));
       return;
     }
     if (typeof avail === "number" && avail > 0 && quantity > avail) {
-      setErrorMessage("The quantity exceeds the inventory. Please reduce the quantity and try again.");
+      setErrorMessage(tProduct("exceedsInventory"));
       return;
     }
     try {
@@ -200,7 +205,7 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
       setItemCount(parsed.totalQuantity);
       setDrawerOpen(true);
     } catch {
-      setErrorMessage("The product inventory is low. Please reduce the quantity to try.");
+      setErrorMessage(tProduct("lowInventory"));
     } finally {
       setLoading(false);
     }
@@ -209,8 +214,8 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
   const closeDrawer = () => setDrawerOpen(false);
 
   const drawerClass = clsx(
-    "absolute inset-y-0 right-0 flex h-full w-full max-w-full sm:max-w-[420px] flex-col bg-card text-foreground shadow-xl transition-transform duration-300 ease-out p-4",
-    drawerOpen ? "translate-x-0" : "translate-x-full"
+    "absolute inset-y-0 end-0 flex h-full w-full max-w-full sm:max-w-[420px] flex-col bg-card text-foreground shadow-xl transition-transform duration-300 ease-out p-4",
+    drawerOpen ? "translate-x-0" : "ltr:translate-x-full rtl:-translate-x-full"
   );
 
   return (
@@ -257,13 +262,13 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
         })}
         <div className="space-y-3">
           <div className="space-y-2">
-            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Quantity</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{tProduct("quantity")}</p>
             <div className="inline-flex h-12 w-44 items-center justify-between rounded-md border border-border bg-card">
               <button
                 type="button"
                 className="h-full w-12 text-lg text-foreground hover:bg-muted/60"
                 onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                aria-label="Decrease quantity"
+                aria-label={tProduct("decreaseQty")}
               >
                 −
               </button>
@@ -272,7 +277,7 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
                 type="button"
                 className="h-full w-12 text-lg text-foreground hover:bg-muted/60"
                 onClick={() => setQuantity((q) => q + 1)}
-                aria-label="Increase quantity"
+                aria-label={tProduct("increaseQty")}
               >
                 +
               </button>
@@ -287,20 +292,20 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
               loading ? (
                 <span className="flex items-center justify-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                  Adding...
+                  {tProduct("adding")}
                 </span>
               ) : (
                 <span className="flex items-center justify-center gap-2">
                   <ShoppingBag className="h-4 w-4" aria-hidden />
-                  Add to Cart
+                  {tProduct("addToCart")}
                 </span>
               )
             ) : (
-              "Sold Out"
+              tProduct("outOfStock")
             )}
           </Button>
           {errorMessage ? <p className="text-sm text-destructive">{errorMessage}</p> : null}
-          <p className="text-xs text-muted-foreground">*Ships in 2-7 business days.</p>
+          <p className="text-xs text-muted-foreground">{tProduct("shipsIn")}</p>
         </div>
       </div>
 
@@ -309,22 +314,22 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
           <div
             className="absolute inset-0 bg-black/40 pointer-events-auto"
             onClick={closeDrawer}
-            aria-label="Close mini cart overlay"
+            aria-label={tCart("closeMiniCartOverlay")}
           />
         )}
         <div className={clsx(drawerClass, "pointer-events-auto")}>
           <div className="flex items-center justify-between border-b border-border pb-4">
             <div className="space-y-0.5">
-              <p className="text-base font-semibold">Your Cart</p>
-              <p className="text-sm text-muted-foreground">{cartLines.length} items</p>
+              <p className="text-base font-semibold">{tCart("yourCart")}</p>
+              <p className="text-sm text-muted-foreground">{cartLines.length} {tCart("items")}</p>
             </div>
-            <button type="button" onClick={closeDrawer} className="text-foreground" aria-label="Close mini cart">
+            <button type="button" onClick={closeDrawer} className="text-foreground" aria-label={tCart("closeMiniCart")}>
               ✕
             </button>
           </div>
           <div className="flex-1 overflow-y-auto space-y-3 py-4">
             {cartLines.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Your cart is empty.</p>
+              <p className="text-sm text-muted-foreground">{tCart("emptyMini")}</p>
             ) : (
               cartLines.map((line) => (
                 <div key={line.id} className="flex gap-3 rounded-md border border-border bg-secondary/20 p-3">
@@ -341,7 +346,7 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
                     <p className="text-sm font-medium text-foreground">{line.title}</p>
                     <p className="text-xs text-muted-foreground">{line.variantTitle}</p>
                     <div className="mt-auto flex items-center justify-between text-sm text-foreground">
-                      <span>Qty: {line.quantity}</span>
+                      <span>{tCart("qty")} {line.quantity}</span>
                       <span>{line.price}</span>
                     </div>
                   </div>
@@ -365,7 +370,7 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
                 onAddToCart={handleAddToCartFromRecommendation}
                 loadingVariantId={addingVariantId}
                 variant="compact"
-                title="You May Also Like"
+                title={tProduct("youMayAlsoLike")}
                 useRecentLocalStorage
                 maxRecent={4}
               />
@@ -373,10 +378,10 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
           </div>
           <div className="border-t border-border px-2 py-2 space-y-4">
             <div className="flex items-center justify-between">
-              <p className="text-base font-semibold text-foreground">Subtotal</p>
+              <p className="text-base font-semibold text-foreground">{tCart("subtotal")}</p>
               <p className="text-lg font-semibold text-foreground">{cartSubtotal || "—"}</p>
             </div>
-            <p className="text-sm text-muted-foreground">Shipping & taxes calculated at checkout</p>
+            <p className="text-sm text-muted-foreground">{tCart("shippingTaxNote")}</p>
             <div className="space-y-2">
               <button
                 type="button"
@@ -391,13 +396,13 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
                     : "bg-muted text-muted-foreground cursor-not-allowed"
                 )}
               >
-                Checkout
+                {tCart("checkout")}
               </button>
               <Link
                 href="/cart"
                 className="flex h-12 w-full items-center justify-center rounded-md border border-border bg-card text-base font-semibold text-foreground hover:bg-muted/40 transition"
               >
-                View Cart
+                {tCart("viewCart")}
               </Link>
             </div>
           </div>
@@ -409,7 +414,7 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
   async function handleAddToCartFromRecommendation(variantId: string, retryWithoutCartId = false) {
     const rec = recommendations.find((r) => r.variantId === variantId);
     if (rec?.available === false) {
-      setErrorMessage("This product is currently not available for sale.");
+      setErrorMessage(tProduct("notAvailable"));
       return;
     }
     try {
@@ -441,7 +446,7 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
     } catch (error) {
       // エラーメッセージをログに出力し、ユーザーには在庫関連のメッセージを表示
       console.error("Add recommendation to cart error:", error instanceof Error ? error.message : error);
-      setErrorMessage("Product inventory is low. Please reduce the quantity to try.");
+      setErrorMessage(tProduct("lowInventory"));
     } finally {
       setAddingVariantId(null);
     }

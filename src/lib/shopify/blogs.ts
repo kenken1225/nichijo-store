@@ -1,4 +1,4 @@
-import { shopifyFetch } from "../shopify";
+import { shopifyFetch, toShopifyLanguage, toShopifyCountry } from "../shopify";
 import type { ShopifyArticle, ShopifyBlog } from "../types/shopify";
 import { ARTICLE_BY_HANDLE_QUERY, BLOG_BY_HANDLE_QUERY, BLOGS_LIST_QUERY, LATEST_ARTICLES_QUERY, SEARCH_ARTICLES_QUERY } from "./queries";
 
@@ -64,13 +64,13 @@ export type SearchArticleResult = {
   blogHandle: string;
 };
 
-export async function getBlogs(): Promise<BlogSummary[]> {
-  const data = await shopifyFetch<BlogsListQuery>(BLOGS_LIST_QUERY);
+export async function getBlogs(locale?: string, countryCode?: string): Promise<BlogSummary[]> {
+  const data = await shopifyFetch<BlogsListQuery>(BLOGS_LIST_QUERY, { language: toShopifyLanguage(locale), country: toShopifyCountry(countryCode) });
   return data?.blogs?.edges?.map(({ node }) => node) ?? [];
 }
 
-export async function getBlogWithArticles(handle: string): Promise<BlogWithArticles | null> {
-  const data = await shopifyFetch<BlogByHandleQuery>(BLOG_BY_HANDLE_QUERY, { handle });
+export async function getBlogWithArticles(handle: string, locale?: string, countryCode?: string): Promise<BlogWithArticles | null> {
+  const data = await shopifyFetch<BlogByHandleQuery>(BLOG_BY_HANDLE_QUERY, { handle, language: toShopifyLanguage(locale), country: toShopifyCountry(countryCode) });
   if (!data?.blog) return null;
 
   const articles =
@@ -92,11 +92,15 @@ export async function getBlogWithArticles(handle: string): Promise<BlogWithArtic
 
 export async function getBlogArticle(
   blogHandle: string,
-  articleHandle: string
+  articleHandle: string,
+  locale?: string,
+  countryCode?: string
 ): Promise<{ blogHandle: string; blogTitle: string; article: BlogArticleDetail } | null> {
   const data = await shopifyFetch<ArticleByHandleQuery>(ARTICLE_BY_HANDLE_QUERY, {
     blogHandle,
     articleHandle,
+    language: toShopifyLanguage(locale),
+    country: toShopifyCountry(countryCode),
   });
   const article = data?.blog?.articleByHandle;
   if (!data?.blog || !article) return null;
@@ -117,8 +121,8 @@ export async function getBlogArticle(
   };
 }
 
-export async function searchArticles(query: string): Promise<SearchArticleResult[]> {
-  const data = await shopifyFetch<SearchArticlesQuery>(SEARCH_ARTICLES_QUERY, { query });
+export async function searchArticles(query: string, locale?: string, countryCode?: string): Promise<SearchArticleResult[]> {
+  const data = await shopifyFetch<SearchArticlesQuery>(SEARCH_ARTICLES_QUERY, { query, language: toShopifyLanguage(locale), country: toShopifyCountry(countryCode) });
   const articles = data?.articles?.edges ?? [];
 
   return articles.map(({ node }) => ({
@@ -167,8 +171,8 @@ export type LatestArticle = {
   blogTitle: string;
 };
 
-export async function getLatestArticles(count: number = 3): Promise<LatestArticle[]> {
-  const data = await shopifyFetch<LatestArticlesQuery>(LATEST_ARTICLES_QUERY, { first: count });
+export async function getLatestArticles(count: number = 3, locale?: string, countryCode?: string): Promise<LatestArticle[]> {
+  const data = await shopifyFetch<LatestArticlesQuery>(LATEST_ARTICLES_QUERY, { first: count, language: toShopifyLanguage(locale), country: toShopifyCountry(countryCode) });
   const articles = data?.articles?.edges ?? [];
 
   return articles.map(({ node }) => ({

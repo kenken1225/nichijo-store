@@ -36,7 +36,7 @@ export function MobileMenuItem({ item, onClose }: { item: MenuItem; onClose: () 
       </button>
 
       {isOpen && (
-        <div className="pl-4 pb-2">
+        <div className="ps-4 pb-2">
           {item.items!.map((child) => (
             <MobileSubMenuItem key={child.id} item={child} onClose={onClose} />
           ))}

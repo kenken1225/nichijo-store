@@ -1,7 +1,7 @@
 import { CART_FRAGMENT } from "./mutations";
 
 export const PRODUCTS_LIST_QUERY = `
-  query ProductsList {
+  query ProductsList($language: LanguageCode, $country: CountryCode) @inContext(language: $language, country: $country) {
     products(first: 12) {
       edges {
         node {
@@ -34,7 +34,7 @@ export const PRODUCTS_LIST_QUERY = `
 `;
 
 export const PRODUCT_BY_HANDLE_QUERY = `
-  query ProductByHandle($handle: String!) {
+  query ProductByHandle($handle: String!, $language: LanguageCode, $country: CountryCode) @inContext(language: $language, country: $country) {
     product(handle: $handle) {
       id
       title
@@ -80,7 +80,7 @@ export const PRODUCT_BY_HANDLE_QUERY = `
 `;
 
 export const PRODUCT_RECOMMENDATIONS_QUERY = `
-  query ProductRecommendations($productId: ID!) {
+  query ProductRecommendations($productId: ID!, $language: LanguageCode, $country: CountryCode) @inContext(language: $language, country: $country) {
     productRecommendations(productId: $productId) {
       id
       title
@@ -126,7 +126,7 @@ export const PRODUCT_RECOMMENDATIONS_QUERY = `
 `;
 
 export const PRODUCTS_BY_HANDLES_QUERY = `
-  query ProductsByHandles($query: String!) {
+  query ProductsByHandles($query: String!, $language: LanguageCode, $country: CountryCode) @inContext(language: $language, country: $country) {
     products(first: 10, query: $query) {
       edges {
         node {
@@ -169,7 +169,7 @@ export const PRODUCTS_BY_HANDLES_QUERY = `
 `;
 
 export const COLLECTIONS_QUERY = `
-  query CollectionsList {
+  query CollectionsList($language: LanguageCode, $country: CountryCode) @inContext(language: $language, country: $country) {
     collections(first: 20) {
       edges {
         node {
@@ -189,7 +189,7 @@ export const COLLECTIONS_QUERY = `
 `;
 
 export const CART_QUERY = `
-  query CartById($cartId: ID!) {
+  query CartById($cartId: ID!, $country: CountryCode) @inContext(country: $country) {
     cart(id: $cartId) {
       ...CartFields
     }
@@ -198,7 +198,7 @@ export const CART_QUERY = `
 `;
 
 export const COLLECTION_BY_HANDLE_QUERY = `
-  query CollectionByHandle($handle: String!) {
+  query CollectionByHandle($handle: String!, $language: LanguageCode, $country: CountryCode) @inContext(language: $language, country: $country) {
     collection(handle: $handle) {
       handle
       title
@@ -257,7 +257,7 @@ export const COLLECTION_BY_HANDLE_QUERY = `
 `;
 
 export const BLOGS_LIST_QUERY = `
-  query BlogsList {
+  query BlogsList($language: LanguageCode, $country: CountryCode) @inContext(language: $language, country: $country) {
     blogs(first: 20) {
       edges {
         node {
@@ -270,7 +270,7 @@ export const BLOGS_LIST_QUERY = `
 `;
 
 export const BLOG_BY_HANDLE_QUERY = `
-  query BlogByHandle($handle: String!) {
+  query BlogByHandle($handle: String!, $language: LanguageCode, $country: CountryCode) @inContext(language: $language, country: $country) {
     blog(handle: $handle) {
       handle
       title
@@ -296,7 +296,7 @@ export const BLOG_BY_HANDLE_QUERY = `
 `;
 
 export const ARTICLE_BY_HANDLE_QUERY = `
-  query ArticleByHandle($blogHandle: String!, $articleHandle: String!) {
+  query ArticleByHandle($blogHandle: String!, $articleHandle: String!, $language: LanguageCode, $country: CountryCode) @inContext(language: $language, country: $country) {
     blog(handle: $blogHandle) {
       handle
       title
@@ -322,7 +322,7 @@ export const ARTICLE_BY_HANDLE_QUERY = `
 `;
 
 export const SEARCH_ARTICLES_QUERY = `
-  query SearchArticles($query: String!) {
+  query SearchArticles($query: String!, $language: LanguageCode, $country: CountryCode) @inContext(language: $language, country: $country) {
     articles(first: 20, query: $query) {
       edges {
         node {
@@ -348,7 +348,7 @@ export const SEARCH_ARTICLES_QUERY = `
 `;
 
 export const LATEST_ARTICLES_QUERY = `
-  query LatestArticles($first: Int!) {
+  query LatestArticles($first: Int!, $language: LanguageCode, $country: CountryCode) @inContext(language: $language, country: $country) {
     articles(first: $first, sortKey: PUBLISHED_AT, reverse: true) {
       edges {
         node {
@@ -374,7 +374,7 @@ export const LATEST_ARTICLES_QUERY = `
 `;
 
 export const PAGES_LIST_QUERY = `
- query PageList {
+ query PageList($language: LanguageCode, $country: CountryCode) @inContext(language: $language, country: $country) {
 	pages(first: 20) {
 		edges{
       node{
@@ -387,7 +387,7 @@ export const PAGES_LIST_QUERY = `
 `;
 
 export const PAGE_BY_HANDLE_QUERY = `
-query PageShow($handle: String!) {
+query PageShow($handle: String!, $language: LanguageCode, $country: CountryCode) @inContext(language: $language, country: $country) {
   page(handle: $handle) {
     handle
     title
@@ -398,7 +398,7 @@ query PageShow($handle: String!) {
 `;
 
 export const POLICIES_QUERY = `
-  query Policies {
+  query Policies($language: LanguageCode, $country: CountryCode) @inContext(language: $language, country: $country) {
     shop {
       privacyPolicy {
         title
@@ -425,7 +425,7 @@ export const POLICIES_QUERY = `
 `;
 
 export const MENU_QUERY = `
-  query Menu($handle: String!) {
+  query Menu($handle: String!, $language: LanguageCode, $country: CountryCode) @inContext(language: $language, country: $country) {
     menu(handle: $handle) {
       id
       handle

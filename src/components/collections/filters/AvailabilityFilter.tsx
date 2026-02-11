@@ -1,9 +1,12 @@
+import { useTranslations } from "next-intl";
+
 type AvailabilityFilterProps = {
   inStockOnly: boolean;
   onToggle: (next: boolean) => void;
 };
 
 export function AvailabilityFilter({ inStockOnly, onToggle }: AvailabilityFilterProps) {
+  const t = useTranslations("collections");
   return (
     <label className="flex items-center gap-3 text-sm text-foreground">
       <input
@@ -12,7 +15,7 @@ export function AvailabilityFilter({ inStockOnly, onToggle }: AvailabilityFilter
         onChange={(e) => onToggle(e.target.checked)}
         className="h-4 w-4 accent-primary"
       />
-      <span>In-stock only</span>
+      <span>{t("inStockOnly")}</span>
     </label>
   );
 }

@@ -1,3 +1,5 @@
+import { useTranslations } from "next-intl";
+
 type PriceOption = { key: string; label: string; min: number | null; max: number | null };
 
 type PriceFilterProps = {
@@ -7,9 +9,10 @@ type PriceFilterProps = {
 };
 
 export function PriceFilter({ options, value, onChange }: PriceFilterProps) {
+  const t = useTranslations("collections");
   return (
     <div className="space-y-3">
-      <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Price Range</p>
+      <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{t("priceRange")}</p>
       <div className="space-y-2">
         {options.map((opt) => (
           <label key={opt.key} className="flex items-center gap-2 text-sm text-foreground">
@@ -33,7 +36,7 @@ export function PriceFilter({ options, value, onChange }: PriceFilterProps) {
             onChange={() => onChange(null)}
             className="h-4 w-4 accent-primary"
           />
-          <span>All</span>
+          <span>{t("all")}</span>
         </label>
       </div>
     </div>

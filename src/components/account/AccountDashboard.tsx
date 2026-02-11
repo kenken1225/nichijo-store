@@ -8,10 +8,14 @@ import { Package, MapPin, User, ChevronRight, Loader2 } from "lucide-react";
 import { SubmitButton } from "./SubmitButton";
 import { formatDate, formatPrice } from "@/lib/shopify";
 import { CustomerOrder } from "@/lib/shopify/customer";
+import { useTranslations } from "next-intl";
+import { useCountry } from "@/contexts/CountryContext";
 
 export function AccountDashboard() {
+  const t = useTranslations("account");
   const router = useRouter();
   const { customer, isLoading, logout } = useAuth();
+  const { country } = useCountry();
   const [recentOrders, setRecentOrders] = useState<CustomerOrder[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
   const [loggingOut, setLoggingOut] = useState(false);
@@ -53,7 +57,7 @@ export function AccountDashboard() {
     <div className="space-y-8">
       {/* Welcome Section */}
       <div className="text-center pb-6 border-b border-border">
-        <h2 className="text-xl font-semibold">Welcome back, {customer?.firstName || "there"}!</h2>
+        <h2 className="text-xl font-semibold">{t("welcomeBack", { name: customer?.firstName || t("there") })}</h2>
         <p className="text-muted-foreground text-sm mt-1">{customer?.email}</p>
       </div>
 
@@ -67,8 +71,8 @@ export function AccountDashboard() {
             <Package className="w-5 h-5 text-primary" />
           </div>
           <div className="flex-1">
-            <div className="font-medium">Orders</div>
-            <div className="text-sm text-muted-foreground">View history</div>
+            <div className="font-medium">{t("orders")}</div>
+            <div className="text-sm text-muted-foreground">{t("viewHistory")}</div>
           </div>
           <ChevronRight className="w-5 h-5 text-muted-foreground" />
         </Link>
@@ -81,8 +85,8 @@ export function AccountDashboard() {
             <MapPin className="w-5 h-5 text-primary" />
           </div>
           <div className="flex-1">
-            <div className="font-medium">Addresses</div>
-            <div className="text-sm text-muted-foreground">Manage</div>
+            <div className="font-medium">{t("addresses")}</div>
+            <div className="text-sm text-muted-foreground">{t("manage")}</div>
           </div>
           <ChevronRight className="w-5 h-5 text-muted-foreground" />
         </Link>
@@ -95,8 +99,8 @@ export function AccountDashboard() {
             <User className="w-5 h-5 text-primary" />
           </div>
           <div className="flex-1">
-            <div className="font-medium">Profile</div>
-            <div className="text-sm text-muted-foreground">Edit info</div>
+            <div className="font-medium">{t("profile")}</div>
+            <div className="text-sm text-muted-foreground">{t("editInfo")}</div>
           </div>
           <ChevronRight className="w-5 h-5 text-muted-foreground" />
         </Link>
@@ -105,9 +109,9 @@ export function AccountDashboard() {
       {/* Recent Orders */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold">Recent Orders</h3>
+          <h3 className="font-semibold">{t("recentOrders")}</h3>
           <Link href="/account/orders" className="text-sm text-primary hover:underline">
-            View all
+            {t("viewAll")}
           </Link>
         </div>
 
@@ -123,9 +127,9 @@ export function AccountDashboard() {
                   <div className="font-medium">{order.name}</div>
                   <div className="text-sm text-muted-foreground">{formatDate(order.processedAt)}</div>
                 </div>
-                <div className="text-right">
+                <div className="text-end">
                   <div className="font-medium">
-                    {formatPrice(order.totalPrice.amount, order.totalPrice.currencyCode)}
+                    {formatPrice(order.totalPrice.amount, order.totalPrice.currencyCode, country.numberLocale)}
                   </div>
                   <div className="text-sm text-muted-foreground capitalize">
                     {order.fulfillmentStatus?.toLowerCase().replace("_", " ") || "Processing"}
@@ -137,9 +141,9 @@ export function AccountDashboard() {
         ) : (
           <div className="text-center py-8 text-muted-foreground">
             <Package className="w-12 h-12 mx-auto mb-3 opacity-30" />
-            <p>No orders yet</p>
+            <p>{t("noOrders")}</p>
             <Link href="/collections/all" className="text-sm text-primary hover:underline mt-2 inline-block">
-              Start shopping
+              {t("startShopping")}
             </Link>
           </div>
         )}
@@ -151,7 +155,7 @@ export function AccountDashboard() {
           loading={loggingOut}
           className="bg-transparent border border-border hover:bg-muted/50"
         >
-          Log Out
+          {t("logOut")}
         </SubmitButton>
       </div>
     </div>

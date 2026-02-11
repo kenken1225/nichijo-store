@@ -6,8 +6,10 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { FormInput } from "./FormInput";
 import { SubmitButton } from "./SubmitButton";
+import { useTranslations } from "next-intl";
 
 export function LoginForm() {
+  const t = useTranslations("auth");
   const router = useRouter();
   const { login } = useAuth();
   const [email, setEmail] = useState("");
@@ -27,11 +29,11 @@ export function LoginForm() {
         router.push("/account");
         router.refresh();
       } else {
-        setError(result.error || "Login failed");
+        setError(result.error || t("loginFailed"));
       }
     } catch (err) {
       console.error("Login error:", err);
-      setError("Login processing error");
+      setError(t("loginError"));
     } finally {
       setLoading(false);
     }
@@ -42,9 +44,9 @@ export function LoginForm() {
       {error && <div className="p-4 rounded-lg bg-destructive/10 text-destructive text-sm">{error}</div>}
 
       <FormInput
-        label="Email address"
+        label={t("emailAddress")}
         type="email"
-        placeholder="you@example.com"
+        placeholder={t("emailPlaceholder")}
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         required
@@ -52,30 +54,30 @@ export function LoginForm() {
       />
 
       <FormInput
-        label="Password"
+        label={t("password")}
         type="password"
-        placeholder="Enter your password"
+        placeholder={t("passwordPlaceholder")}
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         required
         autoComplete="current-password"
       />
 
-      <div className="text-right">
+      <div className="text-end">
         <Link
           href="/account/forgot-password"
           className="text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
-          Forgot your password?
+          {t("forgotPassword")}
         </Link>
       </div>
 
-      <SubmitButton loading={loading}>Login</SubmitButton>
+      <SubmitButton loading={loading}>{t("login")}</SubmitButton>
 
       <p className="text-center text-sm text-muted-foreground">
-        Don&apos;t have an account?{" "}
+        {t("noAccount")}{" "}
         <Link href="/account/register" className="text-foreground font-medium hover:underline">
-          Create an account
+          {t("createAccount")}
         </Link>
       </p>
     </form>

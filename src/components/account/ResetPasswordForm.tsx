@@ -6,12 +6,14 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { FormInput } from "./FormInput";
 import { SubmitButton } from "./SubmitButton";
+import { useTranslations } from "next-intl";
 
 type ResetPasswordFormProps = {
   resetUrl: string;
 };
 
 export function ResetPasswordForm({ resetUrl }: ResetPasswordFormProps) {
+  const t = useTranslations("auth");
   const router = useRouter();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -25,12 +27,12 @@ export function ResetPasswordForm({ resetUrl }: ResetPasswordFormProps) {
 
     // Validation
     if (password.length < 8) {
-      setError("Password must be at least 8 characters long");
+      setError(t("passwordMinError"));
       return;
     }
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError(t("passwordsNoMatch"));
       return;
     }
 
@@ -49,7 +51,7 @@ export function ResetPasswordForm({ resetUrl }: ResetPasswordFormProps) {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Failed to reset password");
+        setError(data.error || t("failedReset"));
         return;
       }
 
@@ -62,7 +64,7 @@ export function ResetPasswordForm({ resetUrl }: ResetPasswordFormProps) {
       }, 3000);
     } catch (err) {
       console.error("Password reset error:", err);
-      setError("An error occurred while resetting your password");
+      setError(t("resetError"));
     } finally {
       setLoading(false);
     }
@@ -72,14 +74,14 @@ export function ResetPasswordForm({ resetUrl }: ResetPasswordFormProps) {
     return (
       <div className="text-center space-y-6">
         <div className="p-4 rounded-lg bg-green-50 text-green-700 text-sm">
-          Your password has been successfully reset!
+          {t("passwordResetSuccess")}
         </div>
-        <p className="text-sm text-muted-foreground">You will be redirected to your account page in a few seconds...</p>
+        <p className="text-sm text-muted-foreground">{t("redirectMessage")}</p>
         <Link
           href="/account"
           className="inline-flex items-center gap-2 text-sm text-foreground font-medium hover:underline"
         >
-          Go to My Account
+          {t("goToAccount")}
         </Link>
       </div>
     );
@@ -91,22 +93,22 @@ export function ResetPasswordForm({ resetUrl }: ResetPasswordFormProps) {
 
       <div className="space-y-2">
         <FormInput
-          label="New password"
+          label={t("newPassword")}
           type="password"
-          placeholder="Enter new password"
+          placeholder={t("newPasswordPlaceholder")}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
           autoComplete="new-password"
           minLength={8}
         />
-        <p className="text-xs text-muted-foreground">Must be at least 8 characters long</p>
+        <p className="text-xs text-muted-foreground">{t("passwordMinLength")}</p>
       </div>
 
       <FormInput
-        label="Confirm new password"
+        label={t("confirmPassword")}
         type="password"
-        placeholder="Confirm new password"
+        placeholder={t("confirmPasswordPlaceholder")}
         value={confirmPassword}
         onChange={(e) => setConfirmPassword(e.target.value)}
         required
@@ -114,7 +116,7 @@ export function ResetPasswordForm({ resetUrl }: ResetPasswordFormProps) {
         minLength={8}
       />
 
-      <SubmitButton loading={loading}>Reset Password</SubmitButton>
+      <SubmitButton loading={loading}>{t("resetPassword")}</SubmitButton>
 
       <div className="text-center">
         <Link
@@ -122,7 +124,7 @@ export function ResetPasswordForm({ resetUrl }: ResetPasswordFormProps) {
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back to Login
+          {t("backToLogin")}
         </Link>
       </div>
     </form>

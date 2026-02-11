@@ -45,10 +45,23 @@ export const CART_FRAGMENT = `
   }
 `;
 
-// Create a new cart
+// Create a new cart (with optional buyerIdentity for country/currency)
 export const CART_CREATE_MUTATION = `
-  mutation CartCreate($lines: [CartLineInput!]) {
-    cartCreate(input: { lines: $lines }) {
+  mutation CartCreate($lines: [CartLineInput!], $buyerIdentity: CartBuyerIdentityInput) {
+    cartCreate(input: { lines: $lines, buyerIdentity: $buyerIdentity }) {
+      cart {
+        ...CartFields
+      }
+      userErrors { field message }
+    }
+  }
+  ${CART_FRAGMENT}
+`;
+
+// Update buyer identity on an existing cart (for country/currency switching)
+export const CART_BUYER_IDENTITY_UPDATE_MUTATION = `
+  mutation CartBuyerIdentityUpdate($cartId: ID!, $buyerIdentity: CartBuyerIdentityInput!) {
+    cartBuyerIdentityUpdate(cartId: $cartId, buyerIdentity: $buyerIdentity) {
       cart {
         ...CartFields
       }
@@ -60,7 +73,7 @@ export const CART_CREATE_MUTATION = `
 
 // Add items to a cart
 export const CART_LINES_ADD_MUTATION = `
-  mutation CartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
+  mutation CartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!, $country: CountryCode) @inContext(country: $country) {
     cartLinesAdd(cartId: $cartId, lines: $lines) {
       cart {
         ...CartFields
@@ -73,7 +86,7 @@ export const CART_LINES_ADD_MUTATION = `
 
 // Update the quantity of items in a cart
 export const CART_LINES_UPDATE_MUTATION = `
-  mutation CartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
+  mutation CartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!, $country: CountryCode) @inContext(country: $country) {
     cartLinesUpdate(cartId: $cartId, lines: $lines) {
       cart {
         ...CartFields
@@ -86,7 +99,7 @@ export const CART_LINES_UPDATE_MUTATION = `
 
 // Remove items from a cart
 export const CART_LINES_REMOVE_MUTATION = `
-  mutation CartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
+  mutation CartLinesRemove($cartId: ID!, $lineIds: [ID!]!, $country: CountryCode) @inContext(country: $country) {
     cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
       cart {
         ...CartFields

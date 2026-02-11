@@ -1,4 +1,4 @@
-import { shopifyFetch } from "../shopify";
+import { shopifyFetch, toShopifyLanguage, toShopifyCountry } from "../shopify";
 import type { ShopifyPagesList, ShopifyPage } from "@/lib/types/shopify";
 import { PAGES_LIST_QUERY, PAGE_BY_HANDLE_QUERY } from "./queries";
 
@@ -13,13 +13,13 @@ type PageSingleQuery = {
 export type PageListHandle = PagesListQuery;
 export type PageSingleHandle = PageSingleQuery;
 
-export async function getPageList(): Promise<ShopifyPagesList[]> {
-  const data = await shopifyFetch<PagesListQuery>(PAGES_LIST_QUERY);
+export async function getPageList(locale?: string, countryCode?: string): Promise<ShopifyPagesList[]> {
+  const data = await shopifyFetch<PagesListQuery>(PAGES_LIST_QUERY, { language: toShopifyLanguage(locale), country: toShopifyCountry(countryCode) });
   return data?.pages?.edges?.map(({ node }) => node) ?? [];
 }
 
-export async function getPageSingle(handle: string): Promise<ShopifyPage | null> {
-  const data = await shopifyFetch<PageSingleQuery>(PAGE_BY_HANDLE_QUERY, { handle });
+export async function getPageSingle(handle: string, locale?: string, countryCode?: string): Promise<ShopifyPage | null> {
+  const data = await shopifyFetch<PageSingleQuery>(PAGE_BY_HANDLE_QUERY, { handle, language: toShopifyLanguage(locale), country: toShopifyCountry(countryCode) });
   if (!data?.page) return null;
 
   const page = {

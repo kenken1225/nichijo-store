@@ -5,8 +5,10 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { FormInput } from "./FormInput";
 import { SubmitButton } from "./SubmitButton";
+import { useTranslations } from "next-intl";
 
 export function ForgotPasswordForm() {
+  const t = useTranslations("auth");
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -27,14 +29,14 @@ export function ForgotPasswordForm() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Failed to send reset email");
+        setError(data.error || t("failedResetSend"));
         return;
       }
 
       setSuccess(true);
     } catch (err) {
       console.error("Password recovery error:", err);
-      setError("An error occurred while sending the reset email");
+      setError(t("resetSendError"));
     } finally {
       setLoading(false);
     }
@@ -44,18 +46,17 @@ export function ForgotPasswordForm() {
     return (
       <div className="text-center space-y-6">
         <div className="p-4 rounded-lg bg-green-50 text-green-700 text-sm">
-          If an account exists for {email}, you will receive an email with
-          instructions to reset your password.
+          {t("resetSentMessage", { email })}
         </div>
         <p className="text-sm text-muted-foreground">
-          Please check your email inbox and spam folder.
+          {t("checkInbox")}
         </p>
         <Link
           href="/account/login"
           className="inline-flex items-center gap-2 text-sm text-foreground font-medium hover:underline"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back to Login
+          {t("backToLogin")}
         </Link>
       </div>
     );
@@ -70,16 +71,16 @@ export function ForgotPasswordForm() {
       )}
 
       <FormInput
-        label="Email address"
+        label={t("emailAddress")}
         type="email"
-        placeholder="you@example.com"
+        placeholder={t("emailPlaceholder")}
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         required
         autoComplete="email"
       />
 
-      <SubmitButton loading={loading}>Send Reset Link</SubmitButton>
+      <SubmitButton loading={loading}>{t("sendResetLink")}</SubmitButton>
 
       <div className="text-center">
         <Link
@@ -87,7 +88,7 @@ export function ForgotPasswordForm() {
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back to Login
+          {t("backToLogin")}
         </Link>
       </div>
     </form>

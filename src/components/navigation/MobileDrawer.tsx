@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import clsx from "clsx";
 import { X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { MobileMenuItem } from "./MobileMenuItem";
 
 function useIsMounted() {
@@ -24,6 +25,7 @@ export function MobileDrawer({
   menuItems: MenuItem[];
 }) {
   const mounted = useIsMounted();
+  const t = useTranslations("common");
 
   useEffect(() => {
     if (isOpen) {
@@ -46,17 +48,17 @@ export function MobileDrawer({
           isOpen ? "opacity-100" : "opacity-0"
         )}
         onClick={onClose}
-        aria-label="Close menu overlay"
+        aria-label={t("closeMenuOverlay")}
       />
       <div
         className={clsx(
-          "absolute inset-y-0 right-0 w-full max-w-[300px] bg-card shadow-xl transition-transform duration-300 ease-out overflow-y-auto",
-          isOpen ? "translate-x-0" : "translate-x-full"
+          "absolute inset-y-0 end-0 w-full max-w-[300px] bg-card shadow-xl transition-transform duration-300 ease-out overflow-y-auto",
+          isOpen ? "translate-x-0" : "ltr:translate-x-full rtl:-translate-x-full"
         )}
       >
         <div className="flex items-center justify-between border-b border-border p-4">
-          <span className="text-lg font-semibold text-foreground">Menu</span>
-          <button type="button" onClick={onClose} className="text-foreground p-1" aria-label="Close menu">
+          <span className="text-lg font-semibold text-foreground">{t("menu")}</span>
+          <button type="button" onClick={onClose} className="text-foreground p-1" aria-label={t("closeMenu")}>
             <X className="h-6 w-6" strokeWidth={1.5} />
           </button>
         </div>

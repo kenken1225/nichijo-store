@@ -1,3 +1,5 @@
+import { useTranslations } from "next-intl";
+
 type ActiveFiltersProps = {
   selectedCategory: string | null;
   priceLabel: string | null;
@@ -17,6 +19,7 @@ export function ActiveFilters({
   onClearInStock,
   onClearAll,
 }: ActiveFiltersProps) {
+  const t = useTranslations("collections");
   const hasPrice = !!priceLabel;
   const hasAny = !!selectedCategory || hasPrice || inStockOnly;
 
@@ -26,13 +29,13 @@ export function ActiveFilters({
     <div className="flex flex-wrap items-center gap-2 text-sm">
       {selectedCategory ? <FilterChip label={`Category: ${selectedCategory}`} onClear={onClearCategory} /> : null}
       {hasPrice ? <FilterChip label={`Price: ${priceLabel}`} onClear={onClearPrice} /> : null}
-      {inStockOnly ? <FilterChip label="In stock" onClear={onClearInStock} /> : null}
+      {inStockOnly ? <FilterChip label={t("inStock")} onClear={onClearInStock} /> : null}
       <button
         type="button"
         onClick={onClearAll}
         className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground hover:bg-muted/70"
       >
-        Clear all
+        {t("clearAll")}
       </button>
     </div>
   );

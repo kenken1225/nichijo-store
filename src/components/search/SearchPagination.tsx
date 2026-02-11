@@ -1,6 +1,7 @@
 "use client";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 type SearchPaginationProps = {
   currentPage: number;
@@ -9,6 +10,7 @@ type SearchPaginationProps = {
 };
 
 export function SearchPagination({ currentPage, totalPages, paramName }: SearchPaginationProps) {
+  const t = useTranslations("search");
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -59,7 +61,7 @@ export function SearchPagination({ currentPage, totalPages, paramName }: SearchP
         onClick={() => updatePage(currentPage - 1)}
         disabled={currentPage === 1}
         className="p-2 rounded-md hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        aria-label="Previous page"
+        aria-label={t("prevPage")}
       >
         <ChevronLeft className="h-4 w-4" />
       </button>
@@ -70,7 +72,7 @@ export function SearchPagination({ currentPage, totalPages, paramName }: SearchP
         onClick={() => updatePage(currentPage + 1)}
         disabled={currentPage === totalPages}
         className="p-2 rounded-md hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        aria-label="Next page"
+        aria-label={t("nextPage")}
       >
         <ChevronRight className="h-4 w-4" />
       </button>

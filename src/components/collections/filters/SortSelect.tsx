@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 
 export type SortValue = "featured" | "price-asc" | "price-desc" | "newest";
 
@@ -9,14 +10,14 @@ type SortSelectProps = {
   onChange: (next: SortValue) => void;
 };
 
-const OPTIONS: { value: SortValue; label: string }[] = [
-  { value: "featured", label: "Featured" },
-  { value: "price-asc", label: "Price: Low to High" },
-  { value: "price-desc", label: "Price: High to Low" },
-  { value: "newest", label: "Newest" },
-];
-
 export function SortSelect({ value, onChange }: SortSelectProps) {
+  const t = useTranslations("collections");
+  const OPTIONS: { value: SortValue; label: string }[] = [
+    { value: "featured", label: t("sortFeatured") },
+    { value: "price-asc", label: t("sortPriceLow") },
+    { value: "price-desc", label: t("sortPriceHigh") },
+    { value: "newest", label: t("sortNewest") },
+  ];
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -29,7 +30,7 @@ export function SortSelect({ value, onChange }: SortSelectProps) {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  const currentLabel = OPTIONS.find((o) => o.value === value)?.label ?? "Featured";
+  const currentLabel = OPTIONS.find((o) => o.value === value)?.label ?? t("sortFeatured");
 
   return (
     <div className="relative" ref={ref}>
@@ -42,7 +43,7 @@ export function SortSelect({ value, onChange }: SortSelectProps) {
         <span className="text-muted-foreground">{open ? "▴" : "▾"}</span>
       </button>
       {open ? (
-        <div className="absolute right-0 mt-2 w-52 rounded-md border border-border bg-card shadow-lg">
+        <div className="absolute end-0 mt-2 w-52 rounded-md border border-border bg-card shadow-lg">
           <div className="py-1 text-sm text-foreground">
             {OPTIONS.map((opt) => (
               <button
@@ -52,7 +53,7 @@ export function SortSelect({ value, onChange }: SortSelectProps) {
                   onChange(opt.value);
                   setOpen(false);
                 }}
-                className={`flex w-full items-center px-3 py-2 text-left hover:bg-muted/60 ${
+                className={`flex w-full items-center px-3 py-2 text-start hover:bg-muted/60 ${
                   opt.value === value ? "text-primary font-semibold" : ""
                 }`}
               >

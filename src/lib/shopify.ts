@@ -6,6 +6,21 @@ type GraphQLResponse<T> = {
 const SHOP_DOMAIN = process.env.SHOPIFY_STORE_DOMAIN;
 const STOREFRONT_TOKEN = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
 
+const LOCALE_TO_LANGUAGE: Record<string, string> = {
+  en: "EN",
+  ar: "AR",
+};
+
+export function toShopifyLanguage(locale?: string): string | undefined {
+  if (!locale) return undefined;
+  return LOCALE_TO_LANGUAGE[locale];
+}
+
+export function toShopifyCountry(countryCode?: string): string | undefined {
+  if (!countryCode) return undefined;
+  return countryCode.toUpperCase();
+}
+
 // RequestInit means that it can take all the options that a fetch request can take
 type ShopifyFetchOptions = RequestInit & {
   /** next.js fetch options like revalidate */
@@ -45,6 +60,7 @@ export async function shopifyFetch<T>(
   return json.data as T;
 }
 
+// format the price
 export function formatPrice(amount: string, currencyCode: string, locale = "en-US") {
   const value = Number(amount);
   if (Number.isNaN(value)) return amount;

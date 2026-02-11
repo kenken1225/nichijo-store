@@ -2,8 +2,10 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Search, X, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export function SearchForm() {
+  const t = useTranslations("search");
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -62,22 +64,22 @@ export function SearchForm() {
 
   return (
     <div className="relative">
-      <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+      <Search className="absolute start-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
       <input
         type="text"
         value={inputValue}
         onChange={(e) => handleInputChange(e.target.value)}
-        placeholder="Search products and articles..."
-        className="w-full pl-12 pr-12 py-3 rounded-full border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors"
+        placeholder={t("placeholder")}
+        className="w-full ps-12 pe-12 py-3 rounded-full border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors"
       />
-      <div className="absolute right-4 top-1/2 -translate-y-1/2">
+      <div className="absolute end-4 top-1/2 -translate-y-1/2">
         {isSearching ? (
           <Loader2 className="h-5 w-5 text-muted-foreground animate-spin" />
         ) : inputValue ? (
           <button
             onClick={handleClear}
             className="p-1 hover:bg-muted rounded-full transition-colors"
-            aria-label="Clear search"
+            aria-label={t("clear")}
           >
             <X className="h-4 w-4 text-muted-foreground" />
           </button>

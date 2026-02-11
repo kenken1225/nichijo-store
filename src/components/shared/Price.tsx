@@ -1,5 +1,8 @@
+"use client";
+
 import clsx from "clsx";
 import { formatPrice } from "@/lib/shopify";
+import { useCountry } from "@/contexts/CountryContext";
 
 type PriceProps = {
   amount: string;
@@ -8,8 +11,10 @@ type PriceProps = {
 };
 
 export function Price({ amount, currencyCode, className }: PriceProps) {
-  return <span className={clsx("text-sm text-muted-foreground", className)}>{formatPrice(amount, currencyCode)}</span>;
+  const { country } = useCountry();
+  return (
+    <span className={clsx("text-sm text-muted-foreground", className)}>
+      {formatPrice(amount, currencyCode, country.numberLocale)}
+    </span>
+  );
 }
-
-
-

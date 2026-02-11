@@ -6,8 +6,10 @@ import { Loader2 } from "lucide-react";
 import { FormInput } from "./FormInput";
 import { FormCheckbox } from "./FormCheckbox";
 import { SubmitButton } from "./SubmitButton";
+import { useTranslations } from "next-intl";
 
 export function ProfileForm() {
+  const t = useTranslations("account");
   const { customer, refreshCustomer, isLoading } = useAuth();
   const [formData, setFormData] = useState({
     firstName: "",
@@ -55,7 +57,7 @@ export function ProfileForm() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Failed to update profile");
+        setError(data.error || t("failedProfileUpdate"));
         return;
       }
 
@@ -63,7 +65,7 @@ export function ProfileForm() {
       await refreshCustomer();
     } catch (err) {
       console.error("Profile update error:", err);
-      setError("An error occurred while updating your profile");
+      setError(t("profileUpdateError"));
     } finally {
       setLoading(false);
     }
@@ -83,30 +85,30 @@ export function ProfileForm() {
 
       {success && (
         <div className="p-4 rounded-lg bg-green-50 text-green-700 text-sm">
-          Your profile has been updated successfully!
+          {t("profileUpdated")}
         </div>
       )}
 
       <div className="p-4 rounded-lg bg-muted/50 text-sm">
-        <span className="font-medium">Email: </span>
+        <span className="font-medium">{t("email")}</span>
         <span className="text-muted-foreground">{customer?.email}</span>
-        <p className="text-xs text-muted-foreground mt-1">Email cannot be changed</p>
+        <p className="text-xs text-muted-foreground mt-1">{t("emailNoChange")}</p>
       </div>
 
-      <FormInput label="First Name" name="firstName" value={formData.firstName} onChange={handleChange} required />
+      <FormInput label={t("firstName")} name="firstName" value={formData.firstName} onChange={handleChange} required />
 
-      <FormInput label="Last Name" name="lastName" value={formData.lastName} onChange={handleChange} required />
+      <FormInput label={t("lastName")} name="lastName" value={formData.lastName} onChange={handleChange} required />
 
-      <FormInput label="Phone" name="phone" type="tel" value={formData.phone} onChange={handleChange} optional />
+      <FormInput label={t("phoneLabel")} name="phone" type="tel" value={formData.phone} onChange={handleChange} optional />
 
       <FormCheckbox
         name="acceptsMarketing"
         checked={formData.acceptsMarketing}
         onChange={handleChange}
-        label="Receive marketing emails about new products, promotions, and updates"
+        label={t("marketingEmails")}
       />
 
-      <SubmitButton loading={loading}>Save Changes</SubmitButton>
+      <SubmitButton loading={loading}>{t("saveChanges")}</SubmitButton>
     </form>
   );
 }

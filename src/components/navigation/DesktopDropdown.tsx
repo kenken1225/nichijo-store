@@ -34,7 +34,7 @@ export function DesktopDropdown({ item }: { item: MenuItem }) {
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 pt-2 z-50">
+        <div className="absolute top-full start-0 pt-2 z-50">
           <div className="bg-card border border-border rounded-lg shadow-lg py-2 min-w-[200px]">
             {item.items!.map((child) => (
               <DropdownItem key={child.id} item={child} />

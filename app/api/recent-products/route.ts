@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
-import { shopifyFetch } from "@/lib/shopify";
+import { cookies } from "next/headers";
+import { shopifyFetch, formatPrice, toShopifyCountry } from "@/lib/shopify";
 import { PRODUCTS_BY_HANDLES_QUERY } from "@/lib/shopify/queries";
+import { COUNTRY_COOKIE_KEY, getCountryByCode } from "@/lib/country-config";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -15,6 +17,11 @@ export async function GET(req: Request) {
   if (!handles.length) {
     return NextResponse.json({ items: [] });
   }
+
+  // get the country code from the cookies
+  const cookieStore = await cookies();
+  const countryCode = cookieStore.get(COUNTRY_COOKIE_KEY)?.value;
+  const countryConfig = countryCode ? getCountryByCode(countryCode) : undefined;
 
   const query = handles.map((h) => `handle:${h}`).join(" OR ");
 
@@ -36,7 +43,9 @@ export async function GET(req: Request) {
           };
         }[];
       };
-    }>(PRODUCTS_BY_HANDLES_QUERY, { query });
+    }>(PRODUCTS_BY_HANDLES_QUERY, { query, country: toShopifyCountry(countryCode) });
+
+    const numberLocale = countryConfig?.numberLocale ?? "en-US";
 
     const items =
       data?.products?.edges.map(({ node }) => {
@@ -46,7 +55,7 @@ export async function GET(req: Request) {
         const secondaryImage = images[1] ?? null;
         return {
           title: node.title,
-          price: price ? `${price.amount} ${price.currencyCode}` : "",
+          price: price ? formatPrice(price.amount, price.currencyCode, numberLocale) : "",
           href: `/products/${node.handle}`,
           imageUrl: node.featuredImage?.url,
           imageAlt: node.featuredImage?.altText ?? null,

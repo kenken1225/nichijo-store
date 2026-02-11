@@ -3,19 +3,24 @@ import { Container } from "@/components/layout/Container";
 import { ProductCard } from "@/components/shared/ProductCard";
 import { ArrowRight } from "lucide-react";
 import { getProductsList } from "@/lib/shopify/products";
+import { getTranslations, getLocale } from "next-intl/server";
+import { getCountryCode } from "@/lib/country-config";
 
 export async function FeaturedProducts() {
-  const products = await getProductsList(8);
+  const locale = await getLocale();
+  const countryCode = await getCountryCode();
+  const products = await getProductsList(8, locale, countryCode);
+  const t = await getTranslations("featured");
 
   return (
     <section className="py-16 sm:py-20 bg-stone-100">
       <Container>
         <div className="text-center mb-10">
           <h2 className="text-2xl sm:text-3xl font-bold mb-3">
-            Featured Collection
+            {t("title")}
           </h2>
           <p className="text-muted-foreground">
-            Curated pieces celebrating Japanese creativity
+            {t("subtitle")}
           </p>
         </div>
 
@@ -36,7 +41,7 @@ export async function FeaturedProducts() {
             href="/collections/all"
             className="inline-flex items-center gap-2 text-foreground font-medium hover:underline"
           >
-            View All Products
+            {t("viewAll")}
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>

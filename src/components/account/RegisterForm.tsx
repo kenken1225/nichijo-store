@@ -6,8 +6,10 @@ import Link from "next/link";
 import { FormInput } from "./FormInput";
 import { FormCheckbox } from "./FormCheckbox";
 import { SubmitButton } from "./SubmitButton";
+import { useTranslations } from "next-intl";
 
 export function RegisterForm() {
+  const t = useTranslations("auth");
   const router = useRouter();
   const [formData, setFormData] = useState({
     firstName: "",
@@ -35,12 +37,12 @@ export function RegisterForm() {
 
     // Validation
     if (!formData.acceptsPrivacyPolicy) {
-      setError("Please agree to the Privacy Policy to continue");
+      setError(t("policyRequired"));
       return;
     }
 
     if (formData.password.length < 8) {
-      setError("Password must be at least 8 characters long");
+      setError(t("passwordMinError"));
       return;
     }
 
@@ -63,7 +65,7 @@ export function RegisterForm() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Registration failed");
+        setError(data.error || t("registrationFailed"));
         return;
       }
 
@@ -72,7 +74,7 @@ export function RegisterForm() {
       router.refresh();
     } catch (err) {
       console.error("Register error:", err);
-      setError("An error occurred during registration");
+      setError(t("registrationError"));
     } finally {
       setLoading(false);
     }
@@ -83,10 +85,10 @@ export function RegisterForm() {
       {error && <div className="p-4 rounded-lg bg-destructive/10 text-destructive text-sm">{error}</div>}
 
       <FormInput
-        label="First name"
+        label={t("firstNamePlaceholder")}
         name="firstName"
         type="text"
-        placeholder="First name"
+        placeholder={t("firstNamePlaceholder")}
         value={formData.firstName}
         onChange={handleChange}
         required
@@ -94,10 +96,10 @@ export function RegisterForm() {
       />
 
       <FormInput
-        label="Last name"
+        label={t("lastNamePlaceholder")}
         name="lastName"
         type="text"
-        placeholder="Last name"
+        placeholder={t("lastNamePlaceholder")}
         value={formData.lastName}
         onChange={handleChange}
         required
@@ -105,10 +107,10 @@ export function RegisterForm() {
       />
 
       <FormInput
-        label="Email address"
+        label={t("emailAddress")}
         name="email"
         type="email"
-        placeholder="you@example.com"
+        placeholder={t("emailPlaceholder")}
         value={formData.email}
         onChange={handleChange}
         required
@@ -116,10 +118,10 @@ export function RegisterForm() {
       />
 
       <FormInput
-        label="Phone number"
+        label={t("phonePlaceholder")}
         name="phone"
         type="tel"
-        placeholder="+1 (555) 000-0000"
+        placeholder={t("phonePlaceholder")}
         value={formData.phone}
         onChange={handleChange}
         optional
@@ -128,17 +130,17 @@ export function RegisterForm() {
 
       <div className="space-y-2">
         <FormInput
-          label="Password"
+          label={t("password")}
           name="password"
           type="password"
-          placeholder="At least 8 characters"
+          placeholder={t("passwordHint")}
           value={formData.password}
           onChange={handleChange}
           required
           autoComplete="new-password"
           minLength={8}
         />
-        <p className="text-xs text-muted-foreground">Must be at least 8 characters long</p>
+        <p className="text-xs text-muted-foreground">{t("passwordMinLength")}</p>
       </div>
 
       <div className="space-y-4 pt-2">
@@ -146,7 +148,7 @@ export function RegisterForm() {
           name="acceptsMarketing"
           checked={formData.acceptsMarketing}
           onChange={handleChange}
-          label="Subscribe to marketing emails for exclusive offers and updates"
+          label={t("marketingSubscribe")}
         />
 
         <FormCheckbox
@@ -155,9 +157,9 @@ export function RegisterForm() {
           onChange={handleChange}
           label={
             <>
-              I agree to the{" "}
+              {t("agreeToPolicy")}{" "}
               <Link href="/policies/privacy-policy" className="text-primary hover:underline" target="_blank">
-                Privacy Policy
+                {t("privacyPolicy")}
               </Link>{" "}
               <span className="text-destructive">*</span>
             </>
@@ -165,12 +167,12 @@ export function RegisterForm() {
         />
       </div>
 
-      <SubmitButton loading={loading}>Create Account</SubmitButton>
+      <SubmitButton loading={loading}>{t("createAccount")}</SubmitButton>
 
       <p className="text-center text-sm text-muted-foreground">
-        Already have an account?{" "}
+        {t("alreadyHaveAccount")}{" "}
         <Link href="/account/login" className="text-foreground font-medium hover:underline">
-          Login
+          {t("login")}
         </Link>
       </p>
     </form>

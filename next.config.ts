@@ -1,4 +1,7 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
+
+const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const SHOPIFY_STORE_DOMAIN = process.env.SHOPIFY_STORE_DOMAIN;
 
@@ -12,10 +15,9 @@ const nextConfig: NextConfig = {
     ],
   },
 
-  // /cart/c/* へのリクエストをShopifyのチェックアウトサーバーにプロキシ
-  // これにより、カスタムドメインでもShopifyのチェックアウトが正しく動作する
+  // this allows the checkout to work correctly even with a custom domain
   async rewrites() {
-    // 環境変数が設定されていない場合は空配列を返す（ビルドエラー回避）
+    // if the environment variable is not set, return an empty array to avoid build errors
     if (!SHOPIFY_STORE_DOMAIN) {
       console.warn("SHOPIFY_STORE_DOMAIN is not set. Checkout rewrites will not work.");
       return [];
@@ -34,4 +36,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

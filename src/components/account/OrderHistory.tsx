@@ -6,8 +6,12 @@ import Image from "next/image";
 import { Package, Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import { CustomerOrder } from "@/lib/shopify/customer";
 import { formatPrice, formatDate } from "@/lib/shopify";
+import { useTranslations } from "next-intl";
+import { useCountry } from "@/contexts/CountryContext";
 
 export function OrderHistory() {
+  const t = useTranslations("account");
+  const { country } = useCountry();
   const [orders, setOrders] = useState<CustomerOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
@@ -79,13 +83,13 @@ export function OrderHistory() {
   const getStatusLabel = (status: string): string => {
     switch (status) {
       case "FULFILLED":
-        return "Shipped";
+        return t("shipped");
       case "PARTIALLY_FULFILLED":
-        return "Partially Shipped";
+        return t("partiallyShipped");
       case "UNFULFILLED":
-        return "Not Shipped";
+        return t("notShipped");
       default:
-        return "Processing";
+        return t("processing");
     }
   };
 
@@ -101,13 +105,13 @@ export function OrderHistory() {
     return (
       <div className="text-center py-12">
         <Package className="w-16 h-16 mx-auto mb-4 text-muted-foreground/30" />
-        <h3 className="text-lg font-medium mb-2">No orders yet</h3>
-        <p className="text-muted-foreground mb-4">When you place your first order, it will appear here.</p>
+        <h3 className="text-lg font-medium mb-2">{t("noOrdersYet")}</h3>
+        <p className="text-muted-foreground mb-4">{t("orderEmptyHint")}</p>
         <Link
           href="/collections/all"
           className="inline-block px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity"
         >
-          Start Shopping
+          {t("startShopping")}
         </Link>
       </div>
     );
@@ -120,7 +124,7 @@ export function OrderHistory() {
           {/* Order Header */}
           <button
             onClick={() => toggleOrderExpand(order.id)}
-            className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors text-left"
+            className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors text-start"
           >
             <div className="flex items-center gap-4">
               <div className="p-2 rounded-full bg-muted">
@@ -132,8 +136,8 @@ export function OrderHistory() {
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <div className="text-right">
-                <div className="font-medium">{formatPrice(order.totalPrice.amount, order.totalPrice.currencyCode)}</div>
+              <div className="text-end">
+                <div className="font-medium">{formatPrice(order.totalPrice.amount, order.totalPrice.currencyCode, country.numberLocale)}</div>
                 <div className="flex gap-2 mt-1">
                   <span className={`text-xs px-2 py-0.5 rounded-full ${getStatusColor(order.financialStatus)}`}>
                     {order.financialStatus?.replace("_", " ")}
@@ -156,7 +160,7 @@ export function OrderHistory() {
             <div className="border-t border-border p-4 bg-muted/30">
               {/* Line Items */}
               <div className="space-y-4 mb-6">
-                <h4 className="font-medium text-sm">Items</h4>
+                <h4 className="font-medium text-sm">{t("itemsLabel")}</h4>
                 {order.lineItems.edges.map((edge, index) => {
                   const item = edge.node;
                   // Get the fulfillment status of each item
@@ -193,7 +197,7 @@ export function OrderHistory() {
                       </div>
                       {item.variant?.price && (
                         <div className="text-sm font-medium">
-                          {formatPrice(item.variant.price.amount, item.variant.price.currencyCode)}
+                          {formatPrice(item.variant.price.amount, item.variant.price.currencyCode, country.numberLocale)}
                         </div>
                       )}
                     </div>
@@ -204,27 +208,27 @@ export function OrderHistory() {
               {/* Order Summary */}
               <div className="border-t border-border pt-4 space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Subtotal</span>
-                  <span>{formatPrice(order.subtotalPrice.amount, order.subtotalPrice.currencyCode)}</span>
+                  <span className="text-muted-foreground">{t("subtotal")}</span>
+                  <span>{formatPrice(order.subtotalPrice.amount, order.subtotalPrice.currencyCode, country.numberLocale)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Shipping</span>
-                  <span>{formatPrice(order.totalShippingPrice.amount, order.totalShippingPrice.currencyCode)}</span>
+                  <span className="text-muted-foreground">{t("shipping")}</span>
+                  <span>{formatPrice(order.totalShippingPrice.amount, order.totalShippingPrice.currencyCode, country.numberLocale)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Tax</span>
-                  <span>{formatPrice(order.totalTax.amount, order.totalTax.currencyCode)}</span>
+                  <span className="text-muted-foreground">{t("tax")}</span>
+                  <span>{formatPrice(order.totalTax.amount, order.totalTax.currencyCode, country.numberLocale)}</span>
                 </div>
                 <div className="flex justify-between font-medium pt-2 border-t border-border">
-                  <span>Total</span>
-                  <span>{formatPrice(order.totalPrice.amount, order.totalPrice.currencyCode)}</span>
+                  <span>{t("total")}</span>
+                  <span>{formatPrice(order.totalPrice.amount, order.totalPrice.currencyCode, country.numberLocale)}</span>
                 </div>
               </div>
 
               {/* Shipping Address */}
               {order.shippingAddress && (
                 <div className="border-t border-border pt-4 mt-4">
-                  <h4 className="font-medium text-sm mb-2">Shipping Address</h4>
+                  <h4 className="font-medium text-sm mb-2">{t("shippingAddress")}</h4>
                   <div className="text-sm text-muted-foreground">
                     <p>
                       {order.shippingAddress.firstName} {order.shippingAddress.lastName}

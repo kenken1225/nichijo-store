@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
-import { createCart, addToCart, updateCartLine, removeFromCart } from "@/lib/shopify/cart";
+import { cookies } from "next/headers";
+import { createCart, addToCart, updateCartLine, removeFromCart, updateCartCountry, getCart } from "@/lib/shopify/cart";
+import { COUNTRY_COOKIE_KEY } from "@/lib/country-config";
 
 function setCartCookie(res: NextResponse, cartId: string) {
   res.cookies.set("cartId", cartId, {
@@ -9,6 +11,24 @@ function setCartCookie(res: NextResponse, cartId: string) {
     maxAge: 60 * 60 * 24 * 6, // 6日
     secure: true,
   });
+}
+
+async function getCountryFromCookie(): Promise<string | undefined> {
+  const cookieStore = await cookies();
+  return cookieStore.get(COUNTRY_COOKIE_KEY)?.value;
+}
+
+async function syncCartCountry(cartId: string, countryCode?: string): Promise<void> {
+  if (!countryCode) return;
+  try {
+    const cart = await getCart(cartId, countryCode);
+    const cartCountry = cart?.buyerIdentity?.countryCode;
+    if (cartCountry && cartCountry !== countryCode.toUpperCase()) {
+      await updateCartCountry(cartId, countryCode);
+    }
+  } catch (error) {
+    console.error("Error syncing cart country", error);
+  }
 }
 
 export async function POST(req: Request) {
@@ -27,14 +47,19 @@ export async function POST(req: Request) {
   }
 
   try {
+    const countryCode = await getCountryFromCookie();
+
     if (!cartId) {
-      const { cart, cartId: newCartId } = await createCart(merchandiseId, quantity);
+      const { cart, cartId: newCartId } = await createCart(merchandiseId, quantity, countryCode);
       const res = NextResponse.json({ cartId: newCartId, cart });
       setCartCookie(res, newCartId);
       return res;
     }
 
-    const { cart } = await addToCart(cartId, merchandiseId, quantity);
+    // if the cart's country is different from the cookie, sync the buyerIdentity first
+    await syncCartCountry(cartId, countryCode);
+
+    const { cart } = await addToCart(cartId, merchandiseId, quantity, countryCode);
     const res = NextResponse.json({ cartId, cart });
     setCartCookie(res, cartId);
     return res;
@@ -56,7 +81,9 @@ export async function PATCH(req: Request) {
   }
 
   try {
-    const { cart } = await updateCartLine(cartId, lineId, quantity);
+    const countryCode = await getCountryFromCookie();
+    await syncCartCountry(cartId, countryCode);
+    const { cart } = await updateCartLine(cartId, lineId, quantity, countryCode);
     const res = NextResponse.json({ cartId, cart });
     setCartCookie(res, cartId);
     return res;
@@ -77,7 +104,9 @@ export async function DELETE(req: Request) {
   }
 
   try {
-    const { cart } = await removeFromCart(cartId, lineIds);
+    const countryCode = await getCountryFromCookie();
+    await syncCartCountry(cartId, countryCode);
+    const { cart } = await removeFromCart(cartId, lineIds, countryCode);
     const res = NextResponse.json({ cartId, cart });
     setCartCookie(res, cartId);
     return res;

@@ -1,4 +1,4 @@
-import { shopifyFetch } from "../shopify";
+import { shopifyFetch, toShopifyLanguage, toShopifyCountry } from "../shopify";
 import type { ShopifyImage } from "../types/shopify";
 import { COLLECTIONS_QUERY, COLLECTION_BY_HANDLE_QUERY } from "./queries";
 
@@ -66,13 +66,13 @@ type CollectionByHandleQuery = {
     | null;
 };
 
-export async function getCollections(): Promise<CollectionSummary[]> {
-  const data = await shopifyFetch<CollectionsQuery>(COLLECTIONS_QUERY);
+export async function getCollections(locale?: string, countryCode?: string): Promise<CollectionSummary[]> {
+  const data = await shopifyFetch<CollectionsQuery>(COLLECTIONS_QUERY, { language: toShopifyLanguage(locale), country: toShopifyCountry(countryCode) });
   return data?.collections?.edges?.map(({ node }) => node) ?? [];
 }
 
-export async function getCollectionWithProducts(handle: string): Promise<CollectionWithProducts | null> {
-  const data = await shopifyFetch<CollectionByHandleQuery>(COLLECTION_BY_HANDLE_QUERY, { handle });
+export async function getCollectionWithProducts(handle: string, locale?: string, countryCode?: string): Promise<CollectionWithProducts | null> {
+  const data = await shopifyFetch<CollectionByHandleQuery>(COLLECTION_BY_HANDLE_QUERY, { handle, language: toShopifyLanguage(locale), country: toShopifyCountry(countryCode) });
   if (!data?.collection) return null;
 
   const products =

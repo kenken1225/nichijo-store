@@ -5,25 +5,29 @@ import Link from "next/link";
 import clsx from "clsx";
 import { Search, User, ShoppingBag, Menu } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
+import { useTranslations } from "next-intl";
 import { MobileDrawer } from "./MobileDrawer";
 import { MenuItem } from "@/lib/shopify/navigation";
 import { DesktopDropdown } from "./DesktopDropdown";
+import { LocaleSwitcher } from "@/components/shared/LocaleSwitcher";
+import { MobileLocaleSwitcher } from "@/components/shared/MobileLocaleSwitcher";
 
 type NavigationProps = {
   className?: string;
   menuItems: MenuItem[];
 };
 
-const iconLinks = [
-  { href: "/pages/search", label: "Search", icon: Search },
-  { href: "/account", label: "Account", icon: User },
-];
-
 export function Navigation({ className, menuItems }: NavigationProps) {
   const { itemCount } = useCart();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const t = useTranslations("common");
 
   const closeDrawer = () => setDrawerOpen(false);
+
+  const iconLinks = [
+    { href: "/pages/search", label: t("search"), icon: Search },
+    { href: "/account", label: t("account"), icon: User },
+  ];
 
   return (
     <>
@@ -33,6 +37,7 @@ export function Navigation({ className, menuItems }: NavigationProps) {
           <DesktopDropdown key={item.id} item={item} />
         ))}
         <div className="flex items-center gap-4">
+          <LocaleSwitcher variant="header" />
           {iconLinks.map((link) => (
             <Link
               key={link.href}
@@ -43,10 +48,10 @@ export function Navigation({ className, menuItems }: NavigationProps) {
               <link.icon className="h-5 w-5" strokeWidth={1.5} />
             </Link>
           ))}
-          <Link href="/cart" className="relative transition-colors hover:text-foreground" aria-label="Cart">
+          <Link href="/cart" className="relative transition-colors hover:text-foreground" aria-label={t("cart")}>
             <ShoppingBag className="h-5 w-5" strokeWidth={1.5} />
             {itemCount > 0 && (
-              <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
+              <span className="absolute -bottom-1 -end-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
                 {itemCount > 99 ? "99+" : itemCount}
               </span>
             )}
@@ -56,6 +61,7 @@ export function Navigation({ className, menuItems }: NavigationProps) {
 
       {/* Mobile Navigation */}
       <div className={clsx("flex md:hidden items-center gap-3", className)}>
+        <MobileLocaleSwitcher />
         {iconLinks.map((link) => (
           <Link
             key={link.href}
@@ -66,10 +72,10 @@ export function Navigation({ className, menuItems }: NavigationProps) {
             <link.icon className="h-5 w-5" strokeWidth={1.5} />
           </Link>
         ))}
-        <Link href="/cart" className="relative transition-colors hover:text-foreground" aria-label="Cart">
+        <Link href="/cart" className="relative transition-colors hover:text-foreground" aria-label={t("cart")}>
           <ShoppingBag className="h-5 w-5" strokeWidth={1.5} />
           {itemCount > 0 && (
-            <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
+            <span className="absolute -bottom-1 -end-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
               {itemCount > 99 ? "99+" : itemCount}
             </span>
           )}
@@ -78,7 +84,7 @@ export function Navigation({ className, menuItems }: NavigationProps) {
           type="button"
           onClick={() => setDrawerOpen(true)}
           className="text-foreground p-1"
-          aria-label="Open menu"
+          aria-label={t("openMenu")}
         >
           <Menu className="h-6 w-6" strokeWidth={1.5} />
         </button>

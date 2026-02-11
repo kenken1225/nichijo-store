@@ -2,19 +2,21 @@ import Link from "next/link";
 import { Container } from "@/components/layout/Container";
 import type { BlogArticleSummary } from "@/lib/shopify/blogs";
 import { formatDate } from "@/lib/shopify";
+import { getTranslations } from "next-intl/server";
 
 type Props = {
   blogHandle: string;
   articles: BlogArticleSummary[];
 };
 
-export function ContinueReading({ blogHandle, articles }: Props) {
+export async function ContinueReading({ blogHandle, articles }: Props) {
+  const t = await getTranslations("blogs");
   if (!articles.length) return null;
 
   return (
     <section className="bg-secondary/20 py-16">
       <Container className="space-y-10">
-        <h2 className="text-center text-3xl font-semibold text-foreground">Continue Reading</h2>
+        <h2 className="text-center text-3xl font-semibold text-foreground">{t("continueReading")}</h2>
         <div className="grid gap-8 md:grid-cols-3">
           {articles.map((article) => (
             <Link
@@ -38,7 +40,7 @@ export function ContinueReading({ blogHandle, articles }: Props) {
                   <p className="text-sm text-muted-foreground leading-6 line-clamp-3">{article.excerpt}</p>
                 ) : null}
               </div>
-              <span className="mt-auto text-sm font-semibold text-primary">Read More →</span>
+              <span className="mt-auto text-sm font-semibold text-primary">{t("readMore")}</span>
             </Link>
           ))}
         </div>

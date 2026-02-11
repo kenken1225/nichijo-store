@@ -8,6 +8,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { Button } from "../ui/Button";
 import { useCart } from "@/contexts/CartContext";
+import { useCountry } from "@/contexts/CountryContext";
+import { useTranslations } from "next-intl";
 
 type CartContentProps = {
   cartId: string | null;
@@ -15,7 +17,9 @@ type CartContentProps = {
 };
 
 export function CartContent({ cartId, initialCart }: CartContentProps) {
+  const t = useTranslations("cart");
   const { setItemCount } = useCart();
+  const { country } = useCountry();
   const [cart, setCart] = useState<CartWithLines | null>(initialCart);
   const [loadingLineId, setLoadingLineId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +39,7 @@ export function CartContent({ cartId, initialCart }: CartContentProps) {
         });
         const data = await res.json();
         if (!res.ok) {
-          setError(data?.error ?? "Failed to remove item, please try again");
+          setError(data?.error ?? t("removeFailed"));
           return;
         }
         checkCartIsEmpty(data?.cart?.lines?.length ?? 0);
@@ -43,7 +47,7 @@ export function CartContent({ cartId, initialCart }: CartContentProps) {
         setCheckoutUrl(data?.cart?.checkoutUrl ?? null);
         setItemCount(data?.cart?.totalQuantity ?? 0);
       } catch (error) {
-        setError(error instanceof Error ? error.message : "Unknown error, please try again");
+        setError(error instanceof Error ? error.message : t("unknownError"));
       } finally {
         setLoadingLineId(null);
       }
@@ -64,7 +68,7 @@ export function CartContent({ cartId, initialCart }: CartContentProps) {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data?.error ?? "Failed to change quantity, please try again");
+        setError(data?.error ?? t("qtyChangeFailed"));
         return;
       }
       checkCartIsEmpty(data?.cart?.lines?.length ?? 0);
@@ -72,7 +76,7 @@ export function CartContent({ cartId, initialCart }: CartContentProps) {
       setCheckoutUrl(data?.cart?.checkoutUrl ?? null);
       setItemCount(data?.cart?.totalQuantity ?? 0);
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Unknown error, please try again");
+      setError(error instanceof Error ? error.message : t("unknownError"));
     } finally {
       setLoadingLineId(null);
     }
@@ -86,12 +90,13 @@ export function CartContent({ cartId, initialCart }: CartContentProps) {
     }
   };
 
+  const zeroPrice = formatPrice("0", country.currency, country.numberLocale);
   const subtotal = cart?.cost?.subtotalAmount
-    ? formatPrice(cart.cost.subtotalAmount.amount, cart.cost.subtotalAmount.currencyCode)
-    : "$0.00";
+    ? formatPrice(cart.cost.subtotalAmount.amount, cart.cost.subtotalAmount.currencyCode, country.numberLocale)
+    : zeroPrice;
   const total = cart?.cost?.totalAmount
-    ? formatPrice(cart.cost.totalAmount.amount, cart.cost.totalAmount.currencyCode)
-    : "$0.00";
+    ? formatPrice(cart.cost.totalAmount.amount, cart.cost.totalAmount.currencyCode, country.numberLocale)
+    : zeroPrice;
 
   return (
     <>
@@ -147,10 +152,10 @@ export function CartContent({ cartId, initialCart }: CartContentProps) {
                       </button>
                     </div>
                   </div>
-                  <div className="text-right text-sm text-muted-foreground md:text-right">
-                    {formatPrice(item.cost.totalAmount.amount, item.cost.totalAmount.currencyCode || "USD")}
+                  <div className="text-end text-sm text-muted-foreground md:text-end">
+                    {formatPrice(item.cost.totalAmount.amount, item.cost.totalAmount.currencyCode || "USD", country.numberLocale)}
                   </div>
-                  <div className="absolute top-5 -translate-y-1/2 right-5">
+                  <div className="absolute top-5 -translate-y-1/2 end-5">
                     <button
                       className="text-xs text-muted-foreground hover:text-foreground cursor-pointer"
                       onClick={() => handleQuantityChange(cartId ?? "", item.id, 0)}
@@ -164,56 +169,56 @@ export function CartContent({ cartId, initialCart }: CartContentProps) {
           </div>
 
           <aside className="rounded-lg p-6 space-y-4 bg-[#C77D58]/30">
-            <h2 className="text-lg font-semibold">Order Summary</h2>
+            <h2 className="text-lg font-semibold">{t("orderSummary")}</h2>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between opacity-90">
-                <span>Subtotal</span>
+                <span>{t("subtotal")}</span>
                 <span>{subtotal}</span>
               </div>
               <div className="flex justify-between opacity-90">
-                <span>Shipping</span>
-                <span>Calculated at checkout</span>
+                <span>{t("shipping")}</span>
+                <span>{t("calcAtCheckout")}</span>
               </div>
               <div className="flex justify-between opacity-90">
-                <span>Tax</span>
-                <span>Calculated at checkout</span>
+                <span>{t("tax")}</span>
+                <span>{t("calcAtCheckout")}</span>
               </div>
             </div>
             <div className="border-t border-white/40 pt-3 flex justify-between text-sm font-semibold">
-              <span>Total</span>
+              <span>{t("total")}</span>
               <span>{total}</span>
             </div>
             <a
               href={checkoutUrl ?? "#"}
               className="w-full block text-center rounded bg-black px-4 py-3 text-sm font-semibold text-white hover:bg-black/80"
             >
-              Proceed to Checkout
+              {t("checkout")}
             </a>
             <div className="w-full rounded border border-black px-4 py-3 text-sm font-semibold text-black hover:bg-black/10 text-center">
               <Link className="" href="/collections/all">
-                Continue Shopping
+                {t("continueShopping")}
               </Link>
             </div>
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-3">
                 <ShieldCheck className="h-5 w-5 mt-0.5 opacity-90" />
                 <div>
-                  <p className="font-semibold">Secure Checkout</p>
-                  <p className="text-xs opacity-90">Your payment information is encrypted</p>
+                  <p className="font-semibold">{t("secureCheckout")}</p>
+                  <p className="text-xs opacity-90">{t("secureCheckoutDesc")}</p>
                 </div>
               </li>
               <li className="flex items-start gap-3">
                 <Globe2 className="h-5 w-5 mt-0.5 opacity-90" />
                 <div>
-                  <p className="font-semibold">Worldwide Shipping</p>
-                  <p className="text-xs opacity-90">We ship to over 100 countries</p>
+                  <p className="font-semibold">{t("worldwideShipping")}</p>
+                  <p className="text-xs opacity-90">{t("worldwideShippingDesc")}</p>
                 </div>
               </li>
               <li className="flex items-start gap-3">
                 <RotateCcw className="h-5 w-5 mt-0.5 opacity-90" />
                 <div>
-                  <p className="font-semibold">Easy Returns</p>
-                  <p className="text-xs opacity-90">Simple and transparent return policies for peace of mind.</p>
+                  <p className="font-semibold">{t("easyReturns")}</p>
+                  <p className="text-xs opacity-90">{t("easyReturnsDesc")}</p>
                 </div>
               </li>
             </ul>
@@ -221,9 +226,9 @@ export function CartContent({ cartId, initialCart }: CartContentProps) {
         </div>
       ) : (
         <div className="text-center">
-          <div className="text-center">Your cart is empty</div>
+          <div className="text-center">{t("empty")}</div>
           <Link href="/collections/all">
-            <Button className="mt-7">Continue Shopping</Button>
+            <Button className="mt-7">{t("continueShopping")}</Button>
           </Link>
         </div>
       )}

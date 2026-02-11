@@ -9,6 +9,7 @@ import { SortSelect } from "./SortSelect";
 import { ActiveFilters } from "./ActiveFilters";
 import { CollectionProductGrid } from "../CollectionProductGrid";
 import { useMediaQuery } from "@/lib/useMediaQuery";
+import { useTranslations } from "next-intl";
 
 type SortValue = "featured" | "price-asc" | "price-desc" | "newest";
 
@@ -17,6 +18,7 @@ type CollectionFiltersProps = {
 };
 
 export function CollectionFilters({ products }: CollectionFiltersProps) {
+  const t = useTranslations("collections");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [priceKey, setPriceKey] = useState<string | null>(null);
   const [inStockOnly, setInStockOnly] = useState(false);
@@ -34,10 +36,10 @@ export function CollectionFilters({ products }: CollectionFiltersProps) {
 
   const priceOptions = useMemo(
     () => [
-      { key: "under-30", label: "Under $30", min: null, max: 30 },
-      { key: "30-60", label: "$30 - $60", min: 30, max: 60 },
-      { key: "60-100", label: "$60 - $100", min: 60, max: 100 },
-      { key: "over-100", label: "Over $100", min: 100, max: null },
+      { key: "under-30", label: t("priceUnder30"), min: null, max: 30 },
+      { key: "30-60", label: t("price30to60"), min: 30, max: 60 },
+      { key: "60-100", label: t("price60to100"), min: 60, max: 100 },
+      { key: "over-100", label: t("priceOver100"), min: 100, max: null },
     ],
     []
   );
@@ -105,7 +107,7 @@ export function CollectionFilters({ products }: CollectionFiltersProps) {
     <div className="space-y-4">
       {/* Mobile controls */}
       <div className="flex items-center justify-between lg:hidden">
-        <p className="text-sm text-foreground">{filtered.length} items</p>
+        <p className="text-sm text-foreground">{filtered.length} {t("items")}</p>
         <div className="flex items-center gap-2">
           <SortSelect value={sort} onChange={setSort} />
           <button
@@ -113,7 +115,7 @@ export function CollectionFilters({ products }: CollectionFiltersProps) {
             onClick={() => setMobileFiltersOpen(true)}
             className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm font-medium text-foreground shadow-sm hover:border-foreground/60"
           >
-            Filters
+            {t("filters")}
           </button>
         </div>
       </div>
@@ -157,7 +159,7 @@ export function CollectionFilters({ products }: CollectionFiltersProps) {
             }`}
           >
             <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-              <p className="text-base font-semibold text-foreground">Filters</p>
+              <p className="text-base font-semibold text-foreground">{t("filters")}</p>
               <button
                 type="button"
                 onClick={() => setMobileFiltersOpen(false)}

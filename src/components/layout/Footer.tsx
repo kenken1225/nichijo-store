@@ -1,21 +1,24 @@
 import Link from "next/link";
-import { ArrowRight, Globe } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Container } from "./Container";
 import { getMenu, normalizeMenuUrl, isExternalUrl, type MenuItem } from "@/lib/shopify/navigation";
 import { Image } from "@/components/shared/Image";
+import { getTranslations } from "next-intl/server";
+import { FooterBottom } from "./FooterBottom";
 
-function FooterCTA() {
+async function FooterCTA() {
+  const t = await getTranslations("footer");
   return (
     <div className="text-center py-16 px-4">
-      <h2 className="text-2xl md:text-3xl font-semibold text-white mb-3">Ready to Explore?</h2>
+      <h2 className="text-2xl md:text-3xl font-semibold text-white mb-3">{t("ctaTitle")}</h2>
       <p className="text-sm md:text-base text-white/70 max-w-md mx-auto mb-6">
-        Let&apos;s explore the world of Japanese culture together!
+        {t("ctaDescription")}
       </p>
       <Link
         href="/collections"
         className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-md text-sm font-medium hover:opacity-90 transition"
       >
-        Browse Collections
+        {t("browseCollections")}
         <ArrowRight className="h-4 w-4" />
       </Link>
     </div>
@@ -72,24 +75,8 @@ function FooterLinks({ menuItems }: FooterLinksProps) {
   );
 }
 
-function FooterBottom() {
-  return (
-    <div className="flex flex-col md:flex-row items-center justify-between gap-4 py-6 border-t border-white/10 text-xs text-white/50">
-      <span>© {new Date().getFullYear()} nichijo. All rights reserved.</span>
-      <button
-        type="button"
-        className="flex items-center gap-2 text-white/50 hover:text-white transition-colors"
-        aria-label="Select language"
-      >
-        <Globe className="h-4 w-4" />
-        English (US)
-      </button>
-    </div>
-  );
-}
-
-export async function Footer() {
-  const menu = await getMenu("footer-main");
+export async function Footer({ locale }: { locale?: string }) {
+  const menu = await getMenu("footer-main", locale);
   const menuItems = menu?.items ?? [];
 
   return (

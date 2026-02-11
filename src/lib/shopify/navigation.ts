@@ -1,4 +1,4 @@
-import { shopifyFetch } from "../shopify";
+import { shopifyFetch, toShopifyLanguage, toShopifyCountry } from "../shopify";
 import { MENU_QUERY } from "./queries";
 
 export type MenuItem = {
@@ -19,8 +19,8 @@ type MenuQueryResponse = {
   menu: Menu | null;
 };
 
-export async function getMenu(handle: string): Promise<Menu | null> {
-  const data = await shopifyFetch<MenuQueryResponse>(MENU_QUERY, { handle });
+export async function getMenu(handle: string, locale?: string, countryCode?: string): Promise<Menu | null> {
+  const data = await shopifyFetch<MenuQueryResponse>(MENU_QUERY, { handle, language: toShopifyLanguage(locale), country: toShopifyCountry(countryCode) });
   return data?.menu ?? null;
 }
 

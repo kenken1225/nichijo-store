@@ -13,7 +13,7 @@ export function CartSkeleton() {
                 <div className="h-10 w-28 bg-muted rounded mt-2" />
               </div>
 
-              <div className="h-4 w-16 bg-muted rounded ml-auto" />
+              <div className="h-4 w-16 bg-muted rounded ms-auto" />
             </div>
           ))}
         </div>
