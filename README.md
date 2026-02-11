@@ -32,13 +32,15 @@ Shopify のテーマをそのまま使う選択肢もありましたが、今回
 ページ遷移のたびにリロードが走り、UX 的に離脱率がたくなる現象にあります。
 海外ユーザーをターゲットにする場合、表示速度は死活問題ですので、フロントエンドを完全に切り離して、Next.js で構築することにしました。
 
+また、各ユーザーの IP アドレスの場所を検知して、言語切り替え（英語、アラビア語）、通貨切り替えを行っております。
+
 ---
 
 ## Tech Stack
 
 **Frontend**
 
-- Next.js 15 (App Router)
+- Next.js 16 (App Router)
 - TypeScript
 - Tailwind CSS
 
@@ -49,14 +51,15 @@ Shopify のテーマをそのまま使う選択肢もありましたが、今回
 
 **Hosting**
 
-- Vercel
+- Netlify
+  > `@netlify/plugin-nextjs` を使用して、Next.js の ISR / SSR をサポート。
 
 ---
 
 ## Architecture
 
 ```
-[User] → [Vercel Edge Network / CDN]
+[User] → [Netlify Edge Network / CDN]
               ↓
          [Next.js App]
               ↓
@@ -70,7 +73,7 @@ Shopify のテーマをそのまま使う選択肢もありましたが、今回
 初回アクセス時に HTML を生成して、1 時間を目処にキャッシュしております。
 Shopify で商品やブログを更新しても、最大 1 時間で自動反映されるので、再デプロイは不要です。
 カートや認証まわりはクライアントサイドで処理して、
-React Context で状態を管理して、API Routes を経由して Shopify とやり取りする構成しています、
+React Context で状態を管理して、API Routes を経由して Shopify とやり取りする構成しています。
 
 ---
 
@@ -81,8 +84,26 @@ React Context で状態を管理して、API Routes を経由して Shopify と�
 - カート機能（Shopify Checkout 連携）
 - ブログ機能（Shopify のブログ記事を取得）
 - 顧客アカウント（ログイン、注文履歴、住所管理）
+- 多言語・多通貨対応
 - レスポンシブ対応
 - 検索機能
+
+---
+
+## Internationalization (i18n) & Multi-Currency
+
+### 言語対応　 & 通貨・国設定
+
+[next-intl](https://next-intl.dev/) を使用した多言語対応をしています。
+
+- ルーティングは `localePrefix: "as-needed"` を採用し、デフォルト言語（英語）の場合は URL にロケールを付与しない
+- 翻訳ファイルは `src/messages/` に JSON 形式で管理
+
+Shopify Markets と連携し、ユーザーの所在国に応じた通貨で商品価格を表示しています。
+
+- 初回アクセス時に Netlify の Geo-IP（`x-country` ヘッダー）から国コードを自動検出し、Cookie に保存
+- ユーザーが手動で国を切り替えることも可能
+- デフォルトは US（USD）
 
 ---
 
@@ -109,6 +130,10 @@ Open http://localhost:3000
 ```
 SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
 SHOPIFY_STOREFRONT_ACCESS_TOKEN=xxxxx
+RESEND_API_KEY=re_xxxxx
+CONTACT_EMAIL=xxxxx@today.is.good.day
+JUDGE_ME_API_KEY_PUBLIC=xxxxx
+JUDGE_ME_API_KEY_PRIVATE=xxxxx
 ```
 
 Storefront Access Token は Shopify 管理画面の「Apps」→「Develop apps」から発行できる。
