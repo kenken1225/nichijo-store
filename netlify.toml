@@ -9,8 +9,10 @@
   from = "/cart/c/*"
   to = "https://nichijo.myshopify.com/cart/c/:splat"
   status = 200
+  force = true
 
 [[redirects]]
   from = "/checkout/*"
   to = "https://nichijo.myshopify.com/checkout/:splat"
   status = 200
+  force = true
