@@ -28,5 +28,5 @@ export default function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next|cart|checkout|.*\\..*).*)"],
+  matcher: ["/((?!api|_next|cart/c|checkout|.*\\..*).*)"],
 };
