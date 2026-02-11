@@ -1,19 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { X } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { useCountry } from "@/contexts/CountryContext";
 import { SUPPORTED_COUNTRIES, GEO_CONFIRMED_COOKIE_KEY, type CountryConfig } from "@/lib/country-config";
 
-/**
- * 初回アクセス時に Geo-IP で検出した国を確認するポップアップ
- *
- * - Geo-IP で検出した国を表示して「この設定でいいですか？」と聞く
- * - 「はい」→ そのまま確定
- * - 「変更する」→ 国の選択リストを表示
- * - 一度確認したら cookie で記録して二度と出さない
- */
 export function CountryPopup() {
   const t = useTranslations("countryPopup");
   const locale = useLocale();
@@ -22,17 +14,14 @@ export function CountryPopup() {
   const [showCountryList, setShowCountryList] = useState(false);
 
   useEffect(() => {
-    // cookie に geo_confirmed がなければポップアップを表示
     const isConfirmed = document.cookie.includes(`${GEO_CONFIRMED_COOKIE_KEY}=true`);
     if (!isConfirmed) {
-      // 少し遅延させて、ページが読み込まれてから表示
       const timer = setTimeout(() => setIsOpen(true), 1500);
       return () => clearTimeout(timer);
     }
   }, []);
 
   const handleConfirm = () => {
-    // 現在の国で確定
     markAsConfirmed();
     setIsOpen(false);
   };
@@ -44,29 +33,25 @@ export function CountryPopup() {
   };
 
   const handleClose = () => {
-    // 閉じるだけ（次回も表示される）→ 確定扱いにする
     markAsConfirmed();
     setIsOpen(false);
   };
 
-  const markAsConfirmed = () => {
+  const markAsConfirmed = useCallback(() => {
     document.cookie = `${GEO_CONFIRMED_COOKIE_KEY}=true;path=/;max-age=${60 * 60 * 24 * 365};samesite=lax`;
-  };
+  }, []);
 
   if (!isOpen) return null;
 
   return (
     <>
-      {/* オーバーレイ */}
       <div
         className="fixed inset-0 bg-black/50 z-[9998] animate-in fade-in duration-300"
         onClick={handleClose}
       />
 
-      {/* ポップアップ */}
       <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-in zoom-in-95 fade-in duration-300">
-          {/* ヘッダー */}
           <div className="flex items-center justify-between p-5 border-b border-gray-100">
             <h2 className="text-lg font-semibold text-gray-900">{t("title")}</h2>
             <button
@@ -80,7 +65,6 @@ export function CountryPopup() {
           </div>
 
           {!showCountryList ? (
-            /* 確認画面 */
             <div className="p-6">
               <div className="text-center mb-6">
                 <span className="text-5xl mb-3 block">{country.flag}</span>
@@ -110,7 +94,6 @@ export function CountryPopup() {
               </div>
             </div>
           ) : (
-            /* 国選択リスト */
             <div className="p-4">
               <p className="text-sm text-gray-500 mb-3 px-1">{t("selectCountry")}</p>
               <div className="space-y-1 max-h-[300px] overflow-y-auto">

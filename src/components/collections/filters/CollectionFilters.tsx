@@ -41,7 +41,7 @@ export function CollectionFilters({ products }: CollectionFiltersProps) {
       { key: "60-100", label: t("price60to100"), min: 60, max: 100 },
       { key: "over-100", label: t("priceOver100"), min: 100, max: null },
     ],
-    []
+    [t]
   );
 
   const filtered = useMemo(() => {
