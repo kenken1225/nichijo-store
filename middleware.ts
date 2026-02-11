@@ -2,8 +2,8 @@ import createMiddleware from "next-intl/middleware";
 import { routing } from "@/i18n/routing";
 import { NextRequest } from "next/server";
 import { COUNTRY_COOKIE_KEY, SUPPORTED_COUNTRIES } from "@/lib/country-config";
-import { getCountryCode } from "@/lib/country-config";
 
+// next-intl middleware
 const intlMiddleware = createMiddleware(routing);
 
 export default function middleware(request: NextRequest) {

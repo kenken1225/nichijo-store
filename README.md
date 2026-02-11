@@ -54,6 +54,15 @@ Shopify のテーマをそのまま使う選択肢もありましたが、今回
 - Netlify
   > `@netlify/plugin-nextjs` を使用して、Next.js の ISR / SSR をサポート。
 
+**Monitoring & Maintenance**
+
+- [Sentry](https://sentry.io/) — エラー監視・パフォーマンス監視
+  > フロントエンド・サーバーサイド両方のエラーをリアルタイムで検知・通知。
+  > エラー発生時にスタックトレース、影響ユーザー数、ブラウザ情報などを自動収集。
+
+- [Dependabot](https://docs.github.com/en/code-security/dependabot) — 依存パッケージの自動更新
+  > npm パッケージと GitHub Actions のバージョンを毎週自動チェックし、更新があれば PR を自動作成。
+
 ---
 
 ## Architecture
@@ -134,9 +143,10 @@ RESEND_API_KEY=re_xxxxx
 CONTACT_EMAIL=xxxxx@today.is.good.day
 JUDGE_ME_API_KEY_PUBLIC=xxxxx
 JUDGE_ME_API_KEY_PRIVATE=xxxxx
+SENTRY_AUTH_TOKEN=sntrys_xxxxx
 ```
 
-Storefront Access Token は Shopify 管理画面の「Apps」→「Develop apps」から発行できる。
+Storefront Access Token は Shopify 管理画面の「Apps」→「Develop apps」から発行。
 
 ---
 

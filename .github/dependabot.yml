@@ -1,0 +1,23 @@
+version: 2
+
+updates:
+  # npm パッケージの依存関係を監視
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    # PRが大量に来すぎないよう、最大5つに制限
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+
+  # GitHub Actionsのバージョンも監視
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+      - "github-actions"
