@@ -1,3 +1,4 @@
+import { Image } from "@/components/shared/Image";
 import type { ShopifyImage } from "@/lib/types/shopify";
 import { formatDate } from "@/lib/shopify";
 
@@ -15,7 +16,14 @@ export function BlogArticleHeader({ title, excerpt, publishedAt, authorName, tag
     <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
       {image?.url ? (
         <div className="relative aspect-[16/9] w-full bg-muted/40">
-          <img src={image.url} alt={image.altText ?? title} className="h-full w-full object-cover" />
+          <Image
+            src={image.url}
+            alt={image.altText ?? title}
+            fill
+            sizes="(max-width: 768px) 100vw, 800px"
+            className="object-cover"
+            preload
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/10 to-transparent" />
         </div>
       ) : null}

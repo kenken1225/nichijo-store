@@ -116,6 +116,8 @@ export function CartContent({ cartId, initialCart }: CartContentProps) {
                       alt={item.merchandise.product.title}
                       width={120}
                       height={120}
+                      sizes="120px"
+                      loading="lazy"
                     />
                   </div>
                   <div>

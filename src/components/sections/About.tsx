@@ -11,7 +11,7 @@ export async function About() {
       <Container>
         <div className="grid gap-10 md:grid-cols-2 md:items-center">
           <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-muted/40">
-            <Image src="/about-img.jpg" width={500} height={500} alt={t("alt")} className="object-cover" />
+            <Image src="/about-img.jpg" width={500} height={500} alt={t("alt")} className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" loading="lazy" />
           </div>
           <div className="space-y-5">
             <h2 className="text-2xl sm:text-3xl font-bold text-foreground">{t("title")}</h2>

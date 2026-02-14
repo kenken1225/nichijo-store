@@ -8,6 +8,7 @@ export function Hero() {
         muted
         loop
         playsInline
+        poster="/topview-poster.jpg"
         className="absolute inset-0 h-full w-full object-cover object-center"
       >
         <source src="/topview-movie.mp4" type="video/mp4" />
@@ -19,7 +20,7 @@ export function Hero() {
       {/* Content */}
       <div className="relative z-10 flex h-full items-center justify-center">
         <div className="animate-fade-in">
-          <Image src="/top-view-text.png" alt="Nichijo Store" width={450} height={300} />
+          <Image src="/top-view-text.png" alt="Nichijo Store" width={450} height={300} preload sizes="(max-width: 768px) 90vw, 450px" />
         </div>
       </div>
     </section>

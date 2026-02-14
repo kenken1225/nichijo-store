@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Hero } from "@/components/sections/Hero";
 import { TopViewSection } from "@/components/sections/TopViewSection";
 import { FeaturedProducts } from "@/components/sections/FeaturedProducts";
@@ -9,6 +10,19 @@ import { CustomerReviews } from "@/components/products/CustomerReviews";
 import { Suspense } from "react";
 
 export const revalidate = 3600;
+
+export const metadata: Metadata = {
+  title: "Nichijo Store | Japanese Products & Lifestyle",
+  description:
+    "Discover authentic Japanese products at Nichijo Store. From matcha to traditional crafts, we bring the best of Japan to your doorstep.",
+  openGraph: {
+    title: "Nichijo Store | Japanese Products & Lifestyle",
+    description:
+      "Discover authentic Japanese products at Nichijo Store. From matcha to traditional crafts, we bring the best of Japan to your doorstep.",
+    type: "website",
+    url: "https://nichijo-jp.com",
+  },
+};
 
 export default function Home() {
   return (

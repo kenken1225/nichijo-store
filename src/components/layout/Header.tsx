@@ -14,7 +14,7 @@ export async function Header({ locale }: { locale?: string }) {
     <HeaderWrapper>
       <Container className="flex h-16 items-center justify-between gap-6">
         <Link href="/" className="text-xl font-semibold tracking-tight text-foreground">
-          <Image src="/logo-nichijo.png" alt="Nichijo Logo" width={90} height={90} />
+          <Image src="/logo-nichijo.png" alt="Nichijo Logo" width={90} height={90} preload sizes="90px" />
         </Link>
         <Navigation menuItems={menuItems} />
       </Container>

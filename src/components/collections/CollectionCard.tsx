@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Image } from "@/components/shared/Image";
 import type { ShopifyImage } from "@/lib/types/shopify";
 
 type CollectionCardProps = {
@@ -14,9 +15,16 @@ export function CollectionCard({ handle, title, description, image }: Collection
       href={`/collections/${handle}`}
       className="flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm transition hover:shadow"
     >
-      <div className="aspect-[4/3] w-full bg-muted/40">
+      <div className="relative aspect-[4/3] w-full bg-muted/40">
         {image?.url ? (
-          <img src={image.url} alt={image.altText ?? title} className="h-full w-full object-cover" />
+          <Image
+            src={image.url}
+            alt={image.altText ?? title}
+            fill
+            sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
+            className="object-cover"
+            loading="lazy"
+          />
         ) : null}
       </div>
       <div className="flex flex-1 flex-col gap-2 px-4 py-3">

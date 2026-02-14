@@ -8,7 +8,6 @@ export async function CustomerReviews() {
 
   if (reviews.length === 0) return null;
 
-  // "reviews" は en.json / ar.json の "reviews" キーに対応する
   const t = await getTranslations("reviews");
 
   return (

@@ -6,6 +6,8 @@ export function VideoSection() {
         muted
         loop
         playsInline
+        preload="none"
+        poster="/topview-poster-2.jpg"
         className="w-full object-contain sm:h-screen sm:object-cover sm:object-center"
       >
         <source src="/topview-movie-2.mp4" type="video/mp4" />

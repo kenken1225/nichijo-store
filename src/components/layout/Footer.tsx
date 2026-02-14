@@ -35,7 +35,7 @@ function FooterLinks({ menuItems }: FooterLinksProps) {
       {/* Logo column */}
       <div className="">
         <Link href="/">
-          <Image src="/logo-nichijo-white.png" alt="Nichijo Logo" width={100} height={100} />
+          <Image src="/logo-nichijo-white.png" alt="Nichijo Logo" width={100} height={100} sizes="100px" loading="lazy" />
         </Link>
       </div>
       {/* Menu columns */}

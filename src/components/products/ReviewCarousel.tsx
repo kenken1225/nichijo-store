@@ -5,6 +5,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
+import { Image } from "@/components/shared/Image";
 import type { JudgeMeReview } from "@/lib/judgeme";
 
 type Props = {
@@ -127,11 +128,14 @@ export function ReviewCarousel({ reviews }: Props) {
                       {review.pictures
                         .filter((pic) => !pic.hidden)
                         .map((pic, idx) => (
-                          <img
+                          <Image
                             key={idx}
                             src={pic.urls.compact}
                             alt={`Review photo ${idx + 1}`}
+                            width={64}
+                            height={64}
                             className="h-16 w-16 rounded-md border border-border object-cover"
+                            loading="lazy"
                           />
                         ))}
                     </div>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { Container } from "@/components/layout/Container";
 import { BlogArticleHeader } from "@/components/blogs/BlogArticleHeader";
 import { BlogArticleContent } from "@/components/blogs/BlogArticleContent";
@@ -15,6 +16,35 @@ export const revalidate = 3600;
 type ArticlePageProps = {
   params: Promise<{ "blog-handle": string; "article-handle": string }>;
 };
+
+export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
+  const { "blog-handle": blogHandle, "article-handle": articleHandle } = await params;
+  const data = await getBlogArticle(blogHandle, articleHandle);
+  if (!data) return {};
+
+  const title = `${data.article.title} | Nichijo Store`;
+  const description = data.article.excerpt?.slice(0, 160) || `${data.article.title} - Nichijo Blog`;
+  const imageUrl = data.article.image?.url;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "article",
+      url: `https://nichijo-jp.com/blogs/${blogHandle}/${articleHandle}`,
+      ...(data.article.publishedAt ? { publishedTime: data.article.publishedAt } : {}),
+      ...(imageUrl ? { images: [{ url: imageUrl, alt: data.article.title }] } : {}),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      ...(imageUrl ? { images: [imageUrl] } : {}),
+    },
+  };
+}
 
 export default async function BlogArticlePage({ params }: ArticlePageProps) {
   const t = await getTranslations("blogs");
@@ -34,8 +64,27 @@ export default async function BlogArticlePage({ params }: ArticlePageProps) {
   const continueArticles =
     blogWithArticles?.articles?.filter((article) => article.handle !== articleHandle)?.slice(0, 3) ?? [];
 
+  // JSON-LD for Google Rich Snippets
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: data.article.title,
+    description: data.article.excerpt || "",
+    url: `https://nichijo-jp.com/blogs/${blogHandle}/${articleHandle}`,
+    ...(data.article.publishedAt ? { datePublished: data.article.publishedAt } : {}),
+    ...(data.article.authorName ? { author: { "@type": "Person", name: data.article.authorName } } : {}),
+    ...(data.article.image?.url ? { image: data.article.image.url } : {}),
+    publisher: {
+      "@type": "Organization",
+      name: "Nichijo Store",
+      url: "https://nichijo-jp.com",
+    },
+  };
+
   return (
     <div className="bg-background">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+
       <section className="bg-secondary/30 py-8 sm:py-12">
         <Container className="space-y-6">
           <div className="text-sm text-muted-foreground">
