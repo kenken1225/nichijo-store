@@ -3,12 +3,11 @@
 import { useTransition, useState, useRef, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { Globe, ChevronDown } from "lucide-react";
+import { Globe, ChevronDown, Loader2 } from "lucide-react";
 import { useCountry } from "@/contexts/CountryContext";
 import { SUPPORTED_COUNTRIES, type CountryConfig } from "@/lib/country-config";
 
 type LocaleSwitcherProps = {
-  /** テーマ: フッター用（暗い背景）かヘッダー用（明るい背景） */
   variant?: "header" | "footer";
 };
 
@@ -28,7 +27,7 @@ export function LocaleSwitcher({ variant = "footer" }: LocaleSwitcherProps) {
   const [openDropdown, setOpenDropdown] = useState<"language" | "country" | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // 外側クリックでドロップダウンを閉じる
+  // outside click to close the dropdown
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -42,9 +41,9 @@ export function LocaleSwitcher({ variant = "footer" }: LocaleSwitcherProps) {
   const handleLanguageChange = (newLocale: string) => {
     setOpenDropdown(null);
     startTransition(() => {
-      // 現在のパスからロケールプレフィックスを除去して新しいロケールに切り替え
+      // remove the locale prefix from the current path and switch to the new locale
       const segments = pathname.split("/");
-      // パスの最初のセグメントがロケールコードかチェック
+      // check if the first segment of the path is the locale code
       if (segments[1] === "en" || segments[1] === "ar") {
         segments[1] = newLocale;
       } else {
@@ -62,7 +61,7 @@ export function LocaleSwitcher({ variant = "footer" }: LocaleSwitcherProps) {
 
   const currentLanguage = LANGUAGES.find((l) => l.code === locale) ?? LANGUAGES[0];
 
-  // variant に応じたスタイル
+  // style based on the variant
   const isFooter = variant === "footer";
   const buttonBaseClass = `flex items-center gap-2 text-sm transition-colors rounded-md px-3 py-2 ${
     isFooter
@@ -70,9 +69,7 @@ export function LocaleSwitcher({ variant = "footer" }: LocaleSwitcherProps) {
       : "text-foreground/60 hover:text-foreground hover:bg-foreground/5"
   }`;
   const dropdownClass = `absolute z-50 min-w-[200px] rounded-lg border shadow-lg py-1 right-0 ${
-    isFooter
-      ? "bg-zinc-800 border-white/10"
-      : "bg-white border-gray-200"
+    isFooter ? "bg-zinc-800 border-white/10" : "bg-white border-gray-200"
   }`;
   const itemClass = `w-full text-left px-4 py-2.5 text-sm flex items-center gap-3 transition-colors ${
     isFooter
@@ -80,14 +77,12 @@ export function LocaleSwitcher({ variant = "footer" }: LocaleSwitcherProps) {
       : "text-foreground/70 hover:text-foreground hover:bg-gray-50"
   }`;
   const activeItemClass = `w-full text-left px-4 py-2.5 text-sm flex items-center gap-3 font-medium ${
-    isFooter
-      ? "text-white bg-white/5"
-      : "text-foreground bg-gray-50"
+    isFooter ? "text-white bg-white/5" : "text-foreground bg-gray-50"
   }`;
 
   return (
     <div ref={dropdownRef} className="flex items-center gap-2 relative">
-      {/* 言語切り替えボタン */}
+      {/* language change button */}
       <div className="relative">
         <button
           type="button"
@@ -96,7 +91,11 @@ export function LocaleSwitcher({ variant = "footer" }: LocaleSwitcherProps) {
           aria-label={t("selectLanguage")}
           disabled={isPending}
         >
-          <Globe className="h-4 w-4" />
+          {isPending ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Globe className="h-4 w-4" />
+          )}
           <span>{currentLanguage.label}</span>
           <ChevronDown className={`h-3 w-3 transition-transform ${openDropdown === "language" ? "rotate-180" : ""}`} />
         </button>
@@ -117,10 +116,10 @@ export function LocaleSwitcher({ variant = "footer" }: LocaleSwitcherProps) {
         )}
       </div>
 
-      {/* 区切り線 */}
+      {/* separator */}
       <span className={isFooter ? "text-white/20" : "text-foreground/20"}>|</span>
 
-      {/* 国・通貨切り替えボタン */}
+      {/* country / currency change button */}
       <div className="relative">
         <button
           type="button"
@@ -134,7 +133,11 @@ export function LocaleSwitcher({ variant = "footer" }: LocaleSwitcherProps) {
         </button>
 
         {openDropdown === "country" && (
-          <div className={`${dropdownClass} ${isFooter ? "bottom-full mb-1" : "top-full mt-1"} max-h-[300px] overflow-y-auto`}>
+          <div
+            className={`${dropdownClass} ${
+              isFooter ? "bottom-full mb-1" : "top-full mt-1"
+            } max-h-[300px] overflow-y-auto`}
+          >
             {SUPPORTED_COUNTRIES.map((c) => (
               <button
                 key={c.code}
@@ -144,9 +147,7 @@ export function LocaleSwitcher({ variant = "footer" }: LocaleSwitcherProps) {
               >
                 <span className="text-base">{c.flag}</span>
                 <span className="flex-1">{locale === "ar" ? c.nameAr : c.nameEn}</span>
-                <span className={isFooter ? "text-white/40 text-xs" : "text-foreground/40 text-xs"}>
-                  {c.currency}
-                </span>
+                <span className={isFooter ? "text-white/40 text-xs" : "text-foreground/40 text-xs"}>{c.currency}</span>
               </button>
             ))}
           </div>

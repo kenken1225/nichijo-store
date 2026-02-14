@@ -4,7 +4,7 @@ import { useTransition, useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useRouter, usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { Globe, X, Check } from "lucide-react";
+import { Globe, X, Check, Loader2 } from "lucide-react";
 import { useCountry } from "@/contexts/CountryContext";
 import { SUPPORTED_COUNTRIES, type CountryConfig } from "@/lib/country-config";
 
@@ -46,7 +46,6 @@ export function MobileLocaleSwitcher() {
         const newPath = segments.join("/") || "/";
         router.replace(newPath);
       });
-      setIsOpen(false);
     },
     [pathname, router, startTransition]
   );
@@ -128,9 +127,13 @@ export function MobileLocaleSwitcher() {
                               isActive
                                 ? "border-primary bg-primary/5 text-primary"
                                 : "border-gray-200 bg-white text-foreground/70 hover:border-foreground/30"
-                            }`}
+                            } ${isPending ? "opacity-60" : ""}`}
                           >
-                            {isActive && <Check className="h-4 w-4" />}
+                            {isPending && isActive ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              isActive && <Check className="h-4 w-4" />
+                            )}
                             <span>{lang.label}</span>
                           </button>
                         );
