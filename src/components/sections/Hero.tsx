@@ -2,7 +2,7 @@ import { Image } from "@/components/shared/Image";
 
 export function Hero() {
   return (
-    <section className="relative h-screen w-full overflow-hidden">
+    <section className="relative h-svh w-full overflow-hidden">
       <video
         autoPlay
         muted
