@@ -26,6 +26,15 @@ Sentry.init({
   // Enable sending user PII (Personally Identifiable Information)
   // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/options/#sendDefaultPii
   sendDefaultPii: true,
+
+  // Filter out hydration mismatch errors caused by browser extensions (e.g. Video Speed Controller)
+  beforeSend(event) {
+    const message = event.exception?.values?.[0]?.value ?? "";
+    if (message.includes("Hydration failed") || message.includes("hydrating") || message.includes("server rendered HTML")) {
+      return null; // Sentry に送信しない
+    }
+    return event;
+  },
 });
 
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
