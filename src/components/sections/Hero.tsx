@@ -19,7 +19,7 @@ export function Hero() {
 
       {/* Content */}
       <div className="relative z-10 flex h-full items-center justify-center">
-        <div className="animate-fade-in">
+        <div className="custom-fade-in">
           <Image src="/top-view-text.png" alt="Nichijo Store" width={450} height={300} preload sizes="(max-width: 768px) 90vw, 450px" />
         </div>
       </div>
