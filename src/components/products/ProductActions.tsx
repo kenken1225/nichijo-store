@@ -76,17 +76,6 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
   }, [variants]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const saved = window.localStorage.getItem("cartId");
-    if (saved) setCartId(saved);
-  }, []);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (cartId) window.localStorage.setItem("cartId", cartId);
-  }, [cartId]);
-
-  useEffect(() => {
     const nextVariant = variants.find((v) => v.availableForSale !== false) ?? variants[0] ?? null;
     setSelectedVariant(nextVariant);
     const map: Record<string, string> = {};
@@ -153,7 +142,9 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
       };
     });
     const subtotalNode = cart?.cost?.subtotalAmount;
-    const subtotal = subtotalNode ? formatPrice(subtotalNode.amount, subtotalNode.currencyCode, country.numberLocale) : "";
+    const subtotal = subtotalNode
+      ? formatPrice(subtotalNode.amount, subtotalNode.currencyCode, country.numberLocale)
+      : "";
     const checkout = cart?.checkoutUrl ?? null;
     const totalQuantity = cart?.totalQuantity ?? 0;
     return { lines, subtotal, checkoutUrl: checkout, totalQuantity };
@@ -161,9 +152,6 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
 
   const clearInvalidCart = () => {
     setCartId(null);
-    if (typeof window !== "undefined") {
-      window.localStorage.removeItem("cartId");
-    }
   };
 
   const handleAddToCart = async (retryWithoutCartId = false) => {
@@ -181,11 +169,10 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
     try {
       setLoading(true);
       setErrorMessage("");
-      const currentCartId = retryWithoutCartId ? null : cartId;
       const res = await fetch("/api/cart", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cartId: currentCartId, merchandiseId: selectedVariant.id, quantity }),
+        body: JSON.stringify({ merchandiseId: selectedVariant.id, quantity }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -226,7 +213,6 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
           <ProductPrice value={displayPrice} />
           <div className="rich-text" dangerouslySetInnerHTML={{ __html: descriptionHtml }} />
         </div>
-
         {Array.from(optionValues.keys()).map((name) => {
           const values = Array.from(optionValues.get(name) ?? []);
           return (
@@ -321,7 +307,9 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
           <div className="flex items-center justify-between border-b border-border pb-4">
             <div className="space-y-0.5">
               <p className="text-base font-semibold">{tCart("yourCart")}</p>
-              <p className="text-sm text-muted-foreground">{cartLines.length} {tCart("items")}</p>
+              <p className="text-sm text-muted-foreground">
+                {cartLines.length} {tCart("items")}
+              </p>
             </div>
             <button type="button" onClick={closeDrawer} className="text-foreground" aria-label={tCart("closeMiniCart")}>
               ✕
@@ -346,7 +334,9 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
                     <p className="text-sm font-medium text-foreground">{line.title}</p>
                     <p className="text-xs text-muted-foreground">{line.variantTitle}</p>
                     <div className="mt-auto flex items-center justify-between text-sm text-foreground">
-                      <span>{tCart("qty")} {line.quantity}</span>
+                      <span>
+                        {tCart("qty")} {line.quantity}
+                      </span>
                       <span>{line.price}</span>
                     </div>
                   </div>
@@ -420,15 +410,14 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
     try {
       setAddingVariantId(variantId);
       setErrorMessage("");
-      const currentCartId = retryWithoutCartId ? null : cartId;
       const res = await fetch("/api/cart", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cartId: currentCartId, merchandiseId: variantId, quantity }),
+        body: JSON.stringify({ merchandiseId: variantId, quantity }),
       });
       const data = await res.json();
       if (!res.ok) {
-        // カートが存在しない場合、cartIdをクリアしてリトライ
+        // if cart does not exist, clear cart content and retry.
         if (data?.error?.includes("does not exist") && !retryWithoutCartId) {
           clearInvalidCart();
           setAddingVariantId(null);
@@ -444,7 +433,7 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
       setItemCount(parsed.totalQuantity);
       setDrawerOpen(true);
     } catch (error) {
-      // エラーメッセージをログに出力し、ユーザーには在庫関連のメッセージを表示
+      // Output error message and show message about inventory info.
       console.error("Add recommendation to cart error:", error instanceof Error ? error.message : error);
       setErrorMessage(tProduct("lowInventory"));
     } finally {
@@ -453,13 +442,12 @@ export function ProductActions({ title, descriptionHtml, variants, recommendatio
   }
 
   async function handleRemoveLine(lineId: string) {
-    if (!cartId) return;
     try {
       setLoading(true);
       const res = await fetch("/api/cart", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cartId, lineIds: [lineId] }),
+        body: JSON.stringify({ lineIds: [lineId] }),
       });
       const data = await res.json();
       if (!res.ok) {

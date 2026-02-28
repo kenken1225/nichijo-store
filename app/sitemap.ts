@@ -37,7 +37,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }));
 
-  // コレクションページ
+  // Collection Page
   const collections = await getCollections();
   const collectionPages: MetadataRoute.Sitemap = collections.map((collection) => ({
     url: `${SITE_URL}/collections/${collection.handle}`,

@@ -16,6 +16,7 @@ type ProductInfoProps = {
   descriptionHtml: string;
   variants: ShopifyVariant[];
   recommendations?: RecommendationItem[];
+  onVariantImageChange?: (imageUrl: string | null) => void;
 };
 
 export function ProductInfo(props: ProductInfoProps) {

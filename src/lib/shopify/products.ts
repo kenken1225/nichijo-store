@@ -8,6 +8,10 @@ import {
   PRODUCTS_LIST_QUERY,
 } from "./queries";
 
+type ProductQueryVariant = ShopifyVariant & {
+  image?: ShopifyImage | null;
+};
+
 type ProductQuery = {
   product: {
     id: string;
@@ -17,7 +21,7 @@ type ProductQuery = {
     handle: string;
     featuredImage?: ShopifyImage | null;
     images: { edges: { node: ShopifyImage }[] };
-    variants: { edges: { node: ShopifyVariant }[] };
+    variants: { edges: { node: ProductQueryVariant }[] };
   } | null;
 };
 
@@ -78,6 +82,7 @@ export async function getProductByHandle(handle: string, locale?: string, countr
       quantityAvailable: node.quantityAvailable,
       selectedOptions: node.selectedOptions,
       price: node.price,
+      image: node.image ?? null,
     })) ?? [];
 
   return {

@@ -8,7 +8,7 @@ function setCartCookie(res: NextResponse, cartId: string) {
     path: "/",
     httpOnly: true,
     sameSite: "lax",
-    maxAge: 60 * 60 * 24 * 6, // 6日
+    maxAge: 60 * 60 * 24 * 6, // 6days
     secure: true,
   });
 }
@@ -16,6 +16,12 @@ function setCartCookie(res: NextResponse, cartId: string) {
 async function getCountryFromCookie(): Promise<string | undefined> {
   const cookieStore = await cookies();
   return cookieStore.get(COUNTRY_COOKIE_KEY)?.value;
+}
+
+// Prioritize a cartId of Cookie, if not, use cartId of body.
+async function getCartIdFromRequest(bodyCartId?: string | null): Promise<string | undefined> {
+  const cookieStore = await cookies();
+  return cookieStore.get("cartId")?.value ?? bodyCartId ?? undefined;
 }
 
 async function syncCartCountry(cartId: string, countryCode?: string): Promise<void> {
@@ -33,7 +39,7 @@ async function syncCartCountry(cartId: string, countryCode?: string): Promise<vo
 
 export async function POST(req: Request) {
   const {
-    cartId,
+    cartId: bodyCartId,
     merchandiseId,
     quantity = 1,
   } = (await req.json()) as {
@@ -48,6 +54,7 @@ export async function POST(req: Request) {
 
   try {
     const countryCode = await getCountryFromCookie();
+    const cartId = await getCartIdFromRequest(bodyCartId);
 
     if (!cartId) {
       const { cart, cartId: newCartId } = await createCart(merchandiseId, quantity, countryCode);
@@ -65,19 +72,41 @@ export async function POST(req: Request) {
     return res;
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
+    // Cart doesn't exist (expired) => delete cookie and make new cookie
+    const hadCartId = await getCartIdFromRequest(bodyCartId);
+    if (message.toLowerCase().includes("does not exist") && hadCartId) {
+      try {
+        const countryCode = await getCountryFromCookie();
+        const { cart, cartId: newCartId } = await createCart(merchandiseId, quantity, countryCode);
+        const res = NextResponse.json({ cartId: newCartId, cart });
+        res.cookies.delete("cartId");
+        setCartCookie(res, newCartId);
+        return res;
+      } catch {
+        // Erro 500
+      }
+    }
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
 export async function PATCH(req: Request) {
-  const { cartId, lineId, quantity } = (await req.json()) as {
+  const {
+    cartId: bodyCartId,
+    lineId,
+    quantity,
+  } = (await req.json()) as {
     cartId?: string;
     lineId?: string;
     quantity?: number;
   };
 
+  const cartId = await getCartIdFromRequest(bodyCartId);
   if (!cartId || !lineId || quantity === undefined) {
-    return NextResponse.json({ error: "cartId, lineId and quantity are required" }, { status: 400 });
+    return NextResponse.json(
+      { error: "cartId (from cookie or body), lineId and quantity are required" },
+      { status: 400 }
+    );
   }
 
   try {
@@ -94,13 +123,14 @@ export async function PATCH(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-  const { cartId, lineIds } = (await req.json()) as {
+  const { cartId: bodyCartId, lineIds } = (await req.json()) as {
     cartId?: string;
     lineIds?: string[];
   };
 
+  const cartId = await getCartIdFromRequest(bodyCartId);
   if (!cartId || !lineIds?.length) {
-    return NextResponse.json({ error: "cartId and lineIds are required" }, { status: 400 });
+    return NextResponse.json({ error: "cartId (from cookie or body) and lineIds are required" }, { status: 400 });
   }
 
   try {

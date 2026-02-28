@@ -35,7 +35,7 @@ export function CartContent({ cartId, initialCart }: CartContentProps) {
         const res = await fetch("/api/cart", {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cartId, lineIds: [lineId] }),
+          body: JSON.stringify({ lineIds: [lineId] }),
         });
         const data = await res.json();
         if (!res.ok) {
@@ -61,7 +61,6 @@ export function CartContent({ cartId, initialCart }: CartContentProps) {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          cartId,
           lineId,
           quantity: nextQuantity,
         }),
