@@ -13,13 +13,15 @@ Shopify Storefront APIを使った顧客アカウント機能。
 
 ## ページ一覧
 
+すべてのルートは `[locale]` 配下（例: `/ar/account`、`/en/account`）。以下は locale を省略した表記。
+
 | パス | 内容 |
 |------|------|
 | `/account` | マイページ |
 | `/account/login` | ログイン |
 | `/account/register` | 会員登録 |
 | `/account/forgot-password` | パスワードリセット申請 |
-| `/account/reset/[customerId]/[token]` | パスワード再設定 |
+| `/account/reset` | パスワード再設定（クエリ `?reset_url=...` でShopifyのリセットURLを受け取る） |
 | `/account/orders` | 注文履歴 |
 | `/account/addresses` | 住所管理 |
 | `/account/profile` | プロファイル編集 |
@@ -46,16 +48,16 @@ Shopify Storefront APIを使った顧客アカウント機能。
 ## ファイル構成
 
 ```
-app/account/          # ページ
-app/api/account/      # APIルート
+app/[locale]/account/   # アカウント系ページ（locale 付き）
+app/api/account/       # APIルート（locale なし）
 src/components/account/  # UIコンポーネント
 src/contexts/AuthContext.tsx  # 認証状態管理
-src/lib/shopify/customer.ts   # Shopify API関連
+src/lib/shopify/customer.ts   # Shopify 顧客API ラッパ
 ```
 
 ## 未ログイン時
 
-`/account`以下にアクセスすると`/account/login`にリダイレクト。
+`/account` 以下にアクセスしたとき、Cookie（`customerAccessToken`）が無ければ `/account/login` にリダイレクト。各保護ページで cookie を確認して redirect している。
 
 ## 備考
 

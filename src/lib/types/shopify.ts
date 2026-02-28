@@ -17,6 +17,7 @@ export type ShopifyVariant = {
   availableForSale?: boolean;
   quantityAvailable?: number | null;
   selectedOptions?: { name: string; value: string }[];
+  image?: ShopifyImage | null;
 };
 
 export type ShopifyProduct = {

@@ -47,7 +47,7 @@ export const PRODUCT_BY_HANDLE_QUERY = `
         width
         height
       }
-      images(first: 8) {
+      images(first: 40) {
         edges {
           node {
             url
@@ -63,7 +63,7 @@ export const PRODUCT_BY_HANDLE_QUERY = `
             id
             title
             availableForSale
-          quantityAvailable
+            quantityAvailable
             selectedOptions {
               name
               value
@@ -71,6 +71,12 @@ export const PRODUCT_BY_HANDLE_QUERY = `
             price {
               amount
               currencyCode
+            }
+            image {
+              url
+              altText
+              width
+              height
             }
           }
         }

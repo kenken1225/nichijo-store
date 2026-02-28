@@ -23,6 +23,7 @@ type ProductPageProps = {
   params: Promise<{ handle: string }>;
 };
 
+// SEO metadata
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { handle } = await params;
   const product = await getProductByHandle(handle);
