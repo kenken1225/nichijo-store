@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { formatPrice } from "@/lib/shopify";
+import { formatPrice } from "@/lib/shopify/client";
 import { useCountry } from "@/contexts/CountryContext";
 
 type PriceProps = {

@@ -1,6 +1,6 @@
 import { Image } from "@/components/shared/Image";
 import type { ShopifyImage } from "@/lib/types/shopify";
-import { formatDate } from "@/lib/shopify";
+import { formatDate } from "@/lib/shopify/client";
 
 type BlogArticleHeaderProps = {
   title: string;

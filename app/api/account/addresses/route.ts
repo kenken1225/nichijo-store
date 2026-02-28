@@ -5,7 +5,7 @@ import {
   updateCustomerAddress,
   deleteCustomerAddress,
   setDefaultCustomerAddress,
-} from "@/lib/shopify/customer";
+} from "@/lib/shopify/domain/customer";
 import { cookies } from "next/headers";
 
 // Get addresses

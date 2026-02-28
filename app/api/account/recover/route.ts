@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { recoverCustomerPassword } from "@/lib/shopify/customer";
+import { recoverCustomerPassword } from "@/lib/shopify/domain/customer";
 
 export async function POST(request: NextRequest) {
   try {

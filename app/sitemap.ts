@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
-import { getProductsList } from "@/lib/shopify/products";
-import { getCollections } from "@/lib/shopify/collections";
-import { getBlogs, getBlogWithArticles } from "@/lib/shopify/blogs";
+import { getProductsList } from "@/lib/shopify/domain/products";
+import { getCollections } from "@/lib/shopify/domain/collections";
+import { getBlogs, getBlogWithArticles } from "@/lib/shopify/domain/blogs";
 
 const SITE_URL = "https://nichijo-jp.com";
 

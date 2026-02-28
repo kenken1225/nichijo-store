@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { BlogArticleCard } from "./BlogArticleCard";
-import type { BlogArticleSummary } from "@/lib/shopify/blogs";
+import type { BlogArticleSummary } from "@/lib/shopify/domain/blogs";
 import { Container } from "../layout/Container";
 import { getTranslations } from "next-intl/server";
 

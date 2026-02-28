@@ -6,7 +6,7 @@ import { WhyLoveIt } from "@/components/products/WhyLoveIt";
 import { CustomerReviews } from "@/components/products/CustomerReviews";
 import { ProductDetail } from "@/components/products/ProductDetail";
 import { Container } from "@/components/layout/Container";
-import { getProductByHandle, getProductRecommendations } from "@/lib/shopify/products";
+import { getProductByHandle, getProductRecommendations } from "@/lib/shopify/domain/products";
 import { ProductDetailSkeleton } from "@/components/skeletons";
 
 // Client Components only are dynamically imported for lazy loading

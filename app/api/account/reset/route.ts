@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { resetCustomerPassword, resetCustomerPasswordByUrl } from "@/lib/shopify/customer";
+import { resetCustomerPassword, resetCustomerPasswordByUrl } from "@/lib/shopify/domain/customer";
 import { cookies } from "next/headers";
 
 export async function POST(request: NextRequest) {

@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react";
-import { MenuItem } from "@/lib/shopify/navigation";
+import { MenuItem } from "@/lib/shopify/domain/navigation";
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import clsx from "clsx";

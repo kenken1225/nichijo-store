@@ -7,10 +7,10 @@ import { Search, User, ShoppingBag, Menu } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useTranslations } from "next-intl";
 import { MobileDrawer } from "./MobileDrawer";
-import { MenuItem } from "@/lib/shopify/navigation";
+import { MenuItem } from "@/lib/shopify/domain/navigation";
 import { DesktopDropdown } from "./DesktopDropdown";
-import { LocaleSwitcher } from "@/components/shared/LocaleSwitcher";
-import { MobileLocaleSwitcher } from "@/components/shared/MobileLocaleSwitcher";
+import { LocaleSwitcher } from "./LocaleSwitcher";
+import { MobileLocaleSwitcher } from "./MobileLocaleSwitcher";
 
 type NavigationProps = {
   className?: string;

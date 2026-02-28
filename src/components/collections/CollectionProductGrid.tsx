@@ -1,5 +1,5 @@
-import type { CollectionProduct } from "@/lib/shopify/collections";
-import { formatPrice } from "@/lib/shopify";
+import type { CollectionProduct } from "@/lib/shopify/domain/collections";
+import { formatPrice } from "@/lib/shopify/client";
 import { ProductCard } from "@/components/shared/ProductCard";
 import { useCountry } from "@/contexts/CountryContext";
 

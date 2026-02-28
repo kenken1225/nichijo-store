@@ -1,6 +1,6 @@
-import { shopifyFetch, toShopifyLanguage, toShopifyCountry } from "../shopify";
-import type { ShopifyArticle, ShopifyBlog } from "../types/shopify";
-import { ARTICLE_BY_HANDLE_QUERY, BLOG_BY_HANDLE_QUERY, BLOGS_LIST_QUERY, LATEST_ARTICLES_QUERY, SEARCH_ARTICLES_QUERY } from "./queries";
+import { shopifyFetch, toShopifyLanguage, toShopifyCountry } from "../client";
+import type { ShopifyArticle, ShopifyBlog } from "../../types/shopify";
+import { ARTICLE_BY_HANDLE_QUERY, BLOG_BY_HANDLE_QUERY, BLOGS_LIST_QUERY, LATEST_ARTICLES_QUERY, SEARCH_ARTICLES_QUERY } from "../graphql/queries";
 
 type BlogsListQuery = {
   blogs: { edges: { node: Pick<ShopifyBlog, "handle" | "title"> }[] };

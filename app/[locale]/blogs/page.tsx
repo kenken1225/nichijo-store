@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Container } from "@/components/layout/Container";
-import { getBlogs } from "@/lib/shopify/blogs";
+import { getBlogs } from "@/lib/shopify/domain/blogs";
 import { getTranslations, getLocale } from "next-intl/server";
 import { getCountryCode } from "@/lib/country-config";
 

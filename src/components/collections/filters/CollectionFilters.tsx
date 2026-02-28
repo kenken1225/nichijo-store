@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { CollectionProduct } from "@/lib/shopify/collections";
+import type { CollectionProduct } from "@/lib/shopify/domain/collections";
 import { CategoryFilter } from "./CategoryFilter";
 import { PriceFilter } from "./PriceFilter";
 import { AvailabilityFilter } from "./AvailabilityFilter";
