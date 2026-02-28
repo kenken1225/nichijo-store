@@ -61,7 +61,7 @@ export function ProductGallery({ images, title, variants = [], selectedVariantIm
     if (!emblaApi) return;
     emblaApi.on("select", onSelect);
     emblaApi.on("reInit", onSelect);
-    onSelect();
+    queueMicrotask(onSelect);
     return () => {
       emblaApi.off("select", onSelect);
       emblaApi.off("reInit", onSelect);
@@ -151,7 +151,6 @@ export function ProductGallery({ images, title, variants = [], selectedVariantIm
                 <span className="text-[10px] leading-tight text-muted-foreground text-center line-clamp-2">
                   {vi.label}
                 </span>
-                あああ
               </button>
             ))}
           </div>
