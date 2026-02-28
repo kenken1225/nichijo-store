@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Package, Loader2, ChevronDown, ChevronUp } from "lucide-react";
-import { CustomerOrder } from "@/lib/shopify/customer";
-import { formatPrice, formatDate } from "@/lib/shopify";
+import { CustomerOrder } from "@/lib/shopify/domain/customer";
+import { formatPrice, formatDate } from "@/lib/shopify/client";
 import { useTranslations } from "next-intl";
 import { useCountry } from "@/contexts/CountryContext";
 

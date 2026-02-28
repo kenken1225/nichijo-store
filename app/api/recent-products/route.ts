@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { shopifyFetch, formatPrice, toShopifyCountry } from "@/lib/shopify";
-import { PRODUCTS_BY_HANDLES_QUERY } from "@/lib/shopify/queries";
+import { shopifyFetch, formatPrice, toShopifyCountry } from "@/lib/shopify/client";
+import { PRODUCTS_BY_HANDLES_QUERY } from "@/lib/shopify/graphql/queries";
 import { COUNTRY_COOKIE_KEY, getCountryByCode } from "@/lib/country-config";
 
 export async function GET(req: Request) {

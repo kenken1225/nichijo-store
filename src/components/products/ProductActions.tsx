@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ShoppingBag, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/Button";
-import { formatPrice } from "@/lib/shopify";
+import { formatPrice } from "@/lib/shopify/client";
 import type { ShopifyVariant } from "@/lib/types/shopify";
 import { YouMayAlsoLike } from "./YouMayAlsoLike";
 import { ProductPrice } from "./ProductPrice";

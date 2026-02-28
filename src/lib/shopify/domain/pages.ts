@@ -1,6 +1,6 @@
-import { shopifyFetch, toShopifyLanguage, toShopifyCountry } from "../shopify";
-import type { ShopifyPagesList, ShopifyPage } from "@/lib/types/shopify";
-import { PAGES_LIST_QUERY, PAGE_BY_HANDLE_QUERY } from "./queries";
+import { shopifyFetch, toShopifyLanguage, toShopifyCountry } from "../client";
+import type { ShopifyPagesList, ShopifyPage } from "../../types/shopify";
+import { PAGES_LIST_QUERY, PAGE_BY_HANDLE_QUERY } from "../graphql/queries";
 
 type PagesListQuery = {
   pages: { edges: { node: ShopifyPagesList }[] } | null;

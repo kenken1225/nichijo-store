@@ -1,7 +1,7 @@
 "use client";
 
-import { CartWithLines } from "@/lib/shopify/cart";
-import { formatPrice } from "@/lib/shopify";
+import { CartWithLines } from "@/lib/shopify/domain/cart";
+import { formatPrice } from "@/lib/shopify/client";
 import Image from "next/image";
 import { Globe2, RotateCcw, ShieldCheck, XIcon, Loader2 } from "lucide-react";
 import { useState } from "react";

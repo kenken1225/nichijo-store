@@ -1,5 +1,5 @@
-import { searchProducts } from "@/lib/shopify/products";
-import { searchArticles } from "@/lib/shopify/blogs";
+import { searchProducts } from "@/lib/shopify/domain/products";
+import { searchArticles } from "@/lib/shopify/domain/blogs";
 import { Container } from "@/components/layout/Container";
 import { ProductCard } from "@/components/shared/ProductCard";
 import { BlogArticleCard } from "@/components/blogs/BlogArticleCard";

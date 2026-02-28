@@ -1,11 +1,11 @@
 import { Container } from "@/components/layout/Container";
 import { YouMayAlsoLike } from "@/components/products/YouMayAlsoLike";
-import { getProductRecommendations } from "@/lib/shopify/products";
+import { getProductRecommendations } from "@/lib/shopify/domain/products";
 import Link from "next/link";
 import { Suspense } from "react";
 import { CartContent } from "@/components/cart/CartContent";
 import { CartSkeleton } from "@/components/skeletons";
-import { getCart, updateCartCountry } from "@/lib/shopify/cart";
+import { getCart, updateCartCountry } from "@/lib/shopify/domain/cart";
 import { cookies } from "next/headers";
 import { getTranslations, getLocale } from "next-intl/server";
 import { getCountryCode } from "@/lib/country-config";

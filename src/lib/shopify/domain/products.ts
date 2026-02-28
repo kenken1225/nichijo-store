@@ -1,12 +1,12 @@
-import { shopifyFetch, formatPrice, toShopifyLanguage, toShopifyCountry } from "../shopify";
-import { getCountryByCode } from "../country-config";
-import type { ShopifyImage, ShopifyVariant } from "../types/shopify";
+import { shopifyFetch, formatPrice, toShopifyLanguage, toShopifyCountry } from "../client";
+import { getCountryByCode } from "../../country-config";
+import type { ShopifyImage, ShopifyVariant } from "../../types/shopify";
 import {
   PRODUCT_BY_HANDLE_QUERY,
   PRODUCT_RECOMMENDATIONS_QUERY,
   PRODUCTS_BY_HANDLES_QUERY,
   PRODUCTS_LIST_QUERY,
-} from "./queries";
+} from "../graphql/queries";
 
 type ProductQueryVariant = ShopifyVariant & {
   image?: ShopifyImage | null;

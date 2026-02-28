@@ -1,6 +1,6 @@
-import { shopifyFetch, toShopifyLanguage, toShopifyCountry } from "../shopify";
-import type { ShopifyImage } from "../types/shopify";
-import { COLLECTIONS_QUERY, COLLECTION_BY_HANDLE_QUERY } from "./queries";
+import { shopifyFetch, toShopifyLanguage, toShopifyCountry } from "../client";
+import type { ShopifyImage } from "../../types/shopify";
+import { COLLECTIONS_QUERY, COLLECTION_BY_HANDLE_QUERY } from "../graphql/queries";
 
 type CollectionNode = {
   handle: string;

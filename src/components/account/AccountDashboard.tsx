@@ -6,8 +6,8 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { Package, MapPin, User, ChevronRight, Loader2 } from "lucide-react";
 import { SubmitButton } from "./SubmitButton";
-import { formatDate, formatPrice } from "@/lib/shopify";
-import { CustomerOrder } from "@/lib/shopify/customer";
+import { formatDate, formatPrice } from "@/lib/shopify/client";
+import { CustomerOrder } from "@/lib/shopify/domain/customer";
 import { useTranslations } from "next-intl";
 import { useCountry } from "@/contexts/CountryContext";
 

@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { Container } from "@/components/layout/Container";
 import { CollectionHeader } from "@/components/collections/CollectionHeader";
 import { CollectionFilters } from "@/components/collections/filters/CollectionFilters";
-import { getCollectionWithProducts } from "@/lib/shopify/collections";
+import { getCollectionWithProducts } from "@/lib/shopify/domain/collections";
 import { CollectionSkeleton } from "@/components/skeletons";
 import { getLocale } from "next-intl/server";
 import { getCountryCode } from "@/lib/country-config";

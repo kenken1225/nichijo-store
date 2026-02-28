@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Container } from "./Container";
-import { getMenu, normalizeMenuUrl, isExternalUrl, type MenuItem } from "@/lib/shopify/navigation";
+import { getMenu, normalizeMenuUrl, isExternalUrl, type MenuItem } from "@/lib/shopify/domain/navigation";
 import { Image } from "@/components/shared/Image";
 import { getTranslations } from "next-intl/server";
 import { FooterBottom } from "./FooterBottom";

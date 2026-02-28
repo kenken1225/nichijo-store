@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { createCart, addToCart, updateCartLine, removeFromCart, updateCartCountry, getCart } from "@/lib/shopify/cart";
+import { createCart, addToCart, updateCartLine, removeFromCart, updateCartCountry, getCart } from "@/lib/shopify/domain/cart";
 import { COUNTRY_COOKIE_KEY } from "@/lib/country-config";
 
 function setCartCookie(res: NextResponse, cartId: string) {

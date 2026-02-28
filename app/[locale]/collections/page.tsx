@@ -1,7 +1,7 @@
 import { Container } from "@/components/layout/Container";
 import { CollectionHeader } from "@/components/collections/CollectionHeader";
 import { CollectionList } from "@/components/collections/CollectionList";
-import { getCollections } from "@/lib/shopify/collections";
+import { getCollections } from "@/lib/shopify/domain/collections";
 import { getTranslations, getLocale } from "next-intl/server";
 import { getCountryCode } from "@/lib/country-config";
 

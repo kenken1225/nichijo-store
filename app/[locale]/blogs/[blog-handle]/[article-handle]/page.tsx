@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { Container } from "@/components/layout/Container";
 import { BlogArticleHeader } from "@/components/blogs/BlogArticleHeader";
 import { BlogArticleContent } from "@/components/blogs/BlogArticleContent";
-import { getBlogArticle, getBlogWithArticles } from "@/lib/shopify/blogs";
+import { getBlogArticle, getBlogWithArticles } from "@/lib/shopify/domain/blogs";
 import BrowseOtherPages from "@/components/shared/BrowseOtherPages";
 import { ContinueReading } from "@/components/blogs/ContinueReading";
 import { getTranslations, getLocale } from "next-intl/server";

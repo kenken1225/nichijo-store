@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { LocaleSwitcher } from "@/components/shared/LocaleSwitcher";
+import { LocaleSwitcher } from "@/components/navigation/LocaleSwitcher";
 
 export function FooterBottom() {
   const t = useTranslations("footer");
