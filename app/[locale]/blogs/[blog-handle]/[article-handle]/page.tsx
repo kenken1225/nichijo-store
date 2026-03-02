@@ -37,12 +37,6 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
       ...(data.article.publishedAt ? { publishedTime: data.article.publishedAt } : {}),
       ...(imageUrl ? { images: [{ url: imageUrl, alt: data.article.title }] } : {}),
     },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      ...(imageUrl ? { images: [imageUrl] } : {}),
-    },
   };
 }
 

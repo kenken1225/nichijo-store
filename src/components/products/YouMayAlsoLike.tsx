@@ -94,8 +94,7 @@ export function YouMayAlsoLike({
   }, [useRecentLocalStorage, maxRecent]);
 
   const sourceItems = items.length ? items : recentItems;
-  // Keep API/recent order (assumed relevance) without re-sorting
-  const limited = sourceItems.slice(0, 4);
+  const limited = items.length ? sourceItems.slice(0, 4) : [...recentItems].reverse().slice(0, 4);
 
   const shouldShowAdd = showAddButton && variant === "compact";
 
@@ -217,7 +216,6 @@ export function YouMayAlsoLike({
         <div className="text-center space-y-2">
           <h2 className="text-2xl font-semibold text-foreground">{t("youMayAlsoLike")}</h2>
         </div>
-        {/* Mobile: horizontal scroll */}
         <div className="md:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2">
           {limited.map((item) => (
             <div key={item.href} className="min-w-[240px] snap-start">
@@ -225,10 +223,19 @@ export function YouMayAlsoLike({
             </div>
           ))}
         </div>
-        {/* Desktop: 4-column grid */}
-        <div className="hidden md:grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {limited.map((item) => renderItem(item))}
-        </div>
+        {limited.length >= 4 ? (
+          <div className="hidden md:flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2">
+            {limited.map((item) => (
+              <div key={item.href} className="min-w-[240px] flex-shrink-0 snap-start">
+                {renderItem(item)}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="hidden md:grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {limited.map((item) => renderItem(item))}
+          </div>
+        )}
       </Container>
     </section>
   );

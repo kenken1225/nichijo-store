@@ -3,9 +3,10 @@ import { getProductsList } from "@/lib/shopify/products";
 import { getCollections } from "@/lib/shopify/collections";
 import { getBlogs, getBlogWithArticles } from "@/lib/shopify/blogs";
 
-const SITE_URL = "https://nichijo-jp.com";
+const getSiteUrl = () => process.env.SITE_URL ?? "https://nichijo-jp.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const SITE_URL = getSiteUrl();
   // static pages
   const staticPages: MetadataRoute.Sitemap = [
     {

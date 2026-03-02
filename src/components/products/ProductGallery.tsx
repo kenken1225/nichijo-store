@@ -4,51 +4,19 @@ import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { ShopifyImage, ShopifyVariant } from "@/lib/types/shopify";
-
-type VariantImageInfo = {
-  label: string;
-  imageUrl: string;
-  imageIndex: number;
-};
+import type { ShopifyImage } from "@/lib/types/shopify";
 
 type ProductGalleryProps = {
   images: ShopifyImage[];
   title: string;
-  variants?: ShopifyVariant[];
   selectedVariantImageUrl?: string | null;
 };
 
-function buildVariantImages(images: ShopifyImage[], variants: ShopifyVariant[]): VariantImageInfo[] {
-  const seen = new Set<string>();
-  const result: VariantImageInfo[] = [];
-
-  for (const variant of variants) {
-    if (!variant.image?.url) continue;
-    const colorOption = variant.selectedOptions?.find(
-      (o) =>
-        o.name.toLowerCase() === "color" || o.name.toLowerCase() === "colour" || o.name === "カラー" || o.name === "色"
-    );
-    const label = colorOption?.value ?? variant.title;
-    if (seen.has(variant.image.url)) continue;
-    seen.add(variant.image.url);
-
-    const idx = images.findIndex((img) => img.url === variant.image!.url);
-    if (idx >= 0) {
-      result.push({ label, imageUrl: variant.image.url, imageIndex: idx });
-    }
-  }
-  return result;
-}
-
-export function ProductGallery({ images, title, variants = [], selectedVariantImageUrl }: ProductGalleryProps) {
+export function ProductGallery({ images, title, selectedVariantImageUrl }: ProductGalleryProps) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, align: "start" });
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
-
-  const isDefaultOnly = variants.length <= 1 && variants[0]?.title;
-  const variantImages = isDefaultOnly ? [] : buildVariantImages(images, variants);
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
@@ -72,13 +40,13 @@ export function ProductGallery({ images, title, variants = [], selectedVariantIm
     if (!emblaApi || !selectedVariantImageUrl) return;
     const idx = images.findIndex((img) => img.url === selectedVariantImageUrl);
     if (idx >= 0 && idx !== emblaApi.selectedScrollSnap()) {
-      emblaApi.scrollTo(idx);
+      emblaApi.scrollTo(idx, true);
     }
   }, [emblaApi, selectedVariantImageUrl, images]);
 
   const scrollTo = useCallback(
-    (index: number) => {
-      emblaApi?.scrollTo(index);
+    (index: number, instant = true) => {
+      emblaApi?.scrollTo(index, instant);
     },
     [emblaApi]
   );
@@ -129,33 +97,6 @@ export function ProductGallery({ images, title, variants = [], selectedVariantIm
           </button>
         )}
       </div>
-
-      {/* Variant image row */}
-      {variantImages.length > 0 && (
-        <div className="w-full max-w-full">
-          <div className="grid gap-1.5" style={{ gridTemplateColumns: `repeat(7, minmax(0, 1fr))` }}>
-            {variantImages.map((vi) => (
-              <button
-                key={vi.imageUrl}
-                type="button"
-                onClick={() => scrollTo(vi.imageIndex)}
-                className="group flex flex-col items-center gap-1"
-              >
-                <div
-                  className={`relative aspect-square w-full overflow-hidden rounded-md border-2 transition ${
-                    selectedIndex === vi.imageIndex ? "border-foreground" : "border-transparent hover:border-border"
-                  }`}
-                >
-                  <Image src={vi.imageUrl} alt={vi.label} fill sizes="80px" className="object-cover" />
-                </div>
-                <span className="text-[10px] leading-tight text-muted-foreground text-center line-clamp-2">
-                  {vi.label}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* All thumbnails grid */}
       <div className="w-full max-w-full">

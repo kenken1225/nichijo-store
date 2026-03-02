@@ -113,4 +113,29 @@ export type CartLineMerchandise = {
     handle: string;
     featuredImage?: ShopifyImage | null;
   };
+  image?: ShopifyImage | null;
+};
+
+export type CartApiResponse = {
+  lines?: CartLine[] | { edges?: { node: CartLine }[] };
+  cost?: { subtotalAmount: ShopifyPrice; totalAmount?: ShopifyPrice };
+  checkoutUrl?: string;
+  totalQuantity?: number;
+};
+
+export type MiniCartLine = {
+  id: string;
+  title: string;
+  variantTitle: string;
+  quantity: number;
+  price: string;
+  imageUrl?: string | null;
+  imageAlt?: string | null;
+};
+
+export type ParsedCart = {
+  lines: MiniCartLine[];
+  subtotal: string;
+  checkoutUrl: string | null;
+  totalQuantity: number;
 };
