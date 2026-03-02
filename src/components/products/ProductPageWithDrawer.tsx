@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { formatPrice } from "@/lib/shopify";
+import { formatPrice } from "@/lib/shopify/client";
 import { useCart } from "@/contexts/CartContext";
 import { useCountry } from "@/contexts/CountryContext";
 import type { CartApiResponse, MiniCartLine, ParsedCart, ShopifyImage, ShopifyVariant } from "@/lib/types/shopify";
