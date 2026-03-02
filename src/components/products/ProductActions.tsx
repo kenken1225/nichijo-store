@@ -44,7 +44,7 @@ export function ProductActions({
   title,
   descriptionHtml,
   variants,
-  recommendations = [],
+  recommendations: _recommendations = [],
   onAddedToCart,
   onVariantImageChange,
 }: ProductActionsProps) {
@@ -125,7 +125,22 @@ export function ProductActions({
     return !hasAvailableVariantFor(next);
   };
 
-  type CartResponse = { lines?: any[]; cost?: any; checkoutUrl?: string; totalQuantity?: number };
+  type CartLineItem = {
+    id?: string;
+    quantity?: number;
+    merchandise?: {
+      product?: { title?: string; featuredImage?: { url?: string; altText?: string } };
+      title?: string;
+      image?: { url?: string; altText?: string };
+      price?: { amount: string; currencyCode: string };
+    };
+  };
+  type CartResponse = {
+    lines?: CartLineItem[];
+    cost?: { subtotalAmount?: { amount: string; currencyCode: string } };
+    checkoutUrl?: string;
+    totalQuantity?: number;
+  };
 
   const parseCart = (
     cart: CartResponse | null
