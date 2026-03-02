@@ -103,7 +103,7 @@ export const PRODUCT_RECOMMENDATIONS_QUERY = `
           }
         }
       }
-      variants(first: 4) {
+      variants(first: 6) {
         edges {
           node {
             id

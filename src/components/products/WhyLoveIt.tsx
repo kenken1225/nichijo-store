@@ -25,7 +25,7 @@ export async function WhyLoveIt() {
     <section className="bg-[#fbf7f3] py-14">
       <Container className="space-y-8">
         <div className="text-center space-y-3">
-          <h2 className="text-3xl font-semibold text-neutral-900">{t("whyLoveItTitle")}</h2>
+          <h2 className="text-3xl font-semibold text-neutral-900 whitespace-pre-line">{t("whyLoveItTitle")}</h2>
         </div>
         <div className="grid gap-6 md:grid-cols-2">
           {points.map((item) => {

@@ -1,4 +1,5 @@
 import type { ShopifyVariant } from "@/lib/types/shopify";
+import type { ParsedCart } from "@/lib/types/shopify";
 import { ProductActions } from "./ProductActions";
 
 type RecommendationItem = {
@@ -17,6 +18,7 @@ type ProductInfoProps = {
   variants: ShopifyVariant[];
   recommendations?: RecommendationItem[];
   onVariantImageChange?: (imageUrl: string | null) => void;
+  onAddedToCart?: (parsed: ParsedCart) => void;
 };
 
 export function ProductInfo(props: ProductInfoProps) {
