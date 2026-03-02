@@ -1,13 +1,13 @@
-import { shopifyFetch, toShopifyCountry } from "../shopify";
-import type { CartLine, ShopifyCart } from "../types/shopify";
-import { CART_QUERY } from "./queries";
+import { shopifyFetch, toShopifyCountry } from "../client";
+import type { CartLine, ShopifyCart } from "../../types/shopify";
+import { CART_QUERY } from "../graphql/queries";
 import {
   CART_CREATE_MUTATION,
   CART_LINES_ADD_MUTATION,
   CART_LINES_UPDATE_MUTATION,
   CART_LINES_REMOVE_MUTATION,
   CART_BUYER_IDENTITY_UPDATE_MUTATION,
-} from "./mutations";
+} from "../graphql/mutations";
 
 type CartQuery = {
   cart:
@@ -92,7 +92,12 @@ export async function createCart(
   return { cart, cartId: cart.id };
 }
 
-export async function addToCart(cartId: string, merchandiseId: string, quantity = 1, countryCode?: string): Promise<{ cart: CartWithLines }> {
+export async function addToCart(
+  cartId: string,
+  merchandiseId: string,
+  quantity = 1,
+  countryCode?: string
+): Promise<{ cart: CartWithLines }> {
   const data = await shopifyFetch<CartMutationResponse<"cartLinesAdd">>(CART_LINES_ADD_MUTATION, {
     cartId,
     lines: [{ merchandiseId, quantity }] as CartLineInput[],
@@ -141,7 +146,11 @@ export async function updateCartLine(
   return { cart };
 }
 
-export async function removeFromCart(cartId: string, lineIds: string[], countryCode?: string): Promise<{ cart: CartWithLines }> {
+export async function removeFromCart(
+  cartId: string,
+  lineIds: string[],
+  countryCode?: string
+): Promise<{ cart: CartWithLines }> {
   const data = await shopifyFetch<CartMutationResponse<"cartLinesRemove">>(CART_LINES_REMOVE_MUTATION, {
     cartId,
     lineIds,
@@ -164,8 +173,8 @@ export async function removeFromCart(cartId: string, lineIds: string[], countryC
 }
 
 /**
- * カートの buyerIdentity を更新して、国・通貨を切り替える
- * ユーザーが国を変更した時に既存カートの通貨も更新するために使う
+ * Update Cart buyerIdentity, Switch counrry and currency
+ * Used to update the currency in existing carts when a user changes their country.
  */
 export async function updateCartCountry(cartId: string, countryCode: string): Promise<{ cart: CartWithLines }> {
   const data = await shopifyFetch<CartMutationResponse<"cartBuyerIdentityUpdate">>(

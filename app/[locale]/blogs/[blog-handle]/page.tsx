@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { Container } from "@/components/layout/Container";
 import { BlogList } from "@/components/blogs/BlogList";
 import { BlogSwitcher } from "@/components/blogs/BlogSwitcher";
-import { getBlogWithArticles, getBlogs } from "@/lib/shopify/blogs";
+import { getBlogWithArticles, getBlogs } from "@/lib/shopify/domain/blogs";
 import { BlogListSkeleton } from "@/components/skeletons";
 import { getTranslations, getLocale } from "next-intl/server";
 import { getCountryCode } from "@/lib/country-config";

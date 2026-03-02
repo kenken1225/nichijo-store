@@ -1,6 +1,6 @@
-import { shopifyFetch, toShopifyLanguage, toShopifyCountry } from "../shopify";
-import type { ShopifyPolicies } from "@/lib/types/shopify";
-import { POLICIES_QUERY } from "./queries";
+import { shopifyFetch, toShopifyLanguage, toShopifyCountry } from "../client";
+import type { ShopifyPolicies } from "../../types/shopify";
+import { POLICIES_QUERY } from "../graphql/queries";
 
 type PoliciesQuery = {
   shop: {

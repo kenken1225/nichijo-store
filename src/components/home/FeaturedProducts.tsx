@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Container } from "@/components/layout/Container";
 import { ProductCard } from "@/components/shared/ProductCard";
 import { ArrowRight } from "lucide-react";
-import { getProductsList } from "@/lib/shopify/products";
+import { getProductsList } from "@/lib/shopify/domain/products";
 import { getTranslations, getLocale } from "next-intl/server";
 import { getCountryCode } from "@/lib/country-config";
 

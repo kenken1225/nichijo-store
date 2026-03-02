@@ -8,7 +8,7 @@ import { ProductPageWithDrawer } from "@/components/products/ProductPageWithDraw
 import { WhyLoveIt } from "@/components/products/WhyLoveIt";
 import { CustomerReviews } from "@/components/products/CustomerReviews";
 import { getCountryCode } from "@/lib/country-config";
-import { getProductByHandle, getProductRecommendations } from "@/lib/shopify/products";
+import { getProductByHandle, getProductRecommendations } from "@/lib/shopify/domain/products";
 
 const YouMayAlsoLike = dynamic(() => import("@/components/products/YouMayAlsoLike").then((mod) => mod.YouMayAlsoLike), {
   loading: () => <div className="h-64 w-full animate-pulse bg-muted" />,

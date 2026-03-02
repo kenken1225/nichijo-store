@@ -1,5 +1,5 @@
 import { CollectionCard } from "./CollectionCard";
-import type { CollectionSummary } from "@/lib/shopify/collections";
+import type { CollectionSummary } from "@/lib/shopify/domain/collections";
 
 type CollectionListProps = {
   collections: CollectionSummary[];

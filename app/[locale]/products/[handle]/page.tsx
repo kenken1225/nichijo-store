@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getCountryCode } from "@/lib/country-config";
-import { getProductByHandle } from "@/lib/shopify/products";
+import { getProductByHandle } from "@/lib/shopify/domain/products";
 import { ProductDetailSkeleton } from "@/components/skeletons";
 import { ProductContent } from "@/components/products/ProductContent";
 

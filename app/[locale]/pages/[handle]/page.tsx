@@ -1,4 +1,4 @@
-import { getPageSingle } from "@/lib/shopify/pages";
+import { getPageSingle } from "@/lib/shopify/domain/pages";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/layout/Container";
 import Link from "next/link";

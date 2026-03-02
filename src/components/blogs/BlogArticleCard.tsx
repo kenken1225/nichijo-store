@@ -1,6 +1,6 @@
 import Link from "next/link";
-import type { BlogArticleSummary } from "@/lib/shopify/blogs";
-import { formatDate } from "@/lib/shopify";
+import type { BlogArticleSummary } from "@/lib/shopify/domain/blogs";
+import { formatDate } from "@/lib/shopify/client";
 import { getTranslations } from "next-intl/server";
 
 type BlogArticleCardProps = {

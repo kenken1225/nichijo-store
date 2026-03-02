@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { Hero } from "@/components/sections/Hero";
-import { TopViewSection } from "@/components/sections/TopViewSection";
-import { FeaturedProducts } from "@/components/sections/FeaturedProducts";
-import { About } from "@/components/sections/About";
-import { Blog } from "@/components/sections/Blog";
-import { Trust } from "@/components/sections/Trust";
-import { VideoSection } from "@/components/sections/VideoSection";
+import { Hero } from "@/components/home/Hero";
+import { TopViewSection } from "@/components/home/TopViewSection";
+import { FeaturedProducts } from "@/components/home/FeaturedProducts";
+import { About } from "@/components/home/About";
+import { Blog } from "@/components/home/Blog";
+import { Trust } from "@/components/home/Trust";
+import { VideoSection } from "@/components/home/VideoSection";
 import { CustomerReviews } from "@/components/products/CustomerReviews";
 import { Suspense } from "react";
 

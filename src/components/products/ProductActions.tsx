@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ShoppingBag, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/Button";
-import { formatPrice } from "@/lib/shopify";
+import { formatPrice } from "@/lib/shopify/client";
 import type { ShopifyVariant } from "@/lib/types/shopify";
 import { ProductPrice } from "./ProductPrice";
 import { useCart } from "@/contexts/CartContext";

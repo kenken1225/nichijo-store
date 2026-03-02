@@ -1,5 +1,5 @@
-import { shopifyFetch, toShopifyLanguage, toShopifyCountry } from "../shopify";
-import { MENU_QUERY } from "./queries";
+import { shopifyFetch, toShopifyLanguage, toShopifyCountry } from "../client";
+import { MENU_QUERY } from "../graphql/queries";
 
 export type MenuItem = {
   id: string;

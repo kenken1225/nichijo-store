@@ -1,4 +1,4 @@
-import { getPolicyByHandle } from "@/lib/shopify/policies";
+import { getPolicyByHandle } from "@/lib/shopify/domain/policies";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/layout/Container";
 import Link from "next/link";

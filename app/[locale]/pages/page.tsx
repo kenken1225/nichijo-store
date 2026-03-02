@@ -1,6 +1,6 @@
 import { Container } from "@/components/layout/Container";
 import { redirect } from "next/navigation";
-import { getPageList } from "@/lib/shopify/pages";
+import { getPageList } from "@/lib/shopify/domain/pages";
 import { getTranslations, getLocale } from "next-intl/server";
 import { getCountryCode } from "@/lib/country-config";
 

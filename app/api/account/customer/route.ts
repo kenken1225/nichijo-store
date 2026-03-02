@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCustomer, getCustomerInfo, updateCustomer } from "@/lib/shopify/customer";
+import { getCustomer, getCustomerInfo, updateCustomer } from "@/lib/shopify/domain/customer";
 import { cookies } from "next/headers";
 
 // Get customer information

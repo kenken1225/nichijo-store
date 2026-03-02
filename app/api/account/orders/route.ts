@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCustomerOrders } from "@/lib/shopify/customer";
+import { getCustomerOrders } from "@/lib/shopify/domain/customer";
 import { cookies } from "next/headers";
 
 // Get order history

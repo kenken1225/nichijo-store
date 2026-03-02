@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Link from "next/link";
-import { MenuItem } from "@/lib/shopify/navigation";
-import { normalizeMenuUrl } from "@/lib/shopify/navigation";
+import { MenuItem, normalizeMenuUrl } from "@/lib/shopify/domain/navigation";
 import { ChevronRight } from "lucide-react";
 
 // Recursive dropdown item for nested menus

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createCustomer, loginCustomer } from "@/lib/shopify/customer";
+import { createCustomer, loginCustomer } from "@/lib/shopify/domain/customer";
 import { cookies } from "next/headers";
 
 export async function POST(request: NextRequest) {
