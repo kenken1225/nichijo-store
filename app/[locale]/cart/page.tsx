@@ -10,8 +10,6 @@ import { cookies } from "next/headers";
 import { getTranslations, getLocale } from "next-intl/server";
 import { getCountryCode } from "@/lib/country-config";
 
-export const revalidate = 3600;
-
 export default async function CartPage() {
   const tCart = await getTranslations("cart");
   const tCommon = await getTranslations("common");
