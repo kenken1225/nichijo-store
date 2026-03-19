@@ -6,6 +6,9 @@ import { useTranslations } from "next-intl";
 import { Container } from "@/components/layout/Container";
 import { ProductCard } from "@/components/shared/ProductCard";
 import { Image } from "@/components/shared/Image";
+import { ProductBadges } from "@/components/shared/ProductBadges";
+import type { ProductBadgeItem } from "@/components/shared/ProductBadges";
+import type { ProductBadgeKind } from "@/lib/shopify/domain/product-badges";
 
 type Recommendation = {
   title: string;
@@ -16,6 +19,7 @@ type Recommendation = {
   secondaryImageUrl?: string | null;
   variantId?: string;
   available?: boolean;
+  badgeKinds?: ProductBadgeKind[];
 };
 
 type YouMayAlsoLikeProps = {
@@ -40,7 +44,19 @@ export function YouMayAlsoLike({
   maxRecent = 5,
 }: YouMayAlsoLikeProps) {
   const t = useTranslations("product");
+  const tBadges = useTranslations("collections");
   const resolvedTitle = title ?? t("youMayAlsoLike");
+
+  const toBadgeItems = (kinds?: ProductBadgeKind[]): ProductBadgeItem[] =>
+    (kinds ?? []).map((kind) => ({
+      kind,
+      label:
+        kind === "soldOut"
+          ? tBadges("badgeSoldOut")
+          : kind === "limitedStock"
+            ? tBadges("badgeLimitedStock")
+            : tBadges("badgePopular"),
+    }));
   const [recentItems, setRecentItems] = useState<Recommendation[]>([]);
   const [recentLoading, setRecentLoading] = useState(false);
 
@@ -131,6 +147,7 @@ export function YouMayAlsoLike({
         <div className="flex flex-col items-start gap-3 rounded-md border border-border p-3">
           <div className="flex flex-col items-start gap-2 w-full">
             <div className="group relative aspect-[4/5] w-full overflow-hidden rounded bg-muted/60 flex-shrink-0">
+              <ProductBadges badges={toBadgeItems(item.badgeKinds)} />
               {item.imageUrl ? (
                 <>
                   <Image
@@ -173,6 +190,7 @@ export function YouMayAlsoLike({
           imageUrl={item.imageUrl}
           imageAlt={item.imageAlt}
           secondaryImageUrl={item.secondaryImageUrl}
+          badges={toBadgeItems(item.badgeKinds)}
         />
         {addBtn
           ? React.cloneElement(addBtn, {

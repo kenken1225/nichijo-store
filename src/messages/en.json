@@ -128,7 +128,13 @@
     "priceUnder30": "Under $30",
     "price30to60": "$30 - $60",
     "price60to100": "$60 - $100",
-    "priceOver100": "Over $100"
+    "priceOver100": "Over $100",
+    "badgeSoldOut": "Sold Out",
+    "badgeLimitedStock": "Limited Stock",
+    "badgePopular": "Popular",
+    "paginationNav": "Collection pages",
+    "paginationPrev": "Previous page",
+    "paginationNext": "Next page"
   },
   "search": {
     "title": "Search",

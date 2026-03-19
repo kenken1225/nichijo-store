@@ -20,6 +20,7 @@ type SearchPageProps = {
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const t = await getTranslations("search");
+  const tBadges = await getTranslations("collections");
   const locale = await getLocale();
   const countryCode = await getCountryCode();
   const { q, productPage, articlePage } = await searchParams;
@@ -83,6 +84,15 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                       href={`/products/${product.handle}`}
                       imageUrl={product.image?.url}
                       imageAlt={product.image?.altText ?? product.title}
+                      badges={product.badgeKinds.map((kind) => ({
+                        kind,
+                        label:
+                          kind === "soldOut"
+                            ? tBadges("badgeSoldOut")
+                            : kind === "limitedStock"
+                              ? tBadges("badgeLimitedStock")
+                              : tBadges("badgePopular"),
+                      }))}
                     />
                   ))}
                 </div>

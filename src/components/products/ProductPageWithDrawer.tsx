@@ -5,6 +5,8 @@ import { formatPrice } from "@/lib/shopify/client";
 import { useCart } from "@/contexts/CartContext";
 import { useCountry } from "@/contexts/CountryContext";
 import type { CartApiResponse, MiniCartLine, ParsedCart, ShopifyImage, ShopifyVariant } from "@/lib/types/shopify";
+import type { ProductBadgeItem } from "@/components/shared/ProductBadges";
+import type { ProductBadgeKind } from "@/lib/shopify/domain/product-badges";
 import { ProductDetail } from "./ProductDetail";
 import { MiniCartDrawer } from "./MiniCartDrawer";
 
@@ -17,6 +19,7 @@ type RecommendationItem = {
   secondaryImageUrl?: string | null;
   variantId?: string;
   available?: boolean;
+  badgeKinds?: ProductBadgeKind[];
 };
 
 type ProductPageWithDrawerProps = {
@@ -27,10 +30,11 @@ type ProductPageWithDrawerProps = {
     images: ShopifyImage[];
     variants: ShopifyVariant[];
   };
+  headerBadges: ProductBadgeItem[];
   recommendations: RecommendationItem[];
 };
 
-export function ProductPageWithDrawer({ product, recommendations }: ProductPageWithDrawerProps) {
+export function ProductPageWithDrawer({ product, headerBadges, recommendations }: ProductPageWithDrawerProps) {
   const { setItemCount } = useCart();
   const { country } = useCountry();
   const [cartLines, setCartLines] = useState<MiniCartLine[]>([]);
@@ -154,6 +158,7 @@ export function ProductPageWithDrawer({ product, recommendations }: ProductPageW
     <>
       <ProductDetail
         product={product}
+        headerBadges={headerBadges}
         recommendations={recommendations}
         onAddedToCart={handleAddedToCart}
         selectedVariantImageUrl={selectedVariantImageUrl}

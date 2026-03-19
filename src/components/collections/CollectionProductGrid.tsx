@@ -2,6 +2,7 @@ import type { CollectionProduct } from "@/lib/shopify/domain/collections";
 import { formatPrice } from "@/lib/shopify/client";
 import { ProductCard } from "@/components/shared/ProductCard";
 import { useCountry } from "@/contexts/CountryContext";
+import { useTranslations } from "next-intl";
 
 type CollectionProductGridProps = {
   products: CollectionProduct[];
@@ -9,6 +10,8 @@ type CollectionProductGridProps = {
 
 export function CollectionProductGrid({ products }: CollectionProductGridProps) {
   const { country } = useCountry();
+  const t = useTranslations("collections");
+
   return (
     <div className="grid grid-cols-2 gap-3 lg:gap-6 lg:grid-cols-3">
       {products.map((product) => (
@@ -24,6 +27,15 @@ export function CollectionProductGrid({ products }: CollectionProductGridProps) 
           imageUrl={product.image?.url}
           imageAlt={product.image?.altText}
           secondaryImageUrl={product.secondaryImage?.url}
+          badges={product.badges.map((kind) => ({
+            kind,
+            label:
+              kind === "soldOut"
+                ? t("badgeSoldOut")
+                : kind === "limitedStock"
+                  ? t("badgeLimitedStock")
+                  : t("badgePopular"),
+          }))}
         />
       ))}
     </div>

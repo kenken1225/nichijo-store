@@ -7,6 +7,8 @@ import {
   PRODUCTS_BY_HANDLES_QUERY,
   PRODUCTS_LIST_QUERY,
 } from "../graphql/queries";
+import type { ProductBadgeKind } from "./product-badges";
+import { deriveProductBadges } from "./product-badges";
 
 type ProductQueryVariant = ShopifyVariant & {
   image?: ShopifyImage | null;
@@ -16,6 +18,9 @@ type ProductQuery = {
   product: {
     id: string;
     title: string;
+    availableForSale: boolean;
+    tags: string[];
+    totalInventory?: number | null;
     description: string;
     descriptionHtml: string;
     handle: string;
@@ -30,6 +35,9 @@ type RecommendationsQuery = {
     id: string;
     title: string;
     handle: string;
+    availableForSale: boolean;
+    tags: string[];
+    totalInventory?: number | null;
     featuredImage?: ShopifyImage | null;
     images?: { edges: { node: ShopifyImage }[] };
     variants?: { edges: { node: ShopifyVariant }[] };
@@ -40,6 +48,9 @@ type RecommendationsQuery = {
 export type ProductDetailData = {
   id: string;
   title: string;
+  availableForSale: boolean;
+  tags: string[];
+  totalInventory?: number | null;
   description: string;
   descriptionHtml: string;
   handle: string;
@@ -57,10 +68,60 @@ export type ProductRecommendation = {
   secondaryImageUrl?: string | null;
   variantId?: string;
   available?: boolean;
+  badgeKinds: ProductBadgeKind[];
 };
 
+type ProductListNode = {
+  handle: string;
+  title: string;
+  availableForSale: boolean;
+  tags: string[];
+  totalInventory?: number | null;
+  featuredImage?: ShopifyImage | null;
+  images?: { edges: { node: ShopifyImage }[] };
+  priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
+  variants?: {
+    edges: {
+      node: {
+        availableForSale?: boolean;
+        quantityAvailable?: number | null;
+      };
+    }[];
+  };
+};
+
+type ProductsListQuery = {
+  products: {
+    edges: {
+      node: ProductListNode;
+    }[];
+  };
+};
+
+export type ProductListItem = {
+  handle: string;
+  title: string;
+  priceFormatted: string;
+  image?: ShopifyImage | null;
+  badgeKinds: ProductBadgeKind[];
+};
+
+function listItemBadges(node: ProductListNode): ProductBadgeKind[] {
+  const variantNode = node.variants?.edges?.[0]?.node;
+  return deriveProductBadges({
+    availableForSale: node.availableForSale,
+    tags: node.tags,
+    totalInventory: node.totalInventory,
+    quantityAvailable: variantNode?.quantityAvailable,
+  });
+}
+
 export async function getProductByHandle(handle: string, locale?: string, countryCode?: string): Promise<ProductDetailData | null> {
-  const data = await shopifyFetch<ProductQuery>(PRODUCT_BY_HANDLE_QUERY, { handle, language: toShopifyLanguage(locale), country: toShopifyCountry(countryCode) });
+  const data = await shopifyFetch<ProductQuery>(PRODUCT_BY_HANDLE_QUERY, {
+    handle,
+    language: toShopifyLanguage(locale),
+    country: toShopifyCountry(countryCode),
+  });
   const product = data?.product;
   if (!product) return null;
 
@@ -88,6 +149,9 @@ export async function getProductByHandle(handle: string, locale?: string, countr
   return {
     id: product.id,
     title: product.title,
+    availableForSale: product.availableForSale,
+    tags: product.tags ?? [],
+    totalInventory: product.totalInventory,
     description: product.description,
     descriptionHtml: product.descriptionHtml,
     handle: product.handle,
@@ -98,7 +162,11 @@ export async function getProductByHandle(handle: string, locale?: string, countr
 }
 
 export async function getProductRecommendations(productId: string, locale?: string, countryCode?: string): Promise<ProductRecommendation[]> {
-  const data = await shopifyFetch<RecommendationsQuery>(PRODUCT_RECOMMENDATIONS_QUERY, { productId, language: toShopifyLanguage(locale), country: toShopifyCountry(countryCode) });
+  const data = await shopifyFetch<RecommendationsQuery>(PRODUCT_RECOMMENDATIONS_QUERY, {
+    productId,
+    language: toShopifyLanguage(locale),
+    country: toShopifyCountry(countryCode),
+  });
   const numberLocale = countryCode ? getCountryByCode(countryCode).numberLocale : "en-US";
   return (
     data?.productRecommendations?.map((rec) => {
@@ -115,34 +183,22 @@ export async function getProductRecommendations(productId: string, locale?: stri
         secondaryImageUrl: secondaryImage?.url ?? null,
         variantId: variantNode?.id,
         available: variantNode?.availableForSale ?? true,
+        badgeKinds: deriveProductBadges({
+          availableForSale: rec.availableForSale,
+          tags: rec.tags,
+          totalInventory: rec.totalInventory,
+          quantityAvailable: variantNode?.quantityAvailable,
+        }),
       };
     }) ?? []
   );
 }
 
-type ProductsListQuery = {
-  products: {
-    edges: {
-      node: {
-        handle: string;
-        title: string;
-        featuredImage?: ShopifyImage | null;
-        images?: { edges: { node: ShopifyImage }[] };
-        priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
-      };
-    }[];
-  };
-};
-
-export type ProductListItem = {
-  handle: string;
-  title: string;
-  priceFormatted: string;
-  image?: ShopifyImage | null;
-};
-
 export async function getProductsList(limit = 12, locale?: string, countryCode?: string): Promise<ProductListItem[]> {
-  const data = await shopifyFetch<ProductsListQuery>(PRODUCTS_LIST_QUERY, { language: toShopifyLanguage(locale), country: toShopifyCountry(countryCode) });
+  const data = await shopifyFetch<ProductsListQuery>(PRODUCTS_LIST_QUERY, {
+    language: toShopifyLanguage(locale),
+    country: toShopifyCountry(countryCode),
+  });
   const numberLocale = countryCode ? getCountryByCode(countryCode).numberLocale : "en-US";
   const edges = data?.products?.edges ?? [];
   return edges.slice(0, limit).map(({ node }) => {
@@ -153,14 +209,17 @@ export async function getProductsList(limit = 12, locale?: string, countryCode?:
       title: node.title,
       image,
       priceFormatted: price ? formatPrice(price.amount, price.currencyCode, numberLocale) : "",
+      badgeKinds: listItemBadges(node),
     };
   });
 }
 
-// Seach Product Query
-
 export async function searchProducts(query: string, locale?: string, countryCode?: string): Promise<ProductListItem[]> {
-  const data = await shopifyFetch<ProductsListQuery>(PRODUCTS_BY_HANDLES_QUERY, { query, language: toShopifyLanguage(locale), country: toShopifyCountry(countryCode) });
+  const data = await shopifyFetch<ProductsListQuery>(PRODUCTS_BY_HANDLES_QUERY, {
+    query,
+    language: toShopifyLanguage(locale),
+    country: toShopifyCountry(countryCode),
+  });
   const numberLocale = countryCode ? getCountryByCode(countryCode).numberLocale : "en-US";
   const products = data?.products?.edges ?? [];
 
@@ -173,6 +232,7 @@ export async function searchProducts(query: string, locale?: string, countryCode
       title: node.title,
       image,
       priceFormatted: price ? formatPrice(price.amount, price.currencyCode, numberLocale) : "",
+      badgeKinds: listItemBadges(node),
     };
   });
 }

@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { Image } from "@/components/shared/Image";
+import { ProductBadges, type ProductBadgeItem } from "@/components/shared/ProductBadges";
+
+export type ProductCardBadge = ProductBadgeItem;
 
 type Props = {
   title: string;
@@ -8,9 +11,10 @@ type Props = {
   imageUrl?: string | null;
   imageAlt?: string | null;
   secondaryImageUrl?: string | null;
+  badges?: ProductBadgeItem[];
 };
 
-export function ProductCard({ title, price, href, imageUrl, imageAlt, secondaryImageUrl }: Props) {
+export function ProductCard({ title, price, href, imageUrl, imageAlt, secondaryImageUrl, badges }: Props) {
   const hasSecondaryImage = !!secondaryImageUrl;
   return (
     <Link
@@ -18,6 +22,7 @@ export function ProductCard({ title, price, href, imageUrl, imageAlt, secondaryI
       className="group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm transition hover:shadow"
     >
       <div className="aspect-[4/5] w-full bg-muted/50 relative overflow-hidden">
+        <ProductBadges badges={badges ?? []} />
         {imageUrl ? (
           <>
             <Image
