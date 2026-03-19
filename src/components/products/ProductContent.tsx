@@ -9,6 +9,9 @@ import { WhyLoveIt } from "@/components/products/WhyLoveIt";
 import { CustomerReviews } from "@/components/products/CustomerReviews";
 import { getCountryCode } from "@/lib/country-config";
 import { getProductByHandle, getProductRecommendations } from "@/lib/shopify/domain/products";
+import { deriveProductBadges } from "@/lib/shopify/domain/product-badges";
+import type { ProductBadgeKind } from "@/lib/shopify/domain/product-badges";
+import type { ProductBadgeItem } from "@/components/shared/ProductBadges";
 
 const YouMayAlsoLike = dynamic(() => import("@/components/products/YouMayAlsoLike").then((mod) => mod.YouMayAlsoLike), {
   loading: () => <div className="h-64 w-full animate-pulse bg-muted" />,
@@ -16,8 +19,21 @@ const YouMayAlsoLike = dynamic(() => import("@/components/products/YouMayAlsoLik
 
 const getSiteUrl = () => process.env.SITE_URL ?? "https://nichijo-jp.com";
 
+function badgeItemsFromKinds(kinds: ProductBadgeKind[], tBadges: (key: string) => string): ProductBadgeItem[] {
+  return kinds.map((kind) => ({
+    kind,
+    label:
+      kind === "soldOut"
+        ? tBadges("badgeSoldOut")
+        : kind === "limitedStock"
+          ? tBadges("badgeLimitedStock")
+          : tBadges("badgePopular"),
+  }));
+}
+
 export async function ProductContent({ handle }: { handle: string }) {
   const t = await getTranslations("product");
+  const tBadges = await getTranslations("collections");
   const locale = await getLocale();
   const countryCode = await getCountryCode();
   const product = await getProductByHandle(handle, locale, countryCode);
@@ -35,7 +51,16 @@ export async function ProductContent({ handle }: { handle: string }) {
     secondaryImageUrl: rec.secondaryImageUrl,
     variantId: rec.variantId,
     available: rec.available,
+    badgeKinds: rec.badgeKinds,
   }));
+
+  const headerBadgeKinds = deriveProductBadges({
+    availableForSale: product.availableForSale,
+    tags: product.tags,
+    totalInventory: product.totalInventory,
+    quantityAvailable: product.variants[0]?.quantityAvailable,
+  });
+  const headerBadges = badgeItemsFromKinds(headerBadgeKinds, tBadges);
 
   // JSON-LD for Google Rich Snippets
   const siteUrl = getSiteUrl();
@@ -82,6 +107,7 @@ export async function ProductContent({ handle }: { handle: string }) {
           images: product.images,
           variants: product.variants,
         }}
+        headerBadges={headerBadges}
         recommendations={recommendations}
       />
 

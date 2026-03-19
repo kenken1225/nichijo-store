@@ -11,6 +11,7 @@ export async function FeaturedProducts() {
   const countryCode = await getCountryCode();
   const products = await getProductsList(8, locale, countryCode);
   const t = await getTranslations("featured");
+  const tBadges = await getTranslations("collections");
 
   return (
     <section className="py-16 sm:py-20 bg-stone-100">
@@ -32,6 +33,15 @@ export async function FeaturedProducts() {
               price={product.priceFormatted}
               href={`/products/${product.handle}`}
               imageUrl={product.image?.url ?? null}
+              badges={product.badgeKinds.map((kind) => ({
+                kind,
+                label:
+                  kind === "soldOut"
+                    ? tBadges("badgeSoldOut")
+                    : kind === "limitedStock"
+                      ? tBadges("badgeLimitedStock")
+                      : tBadges("badgePopular"),
+              }))}
             />
           ))}
         </div>

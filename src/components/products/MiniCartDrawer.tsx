@@ -4,6 +4,7 @@ import clsx from "clsx";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import type { MiniCartLine } from "@/lib/types/shopify";
+import type { ProductBadgeKind } from "@/lib/shopify/domain/product-badges";
 import { YouMayAlsoLike } from "./YouMayAlsoLike";
 
 type RecommendationItem = {
@@ -15,6 +16,7 @@ type RecommendationItem = {
   secondaryImageUrl?: string | null;
   variantId?: string;
   available?: boolean;
+  badgeKinds?: ProductBadgeKind[];
 };
 
 type MiniCartDrawerProps = {

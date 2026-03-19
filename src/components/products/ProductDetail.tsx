@@ -1,5 +1,7 @@
 import type { ShopifyImage, ShopifyVariant } from "@/lib/types/shopify";
 import type { ParsedCart } from "@/lib/types/shopify";
+import type { ProductBadgeItem } from "@/components/shared/ProductBadges";
+import type { ProductBadgeKind } from "@/lib/shopify/domain/product-badges";
 import { Container } from "@/components/layout/Container";
 import { ProductGallery } from "./ProductGallery";
 import { ProductInfo } from "./ProductInfo";
@@ -13,6 +15,7 @@ type RecommendationItem = {
   imageAlt?: string | null;
   variantId?: string;
   available?: boolean;
+  badgeKinds?: ProductBadgeKind[];
 };
 
 type ProductDetailProps = {
@@ -23,6 +26,7 @@ type ProductDetailProps = {
     images: ShopifyImage[];
     variants: ShopifyVariant[];
   };
+  headerBadges: ProductBadgeItem[];
   recommendations?: RecommendationItem[];
   onAddedToCart?: (parsed: ParsedCart) => void;
   selectedVariantImageUrl?: string | null;
@@ -31,6 +35,7 @@ type ProductDetailProps = {
 
 export function ProductDetail({
   product,
+  headerBadges,
   recommendations,
   onAddedToCart,
   selectedVariantImageUrl,
@@ -48,6 +53,7 @@ export function ProductDetail({
           title={product.title}
           descriptionHtml={product.descriptionHtml}
           variants={product.variants}
+          headerBadges={headerBadges}
           recommendations={recommendations}
           onAddedToCart={onAddedToCart}
           onVariantImageChange={onVariantImageChange}

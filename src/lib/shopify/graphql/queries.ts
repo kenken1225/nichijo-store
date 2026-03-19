@@ -7,6 +7,8 @@ export const PRODUCTS_LIST_QUERY = `
         node {
           handle
           title
+          availableForSale
+          tags
           featuredImage {
             url
             altText
@@ -27,6 +29,14 @@ export const PRODUCTS_LIST_QUERY = `
               currencyCode
             }
           }
+          totalInventory
+          variants(first: 1) {
+            edges {
+              node {
+                quantityAvailable
+              }
+            }
+          }
         }
       }
     }
@@ -38,9 +48,12 @@ export const PRODUCT_BY_HANDLE_QUERY = `
     product(handle: $handle) {
       id
       title
+      availableForSale
+      tags
       description
       descriptionHtml
       handle
+      totalInventory
       featuredImage {
         url
         altText
@@ -91,6 +104,9 @@ export const PRODUCT_RECOMMENDATIONS_QUERY = `
       id
       title
       handle
+      availableForSale
+      tags
+      totalInventory
       featuredImage {
         url
         altText
@@ -138,6 +154,8 @@ export const PRODUCTS_BY_HANDLES_QUERY = `
         node {
           handle
           title
+          availableForSale
+          tags
           featuredImage {
             url
             altText
@@ -156,11 +174,13 @@ export const PRODUCTS_BY_HANDLES_QUERY = `
               currencyCode
             }
           }
+          totalInventory
           variants(first: 1) {
             edges {
               node {
                 id
                 availableForSale
+                quantityAvailable
                 price {
                   amount
                   currencyCode
@@ -203,25 +223,22 @@ export const CART_QUERY = `
   ${CART_FRAGMENT}
 `;
 
-export const COLLECTION_BY_HANDLE_QUERY = `
-  query CollectionByHandle($handle: String!, $language: LanguageCode, $country: CountryCode) @inContext(language: $language, country: $country) {
-    collection(handle: $handle) {
-      handle
-      title
-      description
-      image {
-        url
-        altText
-        width
-        height
-      }
-      products(first: 12) {
+const COLLECTION_PRODUCTS_BODY = `
+        pageInfo {
+          hasNextPage
+          hasPreviousPage
+          startCursor
+          endCursor
+        }
         edges {
           node {
             handle
             title
             productType
             createdAt
+            availableForSale
+            totalInventory
+            tags
             featuredImage {
               url
               altText
@@ -242,21 +259,45 @@ export const COLLECTION_BY_HANDLE_QUERY = `
                 currencyCode
               }
             }
-            variants(first: 50) {
-              edges {
-                node {
-                  id
-                  availableForSale
-                  quantityAvailable
-                  price {
-                    amount
-                    currencyCode
-                  }
-                }
-              }
-            }
           }
         }
+`;
+
+/** 次のページへ: first + after */
+export const COLLECTION_BY_HANDLE_QUERY_FORWARD = `
+  query CollectionByHandleForward($handle: String!, $language: LanguageCode, $country: CountryCode, $first: Int!, $after: String) @inContext(language: $language, country: $country) {
+    collection(handle: $handle) {
+      handle
+      title
+      description
+      image {
+        url
+        altText
+        width
+        height
+      }
+      products(first: $first, after: $after) {
+${COLLECTION_PRODUCTS_BODY}
+      }
+    }
+  }
+`;
+
+/** 前のページへ: last + before */
+export const COLLECTION_BY_HANDLE_QUERY_BACKWARD = `
+  query CollectionByHandleBackward($handle: String!, $language: LanguageCode, $country: CountryCode, $last: Int!, $before: String!) @inContext(language: $language, country: $country) {
+    collection(handle: $handle) {
+      handle
+      title
+      description
+      image {
+        url
+        altText
+        width
+        height
+      }
+      products(last: $last, before: $before) {
+${COLLECTION_PRODUCTS_BODY}
       }
     }
   }

@@ -10,6 +10,8 @@ import { ProductPrice } from "./ProductPrice";
 import { useCart } from "@/contexts/CartContext";
 import { useCountry } from "@/contexts/CountryContext";
 import type { ParsedCart } from "@/lib/types/shopify";
+import { ProductBadges, type ProductBadgeItem } from "@/components/shared/ProductBadges";
+import type { ProductBadgeKind } from "@/lib/shopify/domain/product-badges";
 
 type RecommendationItem = {
   title: string;
@@ -19,6 +21,7 @@ type RecommendationItem = {
   imageAlt?: string | null;
   variantId?: string;
   available?: boolean;
+  badgeKinds?: ProductBadgeKind[];
 };
 
 type CartLine = {
@@ -35,6 +38,7 @@ type ProductActionsProps = {
   title: string;
   descriptionHtml: string;
   variants: ShopifyVariant[];
+  headerBadges: ProductBadgeItem[];
   recommendations?: RecommendationItem[];
   onAddedToCart?: (parsed: ParsedCart) => void;
   onVariantImageChange?: (imageUrl: string | null) => void;
@@ -44,6 +48,7 @@ export function ProductActions({
   title,
   descriptionHtml,
   variants,
+  headerBadges,
   recommendations: _recommendations = [],
   onAddedToCart,
   onVariantImageChange,
@@ -211,6 +216,7 @@ export function ProductActions({
     <>
       <div className="space-y-6 mt-5">
         <div className="space-y-2">
+          <ProductBadges badges={headerBadges} variant="inline" />
           <h2 className="text-2xl font-semibold text-foreground">{title}</h2>
           <ProductPrice value={displayPrice} />
           <div className="rich-text" dangerouslySetInnerHTML={{ __html: descriptionHtml }} />

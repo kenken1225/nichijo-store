@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Container } from "@/components/layout/Container";
 import { CollectionHeader } from "@/components/collections/CollectionHeader";
 import { CollectionFilters } from "@/components/collections/filters/CollectionFilters";
+import { CollectionPagination } from "@/components/collections/CollectionPagination";
 import { getCollectionWithProducts } from "@/lib/shopify/domain/collections";
 import { CollectionSkeleton } from "@/components/skeletons";
 import { getLocale } from "next-intl/server";
@@ -13,6 +14,7 @@ export const revalidate = 3600;
 
 type CollectionPageProps = {
   params: Promise<{ handle: string }>;
+  searchParams: Promise<{ after?: string; before?: string; p?: string }>;
 };
 
 export async function generateMetadata({ params }: CollectionPageProps): Promise<Metadata> {
@@ -35,10 +37,27 @@ export async function generateMetadata({ params }: CollectionPageProps): Promise
   };
 }
 
-async function CollectionContent({ handle }: { handle: string }) {
+async function CollectionContent({
+  handle,
+  searchParams,
+}: {
+  handle: string;
+  searchParams: { after?: string; before?: string; p?: string };
+}) {
   const locale = await getLocale();
   const countryCode = await getCountryCode();
-  const collection = await getCollectionWithProducts(handle, locale, countryCode);
+
+  const page = Math.max(1, parseInt(searchParams.p ?? "1", 10) || 1);
+  const before = searchParams.before;
+  const after = before ? undefined : searchParams.after;
+
+  const collection = await getCollectionWithProducts(handle, {
+    locale,
+    countryCode,
+    after,
+    before,
+  });
+
   if (!collection) {
     notFound();
   }
@@ -54,17 +73,19 @@ async function CollectionContent({ handle }: { handle: string }) {
       <section className="py-12">
         <Container className="space-y-8">
           <CollectionFilters products={collection.products} />
+          <CollectionPagination handle={handle} page={page} pageInfo={collection.pageInfo} />
         </Container>
       </section>
     </div>
   );
 }
 
-export default async function CollectionPage({ params }: CollectionPageProps) {
+export default async function CollectionPage({ params, searchParams }: CollectionPageProps) {
   const { handle } = await params;
+  const sp = await searchParams;
   return (
     <Suspense fallback={<CollectionSkeleton />}>
-      <CollectionContent handle={handle} />
+      <CollectionContent handle={handle} searchParams={sp} />
     </Suspense>
   );
 }

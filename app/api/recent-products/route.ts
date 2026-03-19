@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { shopifyFetch, formatPrice, toShopifyCountry } from "@/lib/shopify/client";
 import { PRODUCTS_BY_HANDLES_QUERY } from "@/lib/shopify/graphql/queries";
 import { COUNTRY_COOKIE_KEY, getCountryByCode } from "@/lib/country-config";
+import { deriveProductBadges } from "@/lib/shopify/domain/product-badges";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -18,7 +19,6 @@ export async function GET(req: Request) {
     return NextResponse.json({ items: [] });
   }
 
-  // get the country code from the cookies
   const cookieStore = await cookies();
   const countryCode = cookieStore.get(COUNTRY_COOKIE_KEY)?.value;
   const countryConfig = countryCode ? getCountryByCode(countryCode) : undefined;
@@ -32,12 +32,20 @@ export async function GET(req: Request) {
           node: {
             title: string;
             handle: string;
+            availableForSale: boolean;
+            tags: string[];
+            totalInventory?: number | null;
             featuredImage?: { url: string; altText?: string | null };
             images?: { edges: { node: { url: string; altText?: string | null } }[] };
             priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
             variants: {
               edges: {
-                node: { id: string; availableForSale: boolean; price: { amount: string; currencyCode: string } };
+                node: {
+                  id: string;
+                  availableForSale: boolean;
+                  quantityAvailable?: number | null;
+                  price: { amount: string; currencyCode: string };
+                };
               }[];
             };
           };
@@ -62,6 +70,12 @@ export async function GET(req: Request) {
           secondaryImageUrl: secondaryImage?.url ?? null,
           variantId: variantNode?.id,
           available: variantNode?.availableForSale ?? true,
+          badgeKinds: deriveProductBadges({
+            availableForSale: node.availableForSale,
+            tags: node.tags,
+            totalInventory: node.totalInventory,
+            quantityAvailable: variantNode?.quantityAvailable,
+          }),
         };
       }) ?? [];
 

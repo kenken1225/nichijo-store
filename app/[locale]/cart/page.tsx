@@ -9,6 +9,7 @@ import { getCart, updateCartCountry } from "@/lib/shopify/domain/cart";
 import { cookies } from "next/headers";
 import { getTranslations, getLocale } from "next-intl/server";
 import { getCountryCode } from "@/lib/country-config";
+import type { ProductBadgeKind } from "@/lib/shopify/domain/product-badges";
 
 export default async function CartPage() {
   const tCart = await getTranslations("cart");
@@ -45,6 +46,7 @@ export default async function CartPage() {
     secondaryImageUrl?: string | null;
     variantId?: string;
     available?: boolean;
+    badgeKinds: ProductBadgeKind[];
   }[] = [];
 
   if (firstProductId) {
@@ -58,6 +60,7 @@ export default async function CartPage() {
       secondaryImageUrl: rec.secondaryImageUrl,
       variantId: rec.variantId,
       available: rec.available,
+      badgeKinds: rec.badgeKinds,
     }));
   }
 

@@ -43,7 +43,7 @@ export function SortSelect({ value, onChange }: SortSelectProps) {
         <span className="text-muted-foreground">{open ? "▴" : "▾"}</span>
       </button>
       {open ? (
-        <div className="absolute end-0 mt-2 w-52 rounded-md border border-border bg-card shadow-lg">
+        <div className="z-10 absolute end-0 mt-2 w-52 rounded-md border border-border bg-card shadow-lg">
           <div className="py-1 text-sm text-foreground">
             {OPTIONS.map((opt) => (
               <button
