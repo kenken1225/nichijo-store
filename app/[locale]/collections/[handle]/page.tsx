@@ -9,6 +9,8 @@ import { CollectionSkeleton } from "@/components/skeletons";
 import { getLocale } from "next-intl/server";
 import { getCountryCode } from "@/lib/country-config";
 
+export const revalidate = 3600;
+
 type CollectionPageProps = {
   params: Promise<{ handle: string }>;
 };

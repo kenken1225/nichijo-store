@@ -6,7 +6,7 @@ import { COUNTRY_COOKIE_KEY, SUPPORTED_COUNTRIES } from "@/lib/country-config";
 // next-intl middleware
 const intlMiddleware = createMiddleware(routing);
 
-export default function middleware(request: NextRequest) {
+export default function proxy(request: NextRequest) {
   const response = intlMiddleware(request);
 
   const existingCountry = request.cookies.get(COUNTRY_COOKIE_KEY)?.value;

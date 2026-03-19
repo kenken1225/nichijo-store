@@ -5,6 +5,8 @@ import { getCollections } from "@/lib/shopify/domain/collections";
 import { getTranslations, getLocale } from "next-intl/server";
 import { getCountryCode } from "@/lib/country-config";
 
+export const revalidate = 3600;
+
 export default async function CollectionsPage() {
   const t = await getTranslations("collections");
   const locale = await getLocale();
@@ -15,10 +17,7 @@ export default async function CollectionsPage() {
     <div className="bg-background">
       <section className="bg-secondary/40 py-14">
         <Container className="space-y-4">
-          <CollectionHeader
-            title={t("title")}
-            description={t("description")}
-          />
+          <CollectionHeader title={t("title")} description={t("description")} />
         </Container>
       </section>
 

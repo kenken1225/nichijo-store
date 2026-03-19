@@ -9,7 +9,6 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@next/font": "^14.2.15",
     "@sentry/nextjs": "^10.38.0",
     "@shopify/storefront-api-client": "^1.0.4",
     "@tailwindcss/postcss": "^4.1.18",
