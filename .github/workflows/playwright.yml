@@ -1,0 +1,40 @@
+# E2E: 約2週間に1回（毎月1日・15日 09:00 UTC）+ 手動実行
+# GitHub で「Run workflow」からいつでも再実行可能
+name: Playwright E2E
+
+on:
+  schedule:
+    - cron: "0 9 1,15 * *"
+  workflow_dispatch:
+
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright tests
+        env:
+          E2E_BASE_URL: ${{ vars.E2E_BASE_URL }}
+          E2E_STOREFRONT_PASSWORD: ${{ secrets.E2E_STOREFRONT_PASSWORD }}
+          E2E_FEATURED_PRODUCT_NAME: ${{ vars.E2E_FEATURED_PRODUCT_NAME }}
+        run: npx playwright test --project=chromium
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
