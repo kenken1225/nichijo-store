@@ -12,7 +12,7 @@
     "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
-    "@sentry/nextjs": "^10.38.0",
+    "@sentry/nextjs": "^10.45.0",
     "@shopify/storefront-api-client": "^1.0.4",
     "@tailwindcss/postcss": "^4.1.18",
     "clsx": "^2.1.1",
