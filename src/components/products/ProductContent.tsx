@@ -1,21 +1,22 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { getTranslations, getLocale } from "next-intl/server";
 import { Container } from "@/components/layout/Container";
 import { ProductPageWithDrawer } from "@/components/products/ProductPageWithDrawer";
 import { WhyLoveIt } from "@/components/products/WhyLoveIt";
 import { CustomerReviews } from "@/components/products/CustomerReviews";
+import { YouMayAlsoLikeFromPromise } from "@/components/products/ProductRecommendationsFromPromise";
 import { getCountryCode } from "@/lib/country-config";
-import { getProductByHandle, getProductRecommendations } from "@/lib/shopify/domain/products";
+import {
+  getProductByHandle,
+  getProductRecommendations,
+  mapProductRecommendationsToUiItems,
+  type ProductRecommendationUiItem,
+} from "@/lib/shopify/domain/products";
 import { deriveProductBadges } from "@/lib/shopify/domain/product-badges";
 import type { ProductBadgeKind } from "@/lib/shopify/domain/product-badges";
 import type { ProductBadgeItem } from "@/components/shared/ProductBadges";
-
-const YouMayAlsoLike = dynamic(() => import("@/components/products/YouMayAlsoLike").then((mod) => mod.YouMayAlsoLike), {
-  loading: () => <div className="h-64 w-full animate-pulse bg-muted" />,
-});
 
 const getSiteUrl = () => process.env.SITE_URL ?? "https://nichijo-jp.com";
 
@@ -32,27 +33,28 @@ function badgeItemsFromKinds(kinds: ProductBadgeKind[], tBadges: (key: string) =
 }
 
 export async function ProductContent({ handle }: { handle: string }) {
-  const t = await getTranslations("product");
-  const tBadges = await getTranslations("collections");
-  const locale = await getLocale();
-  const countryCode = await getCountryCode();
-  const product = await getProductByHandle(handle, locale, countryCode);
+  const localePromise = getLocale();
+  const countryCodePromise = getCountryCode();
+  const productPromise = Promise.all([localePromise, countryCodePromise]).then(([locale, countryCode]) =>
+    getProductByHandle(handle, locale, countryCode)
+  );
+
+  const [t, tBadges, locale, countryCode, product] = await Promise.all([
+    getTranslations("product"),
+    getTranslations("collections"),
+    localePromise,
+    countryCodePromise,
+    productPromise,
+  ]);
   if (!product) {
     notFound();
   }
 
-  const recommendationsData = product.id ? await getProductRecommendations(product.id, locale, countryCode) : [];
-  const recommendations = recommendationsData.map((rec) => ({
-    title: rec.title,
-    price: rec.priceFormatted,
-    href: `/products/${rec.handle}`,
-    imageUrl: rec.imageUrl,
-    imageAlt: rec.imageAlt,
-    secondaryImageUrl: rec.secondaryImageUrl,
-    variantId: rec.variantId,
-    available: rec.available,
-    badgeKinds: rec.badgeKinds,
-  }));
+  const recommendationsPromise: Promise<ProductRecommendationUiItem[]> = product.id
+    ? getProductRecommendations(product.id, locale, countryCode)
+        .then(mapProductRecommendationsToUiItems)
+        .catch((): ProductRecommendationUiItem[] => [])
+    : Promise.resolve([]);
 
   const headerBadgeKinds = deriveProductBadges({
     availableForSale: product.availableForSale,
@@ -108,20 +110,22 @@ export async function ProductContent({ handle }: { handle: string }) {
           variants: product.variants,
         }}
         headerBadges={headerBadges}
-        recommendations={recommendations}
+        recommendationsPromise={recommendationsPromise}
       />
 
       <WhyLoveIt />
       <Suspense fallback={null}>
         <CustomerReviews />
       </Suspense>
-      <YouMayAlsoLike
-        items={recommendations.length ? recommendations : undefined}
-        useRecentLocalStorage
-        showAddButton
-        variant="default"
-        title={t("youMayAlsoLike")}
-      />
+      <Suspense fallback={<div className="h-64 w-full animate-pulse bg-muted" />}>
+        <YouMayAlsoLikeFromPromise
+          recommendationsPromise={recommendationsPromise}
+          useRecentLocalStorage
+          showAddButton
+          variant="default"
+          title={t("youMayAlsoLike")}
+        />
+      </Suspense>
     </div>
   );
 }

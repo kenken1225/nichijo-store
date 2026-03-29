@@ -2,22 +2,11 @@
 
 import clsx from "clsx";
 import Link from "next/link";
+import { Suspense } from "react";
 import { useTranslations } from "next-intl";
 import type { MiniCartLine } from "@/lib/types/shopify";
-import type { ProductBadgeKind } from "@/lib/shopify/domain/product-badges";
-import { YouMayAlsoLike } from "./YouMayAlsoLike";
-
-type RecommendationItem = {
-  title: string;
-  price: string;
-  href: string;
-  imageUrl?: string | null;
-  imageAlt?: string | null;
-  secondaryImageUrl?: string | null;
-  variantId?: string;
-  available?: boolean;
-  badgeKinds?: ProductBadgeKind[];
-};
+import type { ProductRecommendationUiItem } from "@/lib/shopify/domain/products";
+import { MiniCartYouMayAlsoLikeFromPromise } from "./ProductRecommendationsFromPromise";
 
 type MiniCartDrawerProps = {
   open: boolean;
@@ -25,7 +14,7 @@ type MiniCartDrawerProps = {
   cartLines: MiniCartLine[];
   cartSubtotal: string;
   checkoutUrl: string | null;
-  recommendations: RecommendationItem[];
+  recommendationsPromise: Promise<ProductRecommendationUiItem[]>;
   onAddFromRecommendation: (variantId: string) => void;
   addingVariantId: string | null;
   onRemoveLine: (lineId: string) => void;
@@ -37,7 +26,7 @@ export function MiniCartDrawer({
   cartLines,
   cartSubtotal,
   checkoutUrl,
-  recommendations,
+  recommendationsPromise,
   onAddFromRecommendation,
   addingVariantId,
   onRemoveLine,
@@ -110,16 +99,14 @@ export function MiniCartDrawer({
         </div>
         <div className="border-t border-border px-2 py-2 hidden md:block">
           <div className="mini-cart-yml text-sm">
-            <YouMayAlsoLike
-              items={recommendations}
-              showAddButton
-              onAddToCart={onAddFromRecommendation}
-              loadingVariantId={addingVariantId}
-              variant="compact"
-              title={tProduct("youMayAlsoLike")}
-              useRecentLocalStorage
-              maxRecent={4}
-            />
+            <Suspense fallback={<div className="h-32 w-full animate-pulse rounded-md bg-muted/60" />}>
+              <MiniCartYouMayAlsoLikeFromPromise
+                recommendationsPromise={recommendationsPromise}
+                onAddToCart={onAddFromRecommendation}
+                loadingVariantId={addingVariantId}
+                title={tProduct("youMayAlsoLike")}
+              />
+            </Suspense>
           </div>
         </div>
         <div className="border-t border-border px-2 py-2 space-y-4">

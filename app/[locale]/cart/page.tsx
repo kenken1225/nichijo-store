@@ -12,13 +12,14 @@ import { getCountryCode } from "@/lib/country-config";
 import type { ProductBadgeKind } from "@/lib/shopify/domain/product-badges";
 
 export default async function CartPage() {
-  const tCart = await getTranslations("cart");
-  const tCommon = await getTranslations("common");
-  const tProduct = await getTranslations("product");
-  const locale = await getLocale();
-  const countryCode = await getCountryCode();
-
-  const cookieStore = await cookies();
+  const [tCart, tCommon, tProduct, locale, countryCode, cookieStore] = await Promise.all([
+    getTranslations("cart"),
+    getTranslations("common"),
+    getTranslations("product"),
+    getLocale(),
+    getCountryCode(),
+    cookies(),
+  ]);
   const cartId = cookieStore.get("cartId")?.value;
 
   let initialCart = cartId ? await getCart(cartId, countryCode) : null;

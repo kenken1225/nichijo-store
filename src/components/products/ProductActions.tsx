@@ -11,19 +11,6 @@ import { useCart } from "@/contexts/CartContext";
 import { useCountry } from "@/contexts/CountryContext";
 import type { ParsedCart } from "@/lib/types/shopify";
 import { ProductBadges, type ProductBadgeItem } from "@/components/shared/ProductBadges";
-import type { ProductBadgeKind } from "@/lib/shopify/domain/product-badges";
-
-type RecommendationItem = {
-  title: string;
-  price: string;
-  href: string;
-  imageUrl?: string | null;
-  imageAlt?: string | null;
-  variantId?: string;
-  available?: boolean;
-  badgeKinds?: ProductBadgeKind[];
-};
-
 type CartLine = {
   id: string;
   title: string;
@@ -39,7 +26,6 @@ type ProductActionsProps = {
   descriptionHtml: string;
   variants: ShopifyVariant[];
   headerBadges: ProductBadgeItem[];
-  recommendations?: RecommendationItem[];
   onAddedToCart?: (parsed: ParsedCart) => void;
   onVariantImageChange?: (imageUrl: string | null) => void;
 };
@@ -49,7 +35,6 @@ export function ProductActions({
   descriptionHtml,
   variants,
   headerBadges,
-  recommendations: _recommendations = [],
   onAddedToCart,
   onVariantImageChange,
 }: ProductActionsProps) {
