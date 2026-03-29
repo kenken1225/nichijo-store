@@ -6,21 +6,9 @@ import { useCart } from "@/contexts/CartContext";
 import { useCountry } from "@/contexts/CountryContext";
 import type { CartApiResponse, MiniCartLine, ParsedCart, ShopifyImage, ShopifyVariant } from "@/lib/types/shopify";
 import type { ProductBadgeItem } from "@/components/shared/ProductBadges";
-import type { ProductBadgeKind } from "@/lib/shopify/domain/product-badges";
+import type { ProductRecommendationUiItem } from "@/lib/shopify/domain/products";
 import { ProductDetail } from "./ProductDetail";
 import { MiniCartDrawer } from "./MiniCartDrawer";
-
-type RecommendationItem = {
-  title: string;
-  price: string;
-  href: string;
-  imageUrl?: string | null;
-  imageAlt?: string | null;
-  secondaryImageUrl?: string | null;
-  variantId?: string;
-  available?: boolean;
-  badgeKinds?: ProductBadgeKind[];
-};
 
 type ProductPageWithDrawerProps = {
   product: {
@@ -31,10 +19,10 @@ type ProductPageWithDrawerProps = {
     variants: ShopifyVariant[];
   };
   headerBadges: ProductBadgeItem[];
-  recommendations: RecommendationItem[];
+  recommendationsPromise: Promise<ProductRecommendationUiItem[]>;
 };
 
-export function ProductPageWithDrawer({ product, headerBadges, recommendations }: ProductPageWithDrawerProps) {
+export function ProductPageWithDrawer({ product, headerBadges, recommendationsPromise }: ProductPageWithDrawerProps) {
   const { setItemCount } = useCart();
   const { country } = useCountry();
   const [cartLines, setCartLines] = useState<MiniCartLine[]>([]);
@@ -95,8 +83,6 @@ export function ProductPageWithDrawer({ product, headerBadges, recommendations }
 
   const handleAddToCartFromRecommendation = useCallback(
     async (variantId: string, retryWithoutCartId = false) => {
-      const rec = recommendations.find((r) => r.variantId === variantId);
-      if (rec?.available === false) return;
       try {
         setAddingVariantId(variantId);
         const res = await fetch("/api/cart", {
@@ -120,7 +106,7 @@ export function ProductPageWithDrawer({ product, headerBadges, recommendations }
         setAddingVariantId(null);
       }
     },
-    [recommendations, parseCart, handleAddedToCart]
+    [parseCart, handleAddedToCart]
   );
 
   const handleRemoveLine = useCallback(
@@ -159,7 +145,6 @@ export function ProductPageWithDrawer({ product, headerBadges, recommendations }
       <ProductDetail
         product={product}
         headerBadges={headerBadges}
-        recommendations={recommendations}
         onAddedToCart={handleAddedToCart}
         selectedVariantImageUrl={selectedVariantImageUrl}
         onVariantImageChange={setSelectedVariantImageUrl}
@@ -170,7 +155,7 @@ export function ProductPageWithDrawer({ product, headerBadges, recommendations }
         cartLines={cartLines}
         cartSubtotal={cartSubtotal}
         checkoutUrl={checkoutUrl}
-        recommendations={recommendations}
+        recommendationsPromise={recommendationsPromise}
         onAddFromRecommendation={(variantId) => handleAddToCartFromRecommendation(variantId)}
         addingVariantId={addingVariantId}
         onRemoveLine={handleRemoveLine}

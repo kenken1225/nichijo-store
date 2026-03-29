@@ -41,19 +41,11 @@ export default async function LocaleLayout({ children, params }: Props) {
     notFound();
   }
 
-  // get the translation messages
-  const messages = await getMessages();
-
-  // get the cart information
-  const cookieStore = await cookies();
+  const [messages, cookieStore] = await Promise.all([getMessages(), cookies()]);
   const cartId = cookieStore.get("cartId")?.value;
   const cart = cartId ? await getCart(cartId) : null;
   const initialCartCount = cart?.totalQuantity ?? 0;
-
-  // get the country code from cookie (set by middleware via Geo-IP or user selection)
   const countryCode = cookieStore.get(COUNTRY_COOKIE_KEY)?.value;
-
-  // if the language is Arabic, use RTL (right to left), otherwise use LTR (left to right)
   const dir = locale === "ar" ? "rtl" : "ltr";
   const fontClass = locale === "ar" ? notoSansArabic.variable : notoSans.variable;
 

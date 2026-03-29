@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import Link from "next/link";
 import { MenuItem, normalizeMenuUrl } from "@/lib/shopify/domain/navigation";
@@ -5,7 +7,6 @@ import { ChevronDown } from "lucide-react";
 import clsx from "clsx";
 import { DropdownItem } from "./DropdownItem";
 
-// Desktop dropdown for items with children
 export function DesktopDropdown({ item }: { item: MenuItem }) {
   const [isOpen, setIsOpen] = useState(false);
   const hasChildren = item.items && item.items.length > 0;

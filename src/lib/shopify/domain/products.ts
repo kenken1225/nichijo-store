@@ -71,6 +71,32 @@ export type ProductRecommendation = {
   badgeKinds: ProductBadgeKind[];
 };
 
+export type ProductRecommendationUiItem = {
+  title: string;
+  price: string;
+  href: string;
+  imageUrl?: string | null;
+  imageAlt?: string | null;
+  secondaryImageUrl?: string | null;
+  variantId?: string;
+  available?: boolean;
+  badgeKinds?: ProductBadgeKind[];
+};
+
+export function mapProductRecommendationsToUiItems(recs: ProductRecommendation[]): ProductRecommendationUiItem[] {
+  return recs.map((rec) => ({
+    title: rec.title,
+    price: rec.priceFormatted,
+    href: `/products/${rec.handle}`,
+    imageUrl: rec.imageUrl,
+    imageAlt: rec.imageAlt,
+    secondaryImageUrl: rec.secondaryImageUrl,
+    variantId: rec.variantId,
+    available: rec.available,
+    badgeKinds: rec.badgeKinds,
+  }));
+}
+
 type ProductListNode = {
   handle: string;
   title: string;
@@ -116,7 +142,11 @@ function listItemBadges(node: ProductListNode): ProductBadgeKind[] {
   });
 }
 
-export async function getProductByHandle(handle: string, locale?: string, countryCode?: string): Promise<ProductDetailData | null> {
+export async function getProductByHandle(
+  handle: string,
+  locale?: string,
+  countryCode?: string
+): Promise<ProductDetailData | null> {
   const data = await shopifyFetch<ProductQuery>(PRODUCT_BY_HANDLE_QUERY, {
     handle,
     language: toShopifyLanguage(locale),
@@ -161,7 +191,11 @@ export async function getProductByHandle(handle: string, locale?: string, countr
   };
 }
 
-export async function getProductRecommendations(productId: string, locale?: string, countryCode?: string): Promise<ProductRecommendation[]> {
+export async function getProductRecommendations(
+  productId: string,
+  locale?: string,
+  countryCode?: string
+): Promise<ProductRecommendation[]> {
   const data = await shopifyFetch<RecommendationsQuery>(PRODUCT_RECOMMENDATIONS_QUERY, {
     productId,
     language: toShopifyLanguage(locale),
