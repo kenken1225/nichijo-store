@@ -1,8 +1,7 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, useRef, type ReactNode } from "react";
 
-// Customer information type
 export type CustomerInfo = {
   id: string;
   email: string;
@@ -27,20 +26,48 @@ type AuthProviderProps = {
   children: ReactNode;
 };
 
+type CustomerFetchResult = {
+  ok: boolean;
+  customer: CustomerInfo | null;
+};
+
 export function AuthProvider({ children }: AuthProviderProps) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [customer, setCustomer] = useState<CustomerInfo | null>(null);
 
-  // Check authentication status
+  const inFlightCustomerFetchRef = useRef<Promise<CustomerFetchResult> | null>(null);
+
+  const fetchCustomerDeduplicated = useCallback(async (): Promise<CustomerFetchResult> => {
+    const existing = inFlightCustomerFetchRef.current;
+    if (existing) {
+      return existing;
+    }
+    const promise = (async (): Promise<CustomerFetchResult> => {
+      try {
+        const res = await fetch("/api/account/customer");
+        if (res.ok) {
+          const data = (await res.json()) as { customer: CustomerInfo };
+          return { ok: true, customer: data.customer };
+        }
+        return { ok: false, customer: null };
+      } catch (error) {
+        console.error("Customer fetch error:", error);
+        return { ok: false, customer: null };
+      } finally {
+        inFlightCustomerFetchRef.current = null;
+      }
+    })();
+    inFlightCustomerFetchRef.current = promise;
+    return promise;
+  }, []);
+
   const checkAuth = useCallback(async () => {
     try {
       setIsLoading(true);
-      const res = await fetch("/api/account/customer");
-
-      if (res.ok) {
-        const data = await res.json();
-        setCustomer(data.customer);
+      const result = await fetchCustomerDeduplicated();
+      if (result.ok && result.customer) {
+        setCustomer(result.customer);
         setIsLoggedIn(true);
       } else {
         setCustomer(null);
@@ -53,22 +80,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [fetchCustomerDeduplicated]);
 
-  // Update customer information
   const refreshCustomer = useCallback(async () => {
     if (!isLoggedIn) return;
 
     try {
-      const res = await fetch("/api/account/customer");
-      if (res.ok) {
-        const data = await res.json();
-        setCustomer(data.customer);
+      const result = await fetchCustomerDeduplicated();
+      if (result.ok && result.customer) {
+        setCustomer(result.customer);
       }
     } catch (error) {
       console.error("Refresh customer error:", error);
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, fetchCustomerDeduplicated]);
 
   // Login
   const login = useCallback(

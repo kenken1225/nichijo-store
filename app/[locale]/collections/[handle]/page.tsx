@@ -6,6 +6,7 @@ import { CollectionHeader } from "@/components/collections/CollectionHeader";
 import { CollectionFilters } from "@/components/collections/filters/CollectionFilters";
 import { CollectionPagination } from "@/components/collections/CollectionPagination";
 import { getCollectionWithProducts } from "@/lib/shopify/domain/collections";
+import { decodeCollectionFiltersParam } from "@/lib/shopify/domain/collection-filters";
 import { CollectionSkeleton } from "@/components/skeletons";
 import { getLocale } from "next-intl/server";
 import { getCountryCode } from "@/lib/country-config";
@@ -14,7 +15,7 @@ export const revalidate = 3600;
 
 type CollectionPageProps = {
   params: Promise<{ handle: string }>;
-  searchParams: Promise<{ after?: string; before?: string; p?: string }>;
+  searchParams: Promise<{ after?: string; before?: string; p?: string; cf?: string }>;
 };
 
 export async function generateMetadata({ params }: CollectionPageProps): Promise<Metadata> {
@@ -42,7 +43,7 @@ async function CollectionContent({
   searchParams,
 }: {
   handle: string;
-  searchParams: { after?: string; before?: string; p?: string };
+  searchParams: { after?: string; before?: string; p?: string; cf?: string };
 }) {
   const locale = await getLocale();
   const countryCode = await getCountryCode();
@@ -50,12 +51,15 @@ async function CollectionContent({
   const page = Math.max(1, parseInt(searchParams.p ?? "1", 10) || 1);
   const before = searchParams.before;
   const after = before ? undefined : searchParams.after;
+  const cfParam = searchParams.cf;
+  const productFilters = decodeCollectionFiltersParam(cfParam);
 
   const collection = await getCollectionWithProducts(handle, {
     locale,
     countryCode,
     after,
     before,
+    productFilters,
   });
 
   if (!collection) {
@@ -72,8 +76,17 @@ async function CollectionContent({
 
       <section className="py-12">
         <Container className="space-y-8">
-          <CollectionFilters products={collection.products} />
-          <CollectionPagination handle={handle} page={page} pageInfo={collection.pageInfo} />
+          <CollectionFilters
+            filterFacets={collection.filterFacets}
+            appliedFilters={productFilters}
+            products={collection.products}
+          />
+          <CollectionPagination
+            handle={handle}
+            page={page}
+            pageInfo={collection.pageInfo}
+            collectionFiltersParam={cfParam}
+          />
         </Container>
       </section>
     </div>

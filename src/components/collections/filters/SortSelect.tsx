@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslations } from "next-intl";
+import { useOnClickOutside } from "@/hooks/useOnClickOutside";
 
 export type SortValue = "featured" | "price-asc" | "price-desc" | "newest";
 
@@ -21,14 +22,7 @@ export function SortSelect({ value, onChange }: SortSelectProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      if (!ref.current) return;
-      if (!ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
+  useOnClickOutside(ref, () => setOpen(false), open);
 
   const currentLabel = OPTIONS.find((o) => o.value === value)?.label ?? t("sortFeatured");
 
@@ -43,7 +37,7 @@ export function SortSelect({ value, onChange }: SortSelectProps) {
         <span className="text-muted-foreground">{open ? "▴" : "▾"}</span>
       </button>
       {open ? (
-        <div className="z-10 absolute end-0 mt-2 w-52 rounded-md border border-border bg-card shadow-lg">
+        <div className="z-11 absolute end-0 mt-2 w-52 rounded-md border border-border bg-card shadow-lg">
           <div className="py-1 text-sm text-foreground">
             {OPTIONS.map((opt) => (
               <button

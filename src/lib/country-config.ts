@@ -95,6 +95,19 @@ export function getCountryByCode(code: string): CountryConfig {
 export const COUNTRY_COOKIE_KEY = "country_code";
 export const GEO_CONFIRMED_COOKIE_KEY = "geo_confirmed";
 
+/** Cookie lifetime for saved shipping/pricing country (Shopify Markets context). */
+export const COUNTRY_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
+
+/**
+ * Persists country on the client so the next full navigation / RSC request sends
+ * {@link COUNTRY_COOKIE_KEY}. Safe to call only in the browser.
+ */
+export function setCountryCodeCookieClient(countryCode: string): void {
+  if (typeof document === "undefined") return;
+  const value = encodeURIComponent(countryCode);
+  document.cookie = `${COUNTRY_COOKIE_KEY}=${value};path=/;max-age=${COUNTRY_COOKIE_MAX_AGE_SECONDS};samesite=lax`;
+}
+
 // helper to get the country code from the cookies for server components
 export async function getCountryCode(): Promise<string> {
   const { cookies } = await import("next/headers");
