@@ -1,78 +1,107 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import type { CollectionProduct } from "@/lib/shopify/domain/collections";
-import { CategoryFilter } from "./CategoryFilter";
-import { PriceFilter } from "./PriceFilter";
-import { AvailabilityFilter } from "./AvailabilityFilter";
+import { useMemo, useState, useTransition } from "react";
+import type { CollectionFilterFacet, CollectionProduct } from "@/lib/shopify/domain/collections";
 import { SortSelect } from "./SortSelect";
+import type { SortValue } from "./SortSelect";
 import { ActiveFilters } from "./ActiveFilters";
 import { CollectionProductGrid } from "../CollectionProductGrid";
-import { useMediaQuery } from "@/lib/useMediaQuery";
 import { useTranslations } from "next-intl";
-
-type SortValue = "featured" | "price-asc" | "price-desc" | "newest";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import clsx from "clsx";
+import {
+  chipsForAppliedFilters,
+  encodeCollectionFiltersParam,
+  filterInputKey,
+  removeFilterByInputKey,
+  selectFacetFilterValue,
+} from "@/lib/shopify/domain/collection-filters";
 
 type CollectionFiltersProps = {
+  filterFacets: CollectionFilterFacet[];
+  appliedFilters: unknown[];
   products: CollectionProduct[];
 };
 
-export function CollectionFilters({ products }: CollectionFiltersProps) {
+function FacetBlock({
+  facet,
+  appliedFilters,
+  onSelectValue,
+}: {
+  facet: CollectionFilterFacet;
+  appliedFilters: unknown[];
+  onSelectValue: (facetId: string, valueId: string) => void;
+}) {
+  const selectedKeys = new Set(appliedFilters.map((f) => filterInputKey(f)));
+
+  return (
+    <div className="space-y-3">
+      <p className="border-b border-primary/20 pb-2 text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
+        {facet.label}
+      </p>
+      <div
+        className={clsx(
+          "flex flex-col gap-2",
+          facet.values.length > 7 && "max-h-60 overflow-y-auto overscroll-contain pe-1"
+        )}
+      >
+        {facet.values.map((v) => {
+          const active = selectedKeys.has(filterInputKey(v.input));
+          return (
+            <button
+              key={v.id}
+              type="button"
+              onClick={() => onSelectValue(facet.id, v.id)}
+              className={clsx(
+                "w-full rounded-lg border px-3 py-2.5 text-start text-sm transition-all duration-200",
+                active
+                  ? "border-primary bg-primary text-primary-foreground shadow-sm ring-1 ring-primary/20"
+                  : "border-border/80 bg-card text-foreground shadow-sm hover:border-primary/35 hover:bg-secondary/50"
+              )}
+            >
+              <span className="font-medium">{v.label}</span>
+              {typeof v.count === "number" ? (
+                <span
+                  className={clsx(
+                    "ms-2 tabular-nums text-xs",
+                    active ? "text-primary-foreground/85" : "text-muted-foreground"
+                  )}
+                >
+                  ({v.count})
+                </span>
+              ) : null}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+export function CollectionFilters({
+  filterFacets,
+  appliedFilters,
+  products,
+}: CollectionFiltersProps) {
   const t = useTranslations("collections");
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [priceKey, setPriceKey] = useState<string | null>(null);
-  const [inStockOnly, setInStockOnly] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [sort, setSort] = useState<SortValue>("featured");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const [isFilterNavPending, startFilterNavTransition] = useTransition();
 
-  const categories = useMemo(() => {
-    const set = new Set<string>();
-    products.forEach((p) => {
-      if (p.category) set.add(p.category);
-    });
-    return Array.from(set).sort((a, b) => a.localeCompare(b));
-  }, [products]);
-
-  const priceOptions = useMemo(
-    () => [
-      { key: "under-30", label: t("priceUnder30"), min: null, max: 30 },
-      { key: "30-60", label: t("price30to60"), min: 30, max: 60 },
-      { key: "60-100", label: t("price60to100"), min: 60, max: 100 },
-      { key: "over-100", label: t("priceOver100"), min: 100, max: null },
-    ],
-    [t]
-  );
-
-  const filtered = useMemo(() => {
-    const selectedPrice = priceOptions.find((p) => p.key === priceKey) ?? null;
-    const min = selectedPrice?.min ?? null;
-    const max = selectedPrice?.max ?? null;
-
-    let next = products.filter((p) => {
-      // category
-      if (selectedCategory && p.category !== selectedCategory) return false;
-
-      // price
-      const priceAmount = p.priceAmount ?? (p.price ? Number(p.price.amount) : undefined);
-      if (min !== null && typeof priceAmount === "number" && priceAmount < min) return false;
-      if (max !== null && typeof priceAmount === "number" && priceAmount >= max) return false;
-
-      // in-stock
-      if (inStockOnly && p.available === false) return false;
-
-      return true;
-    });
-
+  const sortedProducts = useMemo(() => {
+    const next = [...products];
     switch (sort) {
       case "price-asc":
-        next = [...next].sort((a, b) => (a.priceAmount ?? Infinity) - (b.priceAmount ?? Infinity));
+        next.sort((a, b) => (a.priceAmount ?? Infinity) - (b.priceAmount ?? Infinity));
         break;
       case "price-desc":
-        next = [...next].sort((a, b) => (b.priceAmount ?? -Infinity) - (a.priceAmount ?? -Infinity));
+        next.sort((a, b) => (b.priceAmount ?? -Infinity) - (a.priceAmount ?? -Infinity));
         break;
       case "newest":
-        next = [...next].sort((a, b) => {
+        next.sort((a, b) => {
           const aDate = a.createdAt ? Date.parse(a.createdAt) : 0;
           const bDate = b.createdAt ? Date.parse(b.createdAt) : 0;
           return bDate - aDate;
@@ -82,105 +111,161 @@ export function CollectionFilters({ products }: CollectionFiltersProps) {
       default:
         break;
     }
-
     return next;
-  }, [products, selectedCategory, priceKey, inStockOnly, sort, priceOptions]);
+  }, [products, sort]);
 
-  const clearAll = () => {
-    setSelectedCategory(null);
-    setPriceKey(null);
-    setInStockOnly(false);
-    setSort("featured");
+  const chips = useMemo(() => chipsForAppliedFilters(filterFacets, appliedFilters), [filterFacets, appliedFilters]);
+
+  const navigateWithFilters = (next: unknown[]) => {
+    startFilterNavTransition(() => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("after");
+      params.delete("before");
+      params.delete("p");
+      if (next.length) params.set("cf", encodeCollectionFiltersParam(next));
+      else params.delete("cf");
+      const q = params.toString();
+      router.push(q ? `${pathname}?${q}` : pathname);
+    });
   };
 
-  const priceLabel = priceKey ? priceOptions.find((p) => p.key === priceKey)?.label ?? null : null;
+  const onSelectValue = (facetId: string, valueId: string) => {
+    const next = selectFacetFilterValue(filterFacets, facetId, valueId, appliedFilters);
+    navigateWithFilters(next);
+    setMobileFiltersOpen(false);
+  };
 
-  const filtersContent = (
-    <div className="space-y-6">
-      <CategoryFilter categories={categories} selectedCategory={selectedCategory} onSelect={setSelectedCategory} />
-      <PriceFilter options={priceOptions} value={priceKey} onChange={setPriceKey} />
-      <AvailabilityFilter inStockOnly={inStockOnly} onToggle={setInStockOnly} />
-    </div>
-  );
+  const onClearChip = (inputKey: string) => {
+    navigateWithFilters(removeFilterByInputKey(appliedFilters, inputKey));
+  };
+
+  const onClearAllFilters = () => navigateWithFilters([]);
+
+  const filtersContent =
+    filterFacets.length > 0 ? (
+      <div className="space-y-8">
+        {filterFacets.map((facet) => (
+          <FacetBlock
+            key={facet.id}
+            facet={facet}
+            appliedFilters={appliedFilters}
+            onSelectValue={onSelectValue}
+          />
+        ))}
+      </div>
+    ) : null;
 
   return (
     <div className="space-y-4">
-      {/* Mobile controls */}
       <div className="flex items-center justify-between lg:hidden">
-        <p className="text-sm text-foreground">{filtered.length} {t("items")}</p>
+        <p className="text-sm text-muted-foreground">
+          <span className="font-medium text-foreground">{sortedProducts.length}</span> {t("items")}
+        </p>
         <div className="flex items-center gap-2">
           <SortSelect value={sort} onChange={setSort} />
-          <button
-            type="button"
-            onClick={() => setMobileFiltersOpen(true)}
-            className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm font-medium text-foreground shadow-sm hover:border-foreground/60"
-          >
-            {t("filters")}
-          </button>
+          {filterFacets.length > 0 ? (
+            <button
+              type="button"
+              onClick={() => setMobileFiltersOpen(true)}
+              className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium text-foreground shadow-sm transition-colors hover:border-primary/40 hover:bg-secondary/40"
+            >
+              {t("filters")}
+            </button>
+          ) : null}
         </div>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-[260px_1fr]">
-        <div className="hidden lg:block space-y-6 rounded-lg border border-border p-4 ">{filtersContent}</div>
+      <div className="relative">
+        <div
+          className={clsx(
+            "grid gap-8 lg:grid-cols-[280px_1fr] transition-opacity duration-200",
+            isFilterNavPending && "pointer-events-none opacity-55"
+          )}
+          aria-busy={isFilterNavPending}
+        >
+          {filterFacets.length > 0 ? (
+            <aside className="hidden lg:block">
+              <div className="sticky top-24 space-y-6 rounded-xl border border-border/90 bg-secondary/35 p-5 shadow-sm ring-1 ring-border/40 backdrop-blur-sm">
+                {filtersContent}
+              </div>
+            </aside>
+          ) : null}
 
-        <div className="space-y-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="space-y-2">
-              <p className="text-base font-semibold text-foreground">Products ({filtered.length})</p>
-              <ActiveFilters
-                selectedCategory={selectedCategory}
-                priceLabel={priceLabel}
-                inStockOnly={inStockOnly}
-                onClearCategory={() => setSelectedCategory(null)}
-                onClearPrice={() => setPriceKey(null)}
-                onClearInStock={() => setInStockOnly(false)}
-                onClearAll={clearAll}
-              />
+          <div className="space-y-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="space-y-2">
+                <p className="text-base font-semibold text-foreground">
+                  {t("products", { count: sortedProducts.length })}
+                </p>
+                <ActiveFilters
+                  chips={chips}
+                  onClearChip={onClearChip}
+                  onClearAll={onClearAllFilters}
+                />
+              </div>
+
+              <div className="hidden lg:flex">
+                <SortSelect value={sort} onChange={setSort} />
+              </div>
             </div>
 
-            <div className="hidden lg:flex">
-              <SortSelect value={sort} onChange={setSort} />
-            </div>
+            <CollectionProductGrid products={sortedProducts} />
           </div>
-
-          <CollectionProductGrid products={filtered} />
         </div>
+
+        {isFilterNavPending ? (
+          <div
+            className="pointer-events-none absolute start-1/2 top-0 z-10 -translate-x-1/2"
+            role="status"
+            aria-live="polite"
+          >
+            <span className="inline-flex items-center rounded-full border border-border bg-card/95 px-4 py-2 text-sm font-medium text-foreground shadow-md ring-1 ring-primary/15">
+              {t("filterResultsLoading")}
+            </span>
+          </div>
+        ) : null}
       </div>
 
-      {/* Mobile bottom sheet */}
-      {!isDesktop && (
-        <>
+      {/* lg:hidden: same DOM on server & client — avoids hydration mismatch from useMediaQuery */}
+      {filterFacets.length > 0 ? (
+        <div className="lg:hidden">
           {mobileFiltersOpen ? (
-            <div className="fixed inset-0 z-40 bg-black/40" onClick={() => setMobileFiltersOpen(false)} />
+            <button
+              type="button"
+              aria-label="Close filters"
+              className="fixed inset-0 z-40 bg-foreground/25 backdrop-blur-[1px]"
+              onClick={() => setMobileFiltersOpen(false)}
+            />
           ) : null}
           <div
-            className={`fixed inset-x-0 bottom-0 z-50 transform bg-card shadow-2xl transition-transform duration-300 ${
-              mobileFiltersOpen ? "translate-y-0" : "translate-y-full"
-            }`}
+            className={clsx(
+              "fixed inset-x-0 bottom-0 z-50 max-h-[85dvh] flex flex-col rounded-t-2xl border border-border/80 bg-card shadow-2xl ring-1 ring-border/50 transition-transform duration-300 ease-out",
+              mobileFiltersOpen ? "translate-y-0" : "pointer-events-none translate-y-full"
+            )}
           >
-            <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+            <div className="flex shrink-0 items-center justify-between border-b border-border/80 bg-secondary/30 px-4 py-3">
               <p className="text-base font-semibold text-foreground">{t("filters")}</p>
               <button
                 type="button"
                 onClick={() => setMobileFiltersOpen(false)}
-                className="text-muted-foreground hover:text-foreground"
+                className="rounded-md px-2 py-1 text-muted-foreground transition-colors hover:bg-secondary/60 hover:text-foreground"
               >
                 ✕
               </button>
             </div>
-            <div className="max-h-[70vh] overflow-y-auto px-4 py-4 space-y-6">{filtersContent}</div>
-            <div className="border-t border-border p-4">
+            <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">{filtersContent}</div>
+            <div className="shrink-0 border-t border-border/80 bg-secondary/20 p-4">
               <button
                 type="button"
                 onClick={() => setMobileFiltersOpen(false)}
-                className="w-full rounded-md bg-[#c47a57] px-4 py-3 text-sm font-semibold text-white shadow-sm hover:opacity-90 transition"
+                className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary/90"
               >
-                Show Results ({filtered.length})
+                {t("showResults", { count: sortedProducts.length })}
               </button>
             </div>
           </div>
-        </>
-      )}
+        </div>
+      ) : null}
     </div>
   );
 }

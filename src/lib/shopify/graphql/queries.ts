@@ -224,6 +224,18 @@ export const CART_QUERY = `
 `;
 
 const COLLECTION_PRODUCTS_BODY = `
+        filters {
+          id
+          label
+          type
+          presentation
+          values {
+            id
+            label
+            count
+            input
+          }
+        }
         pageInfo {
           hasNextPage
           hasPreviousPage
@@ -265,7 +277,7 @@ const COLLECTION_PRODUCTS_BODY = `
 
 /** 次のページへ: first + after */
 export const COLLECTION_BY_HANDLE_QUERY_FORWARD = `
-  query CollectionByHandleForward($handle: String!, $language: LanguageCode, $country: CountryCode, $first: Int!, $after: String) @inContext(language: $language, country: $country) {
+  query CollectionByHandleForward($handle: String!, $language: LanguageCode, $country: CountryCode, $first: Int!, $after: String, $filters: [ProductFilter!]) @inContext(language: $language, country: $country) {
     collection(handle: $handle) {
       handle
       title
@@ -276,7 +288,7 @@ export const COLLECTION_BY_HANDLE_QUERY_FORWARD = `
         width
         height
       }
-      products(first: $first, after: $after) {
+      products(first: $first, after: $after, filters: $filters) {
 ${COLLECTION_PRODUCTS_BODY}
       }
     }
@@ -285,7 +297,7 @@ ${COLLECTION_PRODUCTS_BODY}
 
 /** 前のページへ: last + before */
 export const COLLECTION_BY_HANDLE_QUERY_BACKWARD = `
-  query CollectionByHandleBackward($handle: String!, $language: LanguageCode, $country: CountryCode, $last: Int!, $before: String!) @inContext(language: $language, country: $country) {
+  query CollectionByHandleBackward($handle: String!, $language: LanguageCode, $country: CountryCode, $last: Int!, $before: String!, $filters: [ProductFilter!]) @inContext(language: $language, country: $country) {
     collection(handle: $handle) {
       handle
       title
@@ -296,7 +308,7 @@ export const COLLECTION_BY_HANDLE_QUERY_BACKWARD = `
         width
         height
       }
-      products(last: $last, before: $before) {
+      products(last: $last, before: $before, filters: $filters) {
 ${COLLECTION_PRODUCTS_BODY}
       }
     }

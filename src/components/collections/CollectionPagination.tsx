@@ -7,6 +7,7 @@ type CollectionPaginationProps = {
   handle: string;
   page: number;
   pageInfo: CollectionPageInfo;
+  collectionFiltersParam?: string;
 };
 
 function hrefFor(handle: string, params: URLSearchParams) {
@@ -14,28 +15,38 @@ function hrefFor(handle: string, params: URLSearchParams) {
   return q ? (`/collections/${handle}?${q}` as const) : (`/collections/${handle}` as const);
 }
 
-export async function CollectionPagination({ handle, page, pageInfo }: CollectionPaginationProps) {
+export async function CollectionPagination({
+  handle,
+  page,
+  pageInfo,
+  collectionFiltersParam,
+}: CollectionPaginationProps) {
   const t = await getTranslations("collections");
 
   if (!pageInfo.hasNextPage && !pageInfo.hasPreviousPage && page <= 1) {
     return null;
   }
 
+  const withCf = (params: URLSearchParams) => {
+    if (collectionFiltersParam) params.set("cf", collectionFiltersParam);
+    return params;
+  };
+
   const nextParams = new URLSearchParams();
   if (pageInfo.hasNextPage && pageInfo.endCursor) {
     nextParams.set("after", pageInfo.endCursor);
     nextParams.set("p", String(page + 1));
   }
-  const nextHref = nextParams.toString() ? hrefFor(handle, nextParams) : null;
+  const nextHref = nextParams.toString() ? hrefFor(handle, withCf(nextParams)) : null;
 
   const prevParams = new URLSearchParams();
   if (pageInfo.hasPreviousPage && pageInfo.startCursor) {
     prevParams.set("before", pageInfo.startCursor);
     prevParams.set("p", String(Math.max(1, page - 1)));
   }
-  const prevHref = prevParams.toString() ? hrefFor(handle, prevParams) : null;
+  const prevHref = prevParams.toString() ? hrefFor(handle, withCf(prevParams)) : null;
 
-  const firstHref = hrefFor(handle, new URLSearchParams());
+  const firstHref = hrefFor(handle, withCf(new URLSearchParams()));
 
   const linkClass = "pb-1 text-foreground/80 transition hover:text-foreground";
   const activeClass = "border-b-2 border-foreground pb-1 font-medium text-foreground";

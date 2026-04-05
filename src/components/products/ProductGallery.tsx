@@ -12,17 +12,29 @@ type ProductGalleryProps = {
   selectedVariantImageUrl?: string | null;
 };
 
+type GalleryNavState = {
+  selectedIndex: number;
+  canScrollPrev: boolean;
+  canScrollNext: boolean;
+};
+
+const initialGalleryNav: GalleryNavState = {
+  selectedIndex: 0,
+  canScrollPrev: false,
+  canScrollNext: false,
+};
+
 export function ProductGallery({ images, title, selectedVariantImageUrl }: ProductGalleryProps) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, align: "start" });
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [canScrollPrev, setCanScrollPrev] = useState(false);
-  const [canScrollNext, setCanScrollNext] = useState(false);
+  const [nav, setNav] = useState<GalleryNavState>(initialGalleryNav);
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
-    setSelectedIndex(emblaApi.selectedScrollSnap());
-    setCanScrollPrev(emblaApi.canScrollPrev());
-    setCanScrollNext(emblaApi.canScrollNext());
+    setNav({
+      selectedIndex: emblaApi.selectedScrollSnap(),
+      canScrollPrev: emblaApi.canScrollPrev(),
+      canScrollNext: emblaApi.canScrollNext(),
+    });
   }, [emblaApi]);
 
   useEffect(() => {
@@ -76,7 +88,7 @@ export function ProductGallery({ images, title, selectedVariantImageUrl }: Produ
         </div>
 
         {/* Arrow buttons */}
-        {canScrollPrev && (
+        {nav.canScrollPrev && (
           <button
             type="button"
             onClick={scrollPrev}
@@ -86,7 +98,7 @@ export function ProductGallery({ images, title, selectedVariantImageUrl }: Produ
             <ChevronLeft className="h-5 w-5 text-foreground" />
           </button>
         )}
-        {canScrollNext && (
+        {nav.canScrollNext && (
           <button
             type="button"
             onClick={scrollNext}
@@ -107,7 +119,7 @@ export function ProductGallery({ images, title, selectedVariantImageUrl }: Produ
               type="button"
               onClick={() => scrollTo(idx)}
               className={`relative aspect-square w-full overflow-hidden rounded-md border-2 transition ${
-                selectedIndex === idx ? "border-foreground" : "border-transparent hover:border-border"
+                nav.selectedIndex === idx ? "border-foreground" : "border-transparent hover:border-border"
               }`}
               aria-label={`Thumbnail ${idx + 1}`}
             >

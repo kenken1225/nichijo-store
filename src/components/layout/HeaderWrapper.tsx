@@ -7,23 +7,46 @@ type HeaderWrapperProps = {
   children: React.ReactNode;
 };
 
+function isHomePathname(pathname: string | null): boolean {
+  if (!pathname) return false;
+  return pathname === "/" || pathname === "/ar";
+}
+
 export function HeaderWrapper({ children }: HeaderWrapperProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
-  const isHomePage = pathname === "/";
+  const isHomePage = isHomePathname(pathname);
 
   useEffect(() => {
-    const handleScroll = () => {
+    if (!isHomePage) return;
+
+    let rafId: number | null = null;
+    let scrollListenerScheduled = false;
+
+    const applyScrollState = () => {
+      scrollListenerScheduled = false;
       const heroHeight = window.innerHeight;
-      setIsScrolled(window.scrollY > heroHeight - 100);
+      const nextScrolled = window.scrollY > heroHeight - 100;
+      setIsScrolled(nextScrolled);
     };
 
-    // Initial check
-    handleScroll();
+    const onScroll = () => {
+      if (scrollListenerScheduled) return;
+      scrollListenerScheduled = true;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        applyScrollState();
+      });
+    };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    applyScrollState();
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (rafId != null) cancelAnimationFrame(rafId);
+    };
+  }, [isHomePage]);
 
   const isTransparent = isHomePage && !isScrolled;
 

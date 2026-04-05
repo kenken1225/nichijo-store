@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { formatPrice } from "@/lib/shopify/client";
+import { parseCartApiResponse } from "@/lib/cart/parseCartResponse";
 import { useCart } from "@/contexts/CartContext";
 import { useCountry } from "@/contexts/CountryContext";
-import type { CartApiResponse, MiniCartLine, ParsedCart, ShopifyImage, ShopifyVariant } from "@/lib/types/shopify";
+import type { MiniCartLine, ParsedCart, ShopifyImage, ShopifyVariant } from "@/lib/types/shopify";
 import type { ProductBadgeItem } from "@/components/shared/ProductBadges";
 import type { ProductRecommendationUiItem } from "@/lib/shopify/domain/products";
 import { ProductDetail } from "./ProductDetail";
@@ -31,44 +31,6 @@ export function ProductPageWithDrawer({ product, headerBadges, recommendationsPr
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [addingVariantId, setAddingVariantId] = useState<string | null>(null);
   const [selectedVariantImageUrl, setSelectedVariantImageUrl] = useState<string | null>(null);
-
-  const parseCart = useCallback(
-    (cart: CartApiResponse | null): ParsedCart => {
-      const linesRaw = cart?.lines;
-      const rawLines = Array.isArray(linesRaw)
-        ? linesRaw
-        : (linesRaw && "edges" in linesRaw && Array.isArray(linesRaw.edges)
-            ? linesRaw.edges.map((e) => e.node)
-            : []);
-      const lines: MiniCartLine[] = rawLines.map((item) => {
-        const merch = item?.merchandise;
-        const image = merch?.product?.featuredImage ?? merch?.image;
-        const price = merch?.price
-          ? formatPrice(merch.price.amount, merch.price.currencyCode, country.numberLocale)
-          : "";
-        return {
-          id: item?.id ?? "",
-          quantity: item?.quantity ?? 1,
-          title: merch?.product?.title ?? merch?.title ?? "",
-          variantTitle: merch?.title ?? "",
-          price,
-          imageUrl: image?.url,
-          imageAlt: image?.altText,
-        };
-      });
-      const subtotalNode = cart?.cost?.subtotalAmount;
-      const subtotal = subtotalNode
-        ? formatPrice(subtotalNode.amount, subtotalNode.currencyCode, country.numberLocale)
-        : "";
-      return {
-        lines,
-        subtotal,
-        checkoutUrl: cart?.checkoutUrl ?? null,
-        totalQuantity: cart?.totalQuantity ?? 0,
-      };
-    },
-    [country.numberLocale]
-  );
 
   const handleAddedToCart = useCallback(
     (parsed: ParsedCart) => {
@@ -98,7 +60,7 @@ export function ProductPageWithDrawer({ product, headerBadges, recommendationsPr
           }
           throw new Error(data?.error ?? "Failed to add to cart");
         }
-        const parsed = parseCart(data.cart);
+        const parsed = parseCartApiResponse(data.cart, country.numberLocale);
         handleAddedToCart(parsed);
       } catch (error) {
         console.error("Add recommendation to cart error:", error);
@@ -106,7 +68,7 @@ export function ProductPageWithDrawer({ product, headerBadges, recommendationsPr
         setAddingVariantId(null);
       }
     },
-    [parseCart, handleAddedToCart]
+    [country.numberLocale, handleAddedToCart]
   );
 
   const handleRemoveLine = useCallback(
@@ -128,7 +90,7 @@ export function ProductPageWithDrawer({ product, headerBadges, recommendationsPr
           }
           throw new Error(data?.error ?? "Failed to remove item");
         }
-        const parsed = parseCart(data.cart);
+        const parsed = parseCartApiResponse(data.cart, country.numberLocale);
         setCartLines(parsed.lines);
         setCartSubtotal(parsed.subtotal);
         setCheckoutUrl(parsed.checkoutUrl);
@@ -137,7 +99,7 @@ export function ProductPageWithDrawer({ product, headerBadges, recommendationsPr
         console.error(error);
       }
     },
-    [parseCart, setItemCount]
+    [country.numberLocale, setItemCount]
   );
 
   return (

@@ -1,4 +1,5 @@
 import { shopifyFetch, toShopifyLanguage, toShopifyCountry } from "../client";
+import { normalizeProductFilterInput, normalizeProductFiltersList } from "./collection-filters";
 import type { ShopifyImage } from "../../types/shopify";
 import {
   COLLECTIONS_QUERY,
@@ -42,9 +43,23 @@ export type CollectionPageInfo = {
   startCursor: string | null;
 };
 
+export type CollectionFilterFacet = {
+  id: string;
+  label: string;
+  type: string;
+  presentation?: string | null;
+  values: {
+    id: string;
+    label: string;
+    count: number;
+    input: Record<string, unknown>;
+  }[];
+};
+
 export type CollectionWithProducts = CollectionNode & {
   products: CollectionProduct[];
   pageInfo: CollectionPageInfo;
+  filterFacets: CollectionFilterFacet[];
 };
 
 type CollectionsQuery = {
@@ -70,6 +85,7 @@ type CollectionByHandleQueryResult = {
   collection:
     | (CollectionNode & {
         products: {
+          filters?: CollectionFilterFacet[];
           pageInfo: CollectionPageInfo;
           edges: { node: ProductNodeRaw }[];
         };
@@ -107,6 +123,8 @@ export type GetCollectionWithProductsOptions = {
   countryCode?: string;
   after?: string | null;
   before?: string | null;
+  /** Storefront API ProductFilter inputs (from FilterValue.input), Search & Discovery–backed */
+  productFilters?: unknown[];
 };
 
 export async function getCollections(locale?: string, countryCode?: string): Promise<CollectionSummary[]> {
@@ -117,16 +135,33 @@ export async function getCollections(locale?: string, countryCode?: string): Pro
   return data?.collections?.edges?.map(({ node }) => node) ?? [];
 }
 
+function mapFilterFacets(raw: CollectionFilterFacet[] | undefined): CollectionFilterFacet[] {
+  if (!raw?.length) return [];
+  return raw.map((f) => ({
+    id: f.id,
+    label: f.label,
+    type: f.type,
+    presentation: f.presentation ?? null,
+    values: (f.values ?? []).map((v) => ({
+      id: v.id,
+      label: v.label,
+      count: v.count,
+      input: normalizeProductFilterInput(v.input) ?? (v.input as Record<string, unknown>),
+    })),
+  }));
+}
+
 export async function getCollectionWithProducts(
   handle: string,
   options?: GetCollectionWithProductsOptions
 ): Promise<CollectionWithProducts | null> {
-  const { locale, countryCode, after, before } = options ?? {};
+  const { locale, countryCode, after, before, productFilters } = options ?? {};
 
   const language = toShopifyLanguage(locale);
   const country = toShopifyCountry(countryCode);
+  const filters = normalizeProductFiltersList(Array.isArray(productFilters) ? productFilters : []);
 
-  const baseVars = { handle, language, country };
+  const baseVars = { handle, language, country, filters };
 
   const data = before
     ? await shopifyFetch<CollectionByHandleQueryResult>(COLLECTION_BY_HANDLE_QUERY_BACKWARD, {
@@ -151,6 +186,7 @@ export async function getCollectionWithProducts(
   };
 
   const products = data.collection.products?.edges?.map(({ node }) => mapProductNode(node)) ?? [];
+  const filterFacets = mapFilterFacets(data.collection.products?.filters);
 
   return {
     handle: data.collection.handle,
@@ -159,5 +195,6 @@ export async function getCollectionWithProducts(
     image: data.collection.image,
     products,
     pageInfo,
+    filterFacets,
   };
 }

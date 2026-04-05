@@ -1,11 +1,12 @@
 "use client";
 
-import { useTransition, useState, useRef, useEffect } from "react";
+import { useTransition, useState, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { Globe, ChevronDown, Loader2 } from "lucide-react";
 import { useCountry } from "@/contexts/CountryContext";
 import { SUPPORTED_COUNTRIES, type CountryConfig } from "@/lib/country-config";
+import { useOnClickOutside } from "@/hooks/useOnClickOutside";
 
 type LocaleSwitcherProps = {
   variant?: "header" | "footer";
@@ -27,16 +28,7 @@ export function LocaleSwitcher({ variant = "footer" }: LocaleSwitcherProps) {
   const [openDropdown, setOpenDropdown] = useState<"language" | "country" | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // outside click to close the dropdown
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setOpenDropdown(null);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  useOnClickOutside(dropdownRef, () => setOpenDropdown(null), openDropdown !== null);
 
   const handleLanguageChange = (newLocale: string) => {
     setOpenDropdown(null);
@@ -91,11 +83,7 @@ export function LocaleSwitcher({ variant = "footer" }: LocaleSwitcherProps) {
           aria-label={t("selectLanguage")}
           disabled={isPending}
         >
-          {isPending ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Globe className="h-4 w-4" />
-          )}
+          {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Globe className="h-4 w-4" />}
           <span>{currentLanguage.label}</span>
           <ChevronDown className={`h-3 w-3 transition-transform ${openDropdown === "language" ? "rotate-180" : ""}`} />
         </button>
