@@ -40,7 +40,7 @@ Shopify のテーマをそのまま使う選択肢もありましたが、今回
 
 **Frontend**
 
-- Next.js 16 (App Router)
+- Next.js 16（App Router）
 - TypeScript
 - Tailwind CSS
 
@@ -54,9 +54,20 @@ Shopify のテーマをそのまま使う選択肢もありましたが、今回
 - Netlify
   > `@netlify/plugin-nextjs` を使用して、Next.js の ISR / SSR をサポート。
 
+**Testing**
+
+- [Vitest](https://vitest.dev/) — 単体テスト（`npm run test`）
+- [Playwright](https://playwright.dev/) — E2E（`npm run test:e2e`）。ローカル／CI 用の環境変数は `.env.e2e.example` を参照。
+
+**CI（GitHub Actions）**
+
+- **Build Check**（`main` の push / PR）— 型チェック、Lint、単体テスト、本番ビルド
+- **Playwright E2E** — 定期実行および手動（ワークフロー参照）
+
 **Monitoring & Maintenance**
 
 - [Sentry](https://sentry.io/) — エラー監視・パフォーマンス監視
+
   > フロントエンド・サーバーサイド両方のエラーをリアルタイムで検知・通知。
   > エラー発生時にスタックトレース、影響ユーザー数、ブラウザ情報などを自動収集。
 
@@ -89,7 +100,7 @@ React Context で状態を管理して、API Routes を経由して Shopify と�
 ## Features
 
 - 商品一覧・詳細ページ
-- コレクション（カテゴリ）機能
+- コレクション（カテゴリ）とストアフロント準拠のフィルタ・ソート
 - カート機能（Shopify Checkout 連携）
 - ブログ機能（Shopify のブログ記事を取得）
 - 顧客アカウント（ログイン、注文履歴、住所管理）
@@ -101,7 +112,7 @@ React Context で状態を管理して、API Routes を経由して Shopify と�
 
 ## Internationalization (i18n) & Multi-Currency
 
-### 言語対応　 & 通貨・国設定
+### 言語対応 & 通貨・国設定
 
 [next-intl](https://next-intl.dev/) を使用した多言語対応をしています。
 
@@ -122,15 +133,25 @@ Shopify Markets と連携し、ユーザーの所在国に応じた通貨で商�
 # Install dependencies
 npm install
 
-# Set environment variables
-cp .env.example .env.local
-# Edit .env.local with your Shopify credentials
+# Environment variables: create .env.local in the repo root
+# (use the keys listed in "Environment Variables" below; team onboarding may provide a template)
 
 # Run development server
 npm run dev
 ```
 
 Open http://localhost:3000
+
+**よく使うコマンド**
+
+```bash
+npm run lint          # ESLint
+npm run test          # Vitest（単体）
+npm run test:watch    # Vitest ウォッチ
+npm run test:e2e      # Playwright（要 E2E 用 env・ブラウザ install）
+```
+
+E2E 用: `.env.e2e.example` を `.env.e2e` にコピーし、`E2E_BASE_URL` などを設定。初回は `npx playwright install chromium` が必要なことがあります。
 
 ---
 
