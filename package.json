@@ -14,13 +14,13 @@
     "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
-    "@sentry/nextjs": "^10.38.0",
-    "@shopify/storefront-api-client": "^1.0.4",
+    "@sentry/nextjs": "^10.45.0",
+    "@shopify/storefront-api-client": "^1.0.10",
     "@tailwindcss/postcss": "^4.1.18",
     "clsx": "^2.1.1",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
-    "lightningcss": "^1.30.2",
+    "lightningcss": "^1.32.0",
     "lucide-react": "^0.576.0",
     "next": "16.1.6",
     "next-intl": "^4.8.3",
@@ -33,7 +33,7 @@
     "zod": "^3.25.17"
   },
   "devDependencies": {
-    "@netlify/plugin-nextjs": "^5.15.8",
+    "@netlify/plugin-nextjs": "^5.15.9",
     "@playwright/test": "^1.58.2",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -43,5 +43,7 @@
     "eslint-config-next": "16.1.6",
     "typescript": "^5",
     "vitest": "^3.2.4"
+    "eslint-config-next": "16.2.1",
+    "typescript": "^5"
   }
 }
