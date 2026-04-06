@@ -4,6 +4,7 @@ import clsx from "clsx";
 import Link from "next/link";
 import { Suspense } from "react";
 import { useTranslations } from "next-intl";
+import { Image } from "@/components/shared/Image";
 import type { MiniCartLine } from "@/lib/types/shopify";
 import type { ProductRecommendationUiItem } from "@/lib/shopify/domain/products";
 import { MiniCartYouMayAlsoLikeFromPromise } from "./ProductRecommendationsFromPromise";
@@ -66,12 +67,14 @@ export function MiniCartDrawer({
           ) : (
             cartLines.map((line) => (
               <div key={line.id} className="flex gap-3 rounded-md border border-border bg-secondary/20 p-3">
-                <div className="relative h-16 w-16 overflow-hidden rounded-md bg-muted/60">
+                <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md bg-muted/60">
                   {line.imageUrl ? (
-                    <img
+                    <Image
                       src={line.imageUrl}
                       alt={line.imageAlt ?? line.title}
-                      className="h-full w-full object-cover"
+                      fill
+                      sizes="64px"
+                      className="object-cover"
                     />
                   ) : null}
                 </div>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { BlogArticleCard } from "./BlogArticleCard";
 import type { BlogArticleSummary } from "@/lib/shopify/domain/blogs";
 import { Container } from "../layout/Container";
+import { Image } from "@/components/shared/Image";
 import { getTranslations } from "next-intl/server";
 
 type BlogListProps = {
@@ -23,10 +24,12 @@ export async function BlogList({ blogHandle, articles }: BlogListProps) {
               <div className="grid gap-0 md:grid-cols-[1fr_1fr]">
                 <div className="relative aspect-[4/3] w-full bg-muted/40 md:aspect-auto md:min-h-[360px]">
                   {featured.image?.url ? (
-                    <img
+                    <Image
                       src={featured.image.url}
                       alt={featured.image.altText ?? featured.title}
-                      className="h-full w-full object-cover"
+                      fill
+                      sizes="(min-width: 768px) 50vw, 100vw"
+                      className="object-cover"
                     />
                   ) : null}
                   <span className="absolute start-4 top-4 rounded-full bg-[#e9dece] px-3 py-1 text-xs font-semibold text-[#c47a57]">
