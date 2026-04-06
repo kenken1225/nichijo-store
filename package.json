@@ -16,7 +16,7 @@
   "dependencies": {
     "@sentry/nextjs": "^10.45.0",
     "@shopify/storefront-api-client": "^1.0.10",
-    "@tailwindcss/postcss": "^4.1.18",
+    "@tailwindcss/postcss": "^4.2.2",
     "clsx": "^2.1.1",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
