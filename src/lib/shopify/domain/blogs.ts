@@ -1,6 +1,12 @@
 import { shopifyFetch, toShopifyLanguage, toShopifyCountry } from "../client";
 import type { ShopifyArticle, ShopifyBlog } from "../../types/shopify";
-import { ARTICLE_BY_HANDLE_QUERY, BLOG_BY_HANDLE_QUERY, BLOGS_LIST_QUERY, LATEST_ARTICLES_QUERY, SEARCH_ARTICLES_QUERY } from "../graphql/queries";
+import {
+  ARTICLE_BY_HANDLE_QUERY,
+  BLOG_BY_HANDLE_QUERY,
+  BLOGS_LIST_QUERY,
+  LATEST_ARTICLES_QUERY,
+  SEARCH_ARTICLES_QUERY,
+} from "../graphql/queries";
 
 type BlogsListQuery = {
   blogs: { edges: { node: Pick<ShopifyBlog, "handle" | "title"> }[] };
@@ -65,12 +71,23 @@ export type SearchArticleResult = {
 };
 
 export async function getBlogs(locale?: string, countryCode?: string): Promise<BlogSummary[]> {
-  const data = await shopifyFetch<BlogsListQuery>(BLOGS_LIST_QUERY, { language: toShopifyLanguage(locale), country: toShopifyCountry(countryCode) });
+  const data = await shopifyFetch<BlogsListQuery>(BLOGS_LIST_QUERY, {
+    language: toShopifyLanguage(locale),
+    country: toShopifyCountry(countryCode),
+  });
   return data?.blogs?.edges?.map(({ node }) => node) ?? [];
 }
 
-export async function getBlogWithArticles(handle: string, locale?: string, countryCode?: string): Promise<BlogWithArticles | null> {
-  const data = await shopifyFetch<BlogByHandleQuery>(BLOG_BY_HANDLE_QUERY, { handle, language: toShopifyLanguage(locale), country: toShopifyCountry(countryCode) });
+export async function getBlogWithArticles(
+  handle: string,
+  locale?: string,
+  countryCode?: string
+): Promise<BlogWithArticles | null> {
+  const data = await shopifyFetch<BlogByHandleQuery>(BLOG_BY_HANDLE_QUERY, {
+    handle,
+    language: toShopifyLanguage(locale),
+    country: toShopifyCountry(countryCode),
+  });
   if (!data?.blog) return null;
 
   const articles =
@@ -121,8 +138,16 @@ export async function getBlogArticle(
   };
 }
 
-export async function searchArticles(query: string, locale?: string, countryCode?: string): Promise<SearchArticleResult[]> {
-  const data = await shopifyFetch<SearchArticlesQuery>(SEARCH_ARTICLES_QUERY, { query, language: toShopifyLanguage(locale), country: toShopifyCountry(countryCode) });
+export async function searchArticles(
+  query: string,
+  locale?: string,
+  countryCode?: string
+): Promise<SearchArticleResult[]> {
+  const data = await shopifyFetch<SearchArticlesQuery>(SEARCH_ARTICLES_QUERY, {
+    query,
+    language: toShopifyLanguage(locale),
+    country: toShopifyCountry(countryCode),
+  });
   const articles = data?.articles?.edges ?? [];
 
   return articles.map(({ node }) => ({
@@ -171,8 +196,16 @@ export type LatestArticle = {
   blogTitle: string;
 };
 
-export async function getLatestArticles(count: number = 3, locale?: string, countryCode?: string): Promise<LatestArticle[]> {
-  const data = await shopifyFetch<LatestArticlesQuery>(LATEST_ARTICLES_QUERY, { first: count, language: toShopifyLanguage(locale), country: toShopifyCountry(countryCode) });
+export async function getLatestArticles(
+  count: number = 3,
+  locale?: string,
+  countryCode?: string
+): Promise<LatestArticle[]> {
+  const data = await shopifyFetch<LatestArticlesQuery>(LATEST_ARTICLES_QUERY, {
+    first: count,
+    language: toShopifyLanguage(locale),
+    country: toShopifyCountry(countryCode),
+  });
   const articles = data?.articles?.edges ?? [];
 
   return articles.map(({ node }) => ({
@@ -185,4 +218,36 @@ export async function getLatestArticles(count: number = 3, locale?: string, coun
     blogHandle: node.blog.handle,
     blogTitle: node.blog.title,
   }));
+}
+
+const latestArticleKey = (a: LatestArticle) => `${a.blogHandle}:${a.handle}`;
+
+export function pickRecentArticlesForBlogIndex(
+  currentBlogHandle: string,
+  listingArticles: BlogArticleSummary[],
+  latest: LatestArticle[],
+  count: number = 4,
+  skipFromListing: number = 8
+): LatestArticle[] {
+  const skipHandles = new Set(listingArticles.slice(0, skipFromListing).map((a) => a.handle));
+  const result: LatestArticle[] = [];
+  const seen = new Set<string>();
+
+  const take = (predicate: (a: LatestArticle) => boolean) => {
+    for (const a of latest) {
+      if (result.length >= count) break;
+      const k = latestArticleKey(a);
+      if (seen.has(k) || !predicate(a)) continue;
+      seen.add(k);
+      result.push(a);
+    }
+  };
+
+  take((a) => !(a.blogHandle === currentBlogHandle && skipHandles.has(a.handle)));
+
+  if (result.length < count) {
+    take(() => true);
+  }
+
+  return result.slice(0, count);
 }

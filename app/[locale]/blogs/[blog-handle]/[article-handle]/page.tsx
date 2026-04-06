@@ -5,8 +5,9 @@ import { Container } from "@/components/layout/Container";
 import { BlogArticleHeader } from "@/components/blogs/BlogArticleHeader";
 import { BlogArticleContent } from "@/components/blogs/BlogArticleContent";
 import { getBlogArticle, getBlogWithArticles } from "@/lib/shopify/domain/blogs";
+import type { LatestArticle } from "@/lib/shopify/domain/blogs";
 import BrowseOtherPages from "@/components/shared/BrowseOtherPages";
-import { ContinueReading } from "@/components/blogs/ContinueReading";
+import { BlogRecentPostsSection } from "@/components/blogs/BlogRecentPostsSection";
 import { getTranslations, getLocale } from "next-intl/server";
 import { getCountryCode } from "@/lib/country-config";
 
@@ -56,7 +57,17 @@ export default async function BlogArticlePage({ params }: ArticlePageProps) {
   }
 
   const continueArticles =
-    blogWithArticles?.articles?.filter((article) => article.handle !== articleHandle)?.slice(0, 3) ?? [];
+    blogWithArticles?.articles?.filter((article) => article.handle !== articleHandle)?.slice(0, 4) ?? [];
+  const continueAsLatest = continueArticles.map((article) => ({
+    handle: article.handle,
+    title: article.title,
+    excerpt: article.excerpt ?? null,
+    publishedAt: article.publishedAt ?? null,
+    tags: article.tags ?? [],
+    image: article.image ?? null,
+    blogHandle,
+    blogTitle: data.blogTitle,
+  })) satisfies LatestArticle[];
 
   // JSON-LD for Google Rich Snippets
   const jsonLd = {
@@ -97,6 +108,7 @@ export default async function BlogArticlePage({ params }: ArticlePageProps) {
             authorName={data.article.authorName}
             tags={data.article.tags}
             image={data.article.image}
+            newLabel={t("badgeNew")}
           />
         </Container>
       </section>
@@ -107,13 +119,13 @@ export default async function BlogArticlePage({ params }: ArticlePageProps) {
         </Container>
       </section>
 
+      <BlogRecentPostsSection items={continueAsLatest} sectionTitle={t("continueReading")} />
+
       <section className="py-12 bg-[#E8DFD0]">
         <Container className="max-w-4xl">
           <BrowseOtherPages />
         </Container>
       </section>
-
-      <ContinueReading blogHandle={blogHandle} articles={continueArticles} />
     </div>
   );
 }

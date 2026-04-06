@@ -7,6 +7,7 @@ import { Search, User, ShoppingBag, Menu } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import type { MenuItem } from "@/lib/shopify/domain/navigation";
 import { MobileDrawer } from "./MobileDrawer";
+import { NavLinkPendingStyle } from "./NavLinkPendingStyle";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 import { MobileLocaleSwitcher } from "./MobileLocaleSwitcher";
 
@@ -34,16 +35,20 @@ export function NavigationDesktopTray({ labels }: { labels: NavigationLabels }) 
           className="transition-colors hover:text-foreground"
           aria-label={link.label}
         >
-          <link.icon className="h-5 w-5" strokeWidth={1.5} />
+          <NavLinkPendingStyle className="inline-flex">
+            <link.icon className="h-5 w-5" strokeWidth={1.5} />
+          </NavLinkPendingStyle>
         </Link>
       ))}
       <Link href="/cart" className="relative transition-colors hover:text-foreground" aria-label={labels.cart}>
-        <ShoppingBag className="h-5 w-5" strokeWidth={1.5} />
-        {itemCount > 0 && (
-          <span className="absolute -bottom-1 -end-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
-            {itemCount > 99 ? "99+" : itemCount}
-          </span>
-        )}
+        <NavLinkPendingStyle className="inline-flex relative">
+          <ShoppingBag className="h-5 w-5" strokeWidth={1.5} />
+          {itemCount > 0 && (
+            <span className="absolute -bottom-1 -end-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
+              {itemCount > 99 ? "99+" : itemCount}
+            </span>
+          )}
+        </NavLinkPendingStyle>
       </Link>
     </div>
   );
@@ -78,16 +83,20 @@ export function NavigationMobileChrome({
             className="transition-colors hover:text-foreground"
             aria-label={link.label}
           >
-            <link.icon className="h-5 w-5" strokeWidth={1.5} />
+            <NavLinkPendingStyle className="inline-flex">
+              <link.icon className="h-5 w-5" strokeWidth={1.5} />
+            </NavLinkPendingStyle>
           </Link>
         ))}
         <Link href="/cart" className="relative transition-colors hover:text-foreground" aria-label={labels.cart}>
-          <ShoppingBag className="h-5 w-5" strokeWidth={1.5} />
-          {itemCount > 0 && (
-            <span className="absolute -bottom-1 -end-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
-              {itemCount > 99 ? "99+" : itemCount}
-            </span>
-          )}
+          <NavLinkPendingStyle className="inline-flex relative">
+            <ShoppingBag className="h-5 w-5" strokeWidth={1.5} />
+            {itemCount > 0 && (
+              <span className="absolute -bottom-1 -end-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
+                {itemCount > 99 ? "99+" : itemCount}
+              </span>
+            )}
+          </NavLinkPendingStyle>
         </Link>
         <button
           type="button"

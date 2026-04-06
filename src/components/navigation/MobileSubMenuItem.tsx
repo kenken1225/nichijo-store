@@ -3,6 +3,7 @@ import Link from "next/link";
 import { MenuItem, normalizeMenuUrl } from "@/lib/shopify/domain/navigation";
 import { ChevronDown } from "lucide-react";
 import clsx from "clsx";
+import { NavLinkPendingStyle } from "./NavLinkPendingStyle";
 
 // Mobile sub-menu item (for children and grandchildren)
 export function MobileSubMenuItem({ item, onClose }: { item: MenuItem; onClose: () => void }) {
@@ -17,7 +18,7 @@ export function MobileSubMenuItem({ item, onClose }: { item: MenuItem; onClose: 
         onClick={onClose}
         className="block py-2 text-sm text-muted-foreground hover:text-primary transition-colors"
       >
-        {item.title}
+        <NavLinkPendingStyle className="block">{item.title}</NavLinkPendingStyle>
       </Link>
     );
   }
@@ -42,7 +43,7 @@ export function MobileSubMenuItem({ item, onClose }: { item: MenuItem; onClose: 
               onClick={onClose}
               className="block py-2 text-sm text-muted-foreground hover:text-primary transition-colors"
             >
-              {grandchild.title}
+              <NavLinkPendingStyle className="block">{grandchild.title}</NavLinkPendingStyle>
             </Link>
           ))}
         </div>

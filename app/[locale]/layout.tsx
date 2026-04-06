@@ -1,6 +1,7 @@
 import { Noto_Sans, Noto_Sans_Arabic } from "next/font/google";
 import "@/styles/index.css";
 import { Header } from "@/components/layout/Header";
+import { NavigationProgress } from "@/components/navigation/NavigationProgress";
 import { Footer } from "@/components/layout/Footer";
 import { CartProvider } from "@/contexts/CartContext";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -52,6 +53,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <html lang={locale} dir={dir}>
       <body className={`${fontClass} bg-background text-foreground antialiased`}>
+        <NavigationProgress />
         <NextIntlClientProvider messages={messages}>
           <CountryProvider initialCountryCode={countryCode}>
             <CartProvider initialCount={initialCartCount}>

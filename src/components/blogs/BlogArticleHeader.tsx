@@ -1,6 +1,7 @@
 import { Image } from "@/components/shared/Image";
 import type { ShopifyImage } from "@/lib/types/shopify";
 import { formatDate } from "@/lib/shopify/client";
+import { ArticleNewBadge, isNewArticle } from "./ArticleNewBadge";
 
 type BlogArticleHeaderProps = {
   title: string;
@@ -9,9 +10,10 @@ type BlogArticleHeaderProps = {
   authorName?: string | null;
   tags: string[];
   image?: ShopifyImage | null;
+  newLabel?: string;
 };
 
-export function BlogArticleHeader({ title, excerpt, publishedAt, authorName, tags, image }: BlogArticleHeaderProps) {
+export function BlogArticleHeader({ title, excerpt, publishedAt, authorName, tags, image, newLabel }: BlogArticleHeaderProps) {
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
       {image?.url ? (
@@ -30,6 +32,7 @@ export function BlogArticleHeader({ title, excerpt, publishedAt, authorName, tag
 
       <div className="space-y-4 px-6 py-6 sm:px-8 sm:py-8">
         <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+          {newLabel ? <ArticleNewBadge show={isNewArticle(publishedAt)} label={newLabel} /> : null}
           <span>{formatDate(publishedAt ?? "", "en-US")}</span>
           {authorName ? <span>・ {authorName}</span> : null}
         </div>

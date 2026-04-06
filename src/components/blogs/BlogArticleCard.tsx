@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { BlogArticleSummary } from "@/lib/shopify/domain/blogs";
 import { formatDate } from "@/lib/shopify/client";
+import { Image } from "@/components/shared/Image";
+import { ArticleNewBadge, isNewArticle } from "./ArticleNewBadge";
 import { getTranslations } from "next-intl/server";
 
 type BlogArticleCardProps = {
@@ -15,12 +17,15 @@ export async function BlogArticleCard({ blogHandle, article }: BlogArticleCardPr
       href={`/blogs/${blogHandle}/${article.handle}`}
       className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
     >
-      <div className="aspect-[4/3] w-full bg-muted/40">
+      <div className="relative aspect-[4/3] w-full bg-muted/40">
+        <ArticleNewBadge show={isNewArticle(article.publishedAt)} label={t("badgeNew")} className="absolute left-2 top-2 z-10" />
         {article.image?.url ? (
-          <img
+          <Image
             src={article.image.url}
             alt={article.image.altText ?? article.title}
-            className="h-full w-full object-cover"
+            fill
+            sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+            className="object-cover"
           />
         ) : null}
       </div>
@@ -39,4 +44,4 @@ export async function BlogArticleCard({ blogHandle, article }: BlogArticleCardPr
       </div>
     </Link>
   );
-}
+}　

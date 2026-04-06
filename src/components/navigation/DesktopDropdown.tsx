@@ -6,6 +6,7 @@ import { MenuItem, normalizeMenuUrl } from "@/lib/shopify/domain/navigation";
 import { ChevronDown } from "lucide-react";
 import clsx from "clsx";
 import { DropdownItem } from "./DropdownItem";
+import { NavLinkPendingStyle } from "./NavLinkPendingStyle";
 
 export function DesktopDropdown({ item }: { item: MenuItem }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,7 +17,7 @@ export function DesktopDropdown({ item }: { item: MenuItem }) {
     return (
       <>
         <Link href={href} className="transition-colors hover:text-foreground">
-          {item.title}
+          <NavLinkPendingStyle>{item.title}</NavLinkPendingStyle>
         </Link>
       </>
     );
