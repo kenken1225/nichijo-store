@@ -1,7 +1,10 @@
+"use client";
+
 import { useState } from "react";
 import Link from "next/link";
 import { MenuItem, normalizeMenuUrl } from "@/lib/shopify/domain/navigation";
 import { ChevronRight } from "lucide-react";
+import { NavLinkPendingStyle } from "./NavLinkPendingStyle";
 
 // Recursive dropdown item for nested menus
 export function DropdownItem({ item }: { item: MenuItem }) {
@@ -15,7 +18,7 @@ export function DropdownItem({ item }: { item: MenuItem }) {
         href={href}
         className="block px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
       >
-        {item.title}
+        <NavLinkPendingStyle>{item.title}</NavLinkPendingStyle>
       </Link>
     );
   }
@@ -39,7 +42,7 @@ export function DropdownItem({ item }: { item: MenuItem }) {
                 href={normalizeMenuUrl(grandchild.url)}
                 className="block px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
               >
-                {grandchild.title}
+                <NavLinkPendingStyle>{grandchild.title}</NavLinkPendingStyle>
               </Link>
             ))}
           </div>

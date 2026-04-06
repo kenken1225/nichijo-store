@@ -4,6 +4,7 @@ import { MenuItem, normalizeMenuUrl } from "@/lib/shopify/domain/navigation";
 import { ChevronDown } from "lucide-react";
 import clsx from "clsx";
 import { MobileSubMenuItem } from "./MobileSubMenuItem";
+import { NavLinkPendingStyle } from "./NavLinkPendingStyle";
 
 // Mobile accordion item
 export function MobileMenuItem({ item, onClose }: { item: MenuItem; onClose: () => void }) {
@@ -18,7 +19,7 @@ export function MobileMenuItem({ item, onClose }: { item: MenuItem; onClose: () 
         onClick={onClose}
         className="block py-3 text-base font-medium text-foreground hover:text-primary transition-colors border-b border-border"
       >
-        {item.title}
+        <NavLinkPendingStyle className="block">{item.title}</NavLinkPendingStyle>
       </Link>
     );
   }
